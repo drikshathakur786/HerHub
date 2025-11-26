@@ -19,9 +19,22 @@
 		FEF6EA762EB07E9700446BBF /* HerHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HerHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		FEF6EA882EB07E9900446BBF /* Exceptions for "HerHub" folder in "HerHub" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = FEF6EA752EB07E9700446BBF /* HerHub */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FEF6EA782EB07E9700446BBF /* HerHub */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				FEF6EA882EB07E9900446BBF /* Exceptions for "HerHub" folder in "HerHub" target */,
+			);
 			path = HerHub;
 			sourceTree = "<group>";
 		};
