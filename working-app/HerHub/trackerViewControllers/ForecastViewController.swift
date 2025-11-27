@@ -83,7 +83,6 @@ extension ForecastViewController {
         // iOS-native design with rounded corners
         topDateContainer.layer.cornerRadius = 24
         topDateContainer.clipsToBounds = true
-        topDateContainer.backgroundColor = UIColor.white.withAlphaComponent(0.3)
         
         // Modern shadow
         topDateContainer.layer.shadowColor = UIColor.black.cgColor

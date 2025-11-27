@@ -20,8 +20,8 @@ class profileViewController: UIViewController {
 
     @IBOutlet weak var settingsStackContainer: UIView!   // 🔥 add outlet for full settings section bg
     @IBOutlet weak var notificationRow: UIView!
-    @IBOutlet weak var helpRow: UIView!
-    @IBOutlet weak var aboutRow: UIView!
+    @IBOutlet weak var  EditProfile: UIView!
+    @IBOutlet weak var LogOut: UIView!
 
     private let profileGradient = CAGradientLayer()
     private let backgroundGradient = CAGradientLayer()  // New background gradient
@@ -127,13 +127,13 @@ extension profileViewController {
         notificationRow.backgroundColor = .white
 
         // Middle row – no rounding
-        helpRow.layer.cornerRadius = 0
-        helpRow.backgroundColor = .white
+        EditProfile.layer.cornerRadius = 0
+        EditProfile.backgroundColor = .white
 
         // 🔥 Bottom row
-        aboutRow.layer.cornerRadius = 18
-        aboutRow.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-        aboutRow.backgroundColor = .white
+       LogOut.layer.cornerRadius = 18
+        LogOut.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        LogOut.backgroundColor = .white
 
         // Shadow on the container (enhanced to match Tracker/Forecast)
         settingsStackContainer.layer.shadowColor = UIColor.black.cgColor
