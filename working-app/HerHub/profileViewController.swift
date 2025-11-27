@@ -18,17 +18,28 @@ class profileViewController: UIViewController {
     @IBOutlet weak var cycleValueLabel: UILabel!
     @IBOutlet weak var periodValueLabel: UILabel!
 
-    @IBOutlet weak var settingsStackContainer: UIView!   // 🔥 add outlet for full settings section bg
+    @IBOutlet weak var settingsStackContainer: UIView!   //  add outlet for full settings section bg
     @IBOutlet weak var notificationRow: UIView!
     @IBOutlet weak var  EditProfile: UIView!
     @IBOutlet weak var LogOut: UIView!
 
     private let profileGradient = CAGradientLayer()
     private let backgroundGradient = CAGradientLayer()  // New background gradient
+    
+    // Store current user for editing
+    private var currentUser: User?
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        
+        // Listen for profile updates
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadProfileData), name: NSNotification.Name("UserProfileUpdated"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadProfileData), name: .userSessionUpdated, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     override func viewDidLayoutSubviews() {
@@ -39,7 +50,38 @@ class profileViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        loadUserData(email: "beth@herhub.com") // Load data when view appears
+        // Load user data from SessionManager
+        if let user = SessionManager.shared.currentUser {
+            loadUserData(email: user.email ?? "")
+        } else {
+            print("⚠️ No user logged in")
+        }
+    }
+    
+    @objc private func reloadProfileData() {
+        print("🔄 Reloading profile data after edit")
+        if let user = currentUser {
+            loadUserData(email: user.email ?? "")
+        }
+    }
+    
+    // MARK: - Actions
+    @IBAction func editProfileButtonTapped(_ sender: Any) {
+        guard let user = currentUser else {
+            print("⚠️ No user data available for editing")
+            return
+        }
+        
+        // Instantiate EditProfileViewController from storyboard
+        let storyboard = UIStoryboard(name: "editProfile", bundle: nil)
+        if let editVC = storyboard.instantiateInitialViewController() as? EditProfileViewController {
+            editVC.currentUser = user
+            editVC.modalPresentationStyle = .fullScreen
+            print("✅ Presenting edit profile with user data")
+            present(editVC, animated: true, completion: nil)
+        } else {
+            print("❌ Failed to instantiate EditProfileViewController")
+        }
     }
 }
 
@@ -179,9 +221,13 @@ extension profileViewController {
         }
     }
     
+    
+    // here we are assigning the label values from supabase
     func updateProfileUI(user: User, baseline: CycleBaselineProfile?) {
-        // Update name label
-        nameLabel.text = user.email ?? user.phoneNumber ?? "User"
+        // Store user for editing
+        self.currentUser = user
+        // Update name label - show userName first, then fallback to email/phone
+        nameLabel.text = user.userName ?? user.email ?? user.phoneNumber ?? "User"
         
         // Update cycle length
         if let cycleLength = baseline?.baseCycleLength {

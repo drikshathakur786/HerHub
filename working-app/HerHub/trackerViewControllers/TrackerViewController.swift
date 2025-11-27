@@ -48,7 +48,18 @@ class TrackerViewController: UIViewController {
             card?.animateIn(delay: 0.1 * Double(index))
         }
         
-        debugLoadUserData(email: "beth@herhub.com")
+        // Listen for session updates
+        NotificationCenter.default.addObserver(self, selector: #selector(handleSessionUpdate), name: .userSessionUpdated, object: nil)
+
+        // Load data from SessionManager
+        if let user = SessionManager.shared.currentUser {
+            debugLoadUserData(email: user.email ?? "")
+        }
+    }
+    
+    @objc private func handleSessionUpdate() {
+        print("🔄 TrackerViewController received session update")
+        Task { await loadCycleData() }
     }
     
     private func setupNavigationTitle() {
@@ -247,9 +258,9 @@ extension TrackerViewController {
     
     private func loadCycleData() async {
         do {
-            // 1️⃣ Get user (TEMP until auth)
-            guard let user = try await UserController.shared.fetchUser(byEmail: "carol@herhub.com") else {
-                print("❌ No user found")
+            // 1️⃣ Get user from SessionManager
+            guard let user = SessionManager.shared.currentUser else {
+                print("❌ No user logged in")
                 return
             }
             

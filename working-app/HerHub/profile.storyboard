@@ -26,7 +26,7 @@
                                                 <rect key="frame" x="20" y="20" width="353" height="146.66666666666666"/>
                                                 <subviews>
                                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="person.crop.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="q4D-0f-8PX">
-                                                        <rect key="frame" x="151.66666666666666" y="20.666666666666668" width="50" height="48.666666666666657"/>
+                                                        <rect key="frame" x="151.66666666666666" y="20.666666666666664" width="50" height="48.666666666666664"/>
                                                         <color key="tintColor" red="0.88612375219999995" green="0.28880334140000002" blue="0.90735162020000004" alpha="0.61677486800000003" colorSpace="custom" customColorSpace="displayP3"/>
                                                         <constraints>
                                                             <constraint firstAttribute="height" constant="50" id="MZa-Hg-CYO"/>
@@ -42,14 +42,14 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="edit-profile-btn">
                                                         <rect key="frame" x="303" y="10" width="40" height="30"/>
                                                         <constraints>
-                                                            <constraint firstAttribute="width" constant="40" id="edit-btn-width"/>
                                                             <constraint firstAttribute="height" constant="30" id="edit-btn-height"/>
+                                                            <constraint firstAttribute="width" constant="40" id="edit-btn-width"/>
                                                         </constraints>
                                                         <state key="normal" title="Edit">
                                                             <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         </state>
                                                         <connections>
-                                                            <segue destination="edit-profile-ref" kind="presentation" modalPresentationStyle="fullScreen" id="edit-profile-segue"/>
+                                                            <action selector="editProfileButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="edit-profile-action"/>
                                                         </connections>
                                                     </button>
                                                 </subviews>
@@ -58,10 +58,10 @@
                                                     <constraint firstItem="q4D-0f-8PX" firstAttribute="centerX" secondItem="Urp-IJ-trS" secondAttribute="centerX" id="Hck-LI-bzC"/>
                                                     <constraint firstItem="q4D-0f-8PX" firstAttribute="top" secondItem="Urp-IJ-trS" secondAttribute="top" constant="20" id="SVv-HU-Brl"/>
                                                     <constraint firstItem="sYk-aR-82t" firstAttribute="top" secondItem="q4D-0f-8PX" secondAttribute="bottom" constant="20" id="Tc2-sU-QBS"/>
+                                                    <constraint firstItem="edit-profile-btn" firstAttribute="top" secondItem="Urp-IJ-trS" secondAttribute="top" constant="10" id="edit-btn-top"/>
+                                                    <constraint firstAttribute="trailing" secondItem="edit-profile-btn" secondAttribute="trailing" constant="10" id="edit-btn-trailing"/>
                                                     <constraint firstAttribute="bottom" secondItem="sYk-aR-82t" secondAttribute="bottom" constant="35" id="edw-pP-PxF"/>
                                                     <constraint firstItem="sYk-aR-82t" firstAttribute="centerX" secondItem="Urp-IJ-trS" secondAttribute="centerX" id="q8V-P2-Vgb"/>
-                                                    <constraint firstAttribute="trailing" secondItem="edit-profile-btn" secondAttribute="trailing" constant="10" id="edit-btn-trailing"/>
-                                                    <constraint firstItem="edit-profile-btn" firstAttribute="top" secondItem="Urp-IJ-trS" secondAttribute="top" constant="10" id="edit-btn-top"/>
                                                 </constraints>
                                             </view>
                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="yyV-QZ-TSw">
@@ -155,7 +155,7 @@
                                                         <rect key="frame" x="0.0" y="0.0" width="353" height="50"/>
                                                         <subviews>
                                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bell.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Esg-R0-AA1">
-                                                                <rect key="frame" x="10" y="10.333333333333332" width="30" height="29.333333333333339"/>
+                                                                <rect key="frame" x="10" y="10.333333333333332" width="30" height="29.333333333333353"/>
                                                                 <color key="tintColor" red="1" green="0.77580227089999998" blue="0.93574892480000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="width" constant="30" id="V1o-db-jbJ"/>
@@ -204,6 +204,9 @@
                                                                 <rect key="frame" x="282" y="8" width="51" height="34.333333333333336"/>
                                                                 <color key="tintColor" systemColor="underPageBackgroundColor"/>
                                                                 <buttonConfiguration key="configuration" style="plain" image="arrowshape.turn.up.right" catalog="system"/>
+                                                                <connections>
+                                                                    <segue destination="edit-profile-ref" kind="show" id="evt-8S-J4i"/>
+                                                                </connections>
                                                             </button>
                                                         </subviews>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -310,7 +313,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1382.4427480916031" y="475.35211267605638"/>
+            <point key="canvasLocation" x="1302" y="39"/>
         </scene>
         <!--profile-->
         <scene sceneID="YyK-FG-tFI">
@@ -332,13 +335,15 @@
             </objects>
             <point key="canvasLocation" x="-89" y="39"/>
         </scene>
-        <!--Edit Profile Reference-->
+        <!--editProfile-->
         <scene sceneID="edit-profile-ref-scene">
             <objects>
-                <viewControllerPlaceholder storyboardName="editProfile" id="edit-profile-ref" sceneMemberID="viewController"/>
+                <viewControllerPlaceholder storyboardName="editProfile" id="edit-profile-ref" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="s0d-pG-b5c"/>
+                </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="edit-profile-ref-responder" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="700" y="39"/>
+            <point key="canvasLocation" x="2539" y="39"/>
         </scene>
     </scenes>
     <resources>
@@ -351,7 +356,7 @@
         <image name="pencil" catalog="system" width="128" height="113"/>
         <image name="person.crop.circle" catalog="system" width="128" height="123"/>
         <systemColor name="opaqueSeparatorColor">
-            <color red="0.77647058823529413" green="0.77647058823529413" blue="0.78431372549019607" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.77647058820000003" green="0.77647058820000003" blue="0.7843137255" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>

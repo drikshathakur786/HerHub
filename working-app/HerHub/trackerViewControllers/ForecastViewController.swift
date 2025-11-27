@@ -204,9 +204,9 @@ extension ForecastViewController {
 
     private func loadForecastData() async {
         do {
-            // 1️⃣ Fetch user (temp — replace with auth)
-            guard let user = try await UserController.shared.fetchUser(byEmail: "carol@herhub.com") else {
-                print("❌ No user found")
+            // 1️⃣ Get user from SessionManager
+            guard let user = SessionManager.shared.currentUser else {
+                print("❌ No user logged in")
                 return
             }
             

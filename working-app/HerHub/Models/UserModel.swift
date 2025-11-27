@@ -12,6 +12,7 @@ struct User: Codable, Equatable {
     var email: String?
     var phoneNumber: String?
     var password: String
+    var userName: String?
     var userPicture: String?
 
     // MARK: - Linked Cycle Data
@@ -24,6 +25,7 @@ struct User: Codable, Equatable {
         case email
         case phoneNumber = "phone_number"
         case password
+        case userName = "user_name"
         case userPicture = "user_picture"
         case baselineProfile
         case recentCheckIns

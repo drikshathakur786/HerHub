@@ -1,0 +1,94 @@
+# Data Source Documentation
+
+This document details the data sources and flow for the HerHub application, including `TrackerViewController`, `ForecastViewController`, and `ProfileViewController`.
+
+## 🔄 Session Management & Data Flow
+
+**Core Component:** `SessionManager` ([SessionManager.swift](file:///Users/apple/Desktop/XcodeXperts-iOS-app%203/working-app/HerHub/SessionManager.swift))
+
+The app uses a centralized session manager to handle user data.
+-   **Source of Truth:** `SessionManager.shared.currentUser` holds the active `User` object.
+-   **Updates:** The `UserSessionUpdated` notification is broadcast whenever:
+    -   User logs in
+    -   User logs out
+    -   Session is auto-loaded on launch
+    -   User profile is updated
+-   **Listeners:** View controllers (`TrackerViewController`, `ProfileViewController`) listen for this notification to reload data immediately.
+
+---
+
+## 📊 TrackerViewController (Tracker Storyboard)
+
+**File:** [working-app/HerHub/trackerViewControllers/TrackerViewController.swift](file:///Users/apple/Desktop/XcodeXperts-iOS-app%203/working-app/HerHub/trackerViewControllers/TrackerViewController.swift)
+
+**Trigger:** `viewDidLoad` (initial) & `handleSessionUpdate` (notification)
+
+| Label Outlet | Data Source / Type | Fetch Function / Logic | Line Ref |
+| :--- | :--- | :--- | :--- |
+| `insightTitleLabel` | Static String | Hardcoded: "Today's Insight" | `updateInsightUI`: L325 |
+| `insightDescriptionLabel` | `String` | `CycleDataController.shared.getDailyForecasts` -> `forecast.weatherDescription` | `updateInsightUI`: L327 |
+| `moodValueLabel` | `String` (Derived) | `CycleDataController.shared.getCheckIns` -> `checkIn.symptomsPresent ? "Mixed" : "Good"` | `updateCheckInUI`: L299 |
+| `cycleDayValueLabel` | `String` (Date) | `CycleDataController.shared.getCheckIns` -> `checkIn.date` (Day component) | `updateCheckInUI`: L300 |
+| `nextPeriodValueLabel` | `String` (Derived) | `CycleDataController.shared.getCheckIns` -> `checkIn.periodStartedToday ? "Started" : "No"` | `updateCheckInUI`: L301 |
+| `energyValueLabel` | `String` (Derived) | `CycleDataController.shared.getCheckIns` -> `checkIn.sleepHours >= 7 ? "High" : "Low"` | `updateCheckInUI`: L302 |
+| `dayLabels` (Collection) | `String` (Date) | `CycleDataController.shared.getDailyForecasts` -> `forecast.date` (Day Name e.g., "Mon") | `updateForecastUI`: L366 |
+| `dateLabels` (Collection) | `String` (Date) | `CycleDataController.shared.getDailyForecasts` -> `forecast.date` (Day Number e.g., "27") | `updateForecastUI`: L371 |
+| `moodLabels` (Collection) | `String` (Enum) | `CycleDataController.shared.getDailyForecasts` -> `forecast.phaseDescription` (Computed property) | `updateForecastUI`: L376 |
+| `fertilityBoxes` (Collection) | `String` (Enum) | `CycleDataController.shared.getDailyForecasts` -> `forecast.fertility.displayName` | `updateForecastUI`: L382 |
+
+---
+
+## 🌤️ ForecastViewController (Forecast Storyboard)
+
+**File:** [working-app/HerHub/trackerViewControllers/ForecastViewController.swift](file:///Users/apple/Desktop/XcodeXperts-iOS-app%203/working-app/HerHub/trackerViewControllers/ForecastViewController.swift)
+
+| Label Outlet | Data Source / Type | Fetch Function / Logic | Line Ref |
+| :--- | :--- | :--- | :--- |
+| `selectedDayLabel` | `String` (Date) | `CycleDataController.shared.getDailyForecasts` -> `forecast.date` (Day Name) | `updateDateStrip`: L270 |
+| `selectedDateLabel` | `String` (Date) | `CycleDataController.shared.getDailyForecasts` -> `forecast.date` (Day Number) | `updateDateStrip`: L271 |
+| `dateLabel` (Phase Card) | `String` (Date) | `CycleDataController.shared.getDailyForecasts` -> `forecast.date` (Month & Day) | `updatePhaseCard`: L404 |
+| `phaseLabel` (Phase Card) | `String` (Enum) | `CycleDataController.shared.getDailyForecasts` -> `forecast.phase.rawValue` | `updatePhaseCard`: L409 |
+| `fertilityCard` Labels | `String` (Enum) | `CycleDataController.shared.getDailyForecasts` -> `forecast.fertility.displayName` (or "High") | `updateFertilityCard`: L454 |
+| `energyCard` Labels | `String` (Enum) | `CycleDataController.shared.getDailyForecasts` -> `forecast.energy.displayName` (or "High") | `updateEnergyCard`: L562 |
+| `symptomsCard` Labels | `String` | `CycleDataController.shared.getDailyForecasts` -> `forecast.symptoms` (Name + Intensity) | `updateSymptomsCard`: L653 |
+| `recommendationsCard` Labels | `String` | `CycleDataController.shared.getDailyForecasts` -> `forecast.recommendations` | `updateRecommendationsInStackView`: L744 |
+| `aboutCard` Labels | `String` | `CycleDataController.shared.getDailyForecasts` -> `forecast.weatherDescription` | `updateAboutCard`: L795 |
+
+---
+
+## 👤 ProfileViewController (Profile Storyboard)
+
+**File:** [working-app/HerHub/profileViewController.swift](file:///Users/apple/Desktop/XcodeXperts-iOS-app%203/working-app/HerHub/profileViewController.swift)
+
+**Trigger:** `viewDidAppear`, `UserProfileUpdated` notification, `UserSessionUpdated` notification
+
+| Label Outlet | Data Source / Type | Fetch Function / Logic |
+| :--- | :--- | :--- |
+| `nameLabel` | `String` | `User.userName` (Fallback: `email` -> `phoneNumber` -> "User") |
+| `cycleValueLabel` | `Int` | `CycleDataController.shared.getBaselineProfile` -> `baseline.baseCycleLength` |
+| `periodValueLabel` | `Int` | `CycleDataController.shared.getBaselineProfile` -> `baseline.basePeriodLength` |
+| `profileImage` | `String` (URL) | `User.userPicture` (Currently placeholder/local) |
+
+---
+
+## ✏️ EditProfileViewController (EditProfile Storyboard)
+
+**File:** [working-app/HerHub/EditProfileViewController.swift](file:///Users/apple/Desktop/XcodeXperts-iOS-app%203/working-app/HerHub/EditProfileViewController.swift)
+
+**Trigger:** `viewWillAppear` (Loads data), `saveButtonTapped` (Saves data)
+
+| Field Outlet | Data Source / Type | Read Logic | Write Logic |
+| :--- | :--- | :--- | :--- |
+| `nameTextField` | `String` | `User.userName` | Updates `User.userName` |
+| `emailTextField` | `String` | `User.email` (Read Only) | N/A |
+| `bioTextField` | `String` | Placeholder (Not in model) | N/A |
+
+---
+
+## 🔑 Key Data Controllers
+- **`SessionManager`**: Manages the active user session and broadcasts updates.
+- **`UserController`**: Handles user CRUD operations (update profile, etc.).
+- **`CycleDataController`**:
+    - `getCheckIns(forUser:)`: Fetches user's past check-in data.
+    - `getDailyForecasts(forUser:)`: Fetches future predictions.
+    - `getBaselineProfile(forUser:)`: Fetches static cycle settings (length, period duration).
