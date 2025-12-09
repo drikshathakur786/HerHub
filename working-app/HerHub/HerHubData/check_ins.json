@@ -1,0 +1,13 @@
+[
+  {
+    "current_stress" : 6,
+    "date" : "2025-12-09T06:12:00Z",
+    "exercise_change" : "same",
+    "id" : "2F574947-AD94-4580-AFE2-B20941B4C503",
+    "period_started_today" : false,
+    "sick_or_meds" : false,
+    "sleep_hours" : 7.5,
+    "symptoms_present" : true,
+    "user_id" : "00000000-0000-0000-0000-000000000001"
+  }
+]
