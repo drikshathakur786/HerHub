@@ -1330,6 +1330,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Qpe-4D-2v5">
                         <rect key="frame" x="0.0" y="118" width="393" height="54"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

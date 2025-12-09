@@ -7,7 +7,7 @@
 
 import Foundation
 
-// MARK: - Resource Model
+// Resource Model
 struct Resource: Codable, Identifiable, Equatable {
     let id: UUID
     var title: String

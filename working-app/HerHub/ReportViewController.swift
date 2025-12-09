@@ -56,13 +56,13 @@ class ReportViewController: UIViewController {
         @IBAction func submitTapped(_ sender: Any) {
             // 1. Check Reason
                 guard let reason = selectedReason else {
-                    print("❌ Error: No reason selected.")
+                    print("  Error: No reason selected.")
                     return
                 }
                 
                 // 2. Check IDs (I bet this is printing!)
                 if postID == nil || communityID == nil {
-                    print("❌ Error: postID or communityID is MISSING! You forgot to pass them.")
+                    print("  Error: postID or communityID is MISSING! You forgot to pass them.")
                     return
                 }
                 

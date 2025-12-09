@@ -24,7 +24,6 @@ class TrackerViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationTitle()
-//        DummyDataSeeder.seedAllDummyData()
       
 
     }
@@ -127,7 +126,7 @@ extension TrackerViewController {
                 // 1️⃣ Fetch USER
                 // ------------------------------------------------------
                 guard let user = try await UserController.shared.fetchUser(byEmail: email) else {
-                    print("❌ [DEBUG] User not found for email:", email)
+                    print("  [DEBUG] User not found for email:", email)
                     await showDebugAlertAsync(
                         title: "User Not Found",
                         message: "No user found with email: \(email)"
@@ -152,7 +151,7 @@ extension TrackerViewController {
                     print("   - On Birth Control: \(baseline.onBirthControl)")
                     print("   - Has PCOS: \(baseline.hasPCOS)")
                 } else {
-                    print("⚠️ [DEBUG] No baseline profile found for this user")
+                    print("   [DEBUG] No baseline profile found for this user")
                 }
 
                 // ------------------------------------------------------
@@ -179,7 +178,7 @@ extension TrackerViewController {
                         }
                     }
                 } else {
-                    print("⚠️ [DEBUG] No check-ins found")
+                    print("   [DEBUG] No check-ins found")
                 }
 
                 // ------------------------------------------------------
@@ -190,7 +189,7 @@ extension TrackerViewController {
                     print("   - Cycle Length: \(prediction.predicted_cycle_length)")
                     print("   - Next Period: \(prediction.predicted_next_period_start)")
                 } else {
-                    print("⚠️ [DEBUG] No prediction found in user.latestPrediction")
+                    print("   [DEBUG] No prediction found in user.latestPrediction")
                 }
 
                 // ------------------------------------------------------
@@ -200,7 +199,7 @@ extension TrackerViewController {
                     let forecasts = try await CycleDataController.shared.getDailyForecasts(forUser: user.id)
 
                     if forecasts.isEmpty {
-                        print("⚠️ [DEBUG] No daily forecasts found for user")
+                        print("   [DEBUG] No daily forecasts found for user")
                     } else {
                         print("🌤️ [DEBUG] Daily Forecasts: \(forecasts.count) found")
                         for (i, f) in forecasts.enumerated() {
@@ -222,7 +221,7 @@ extension TrackerViewController {
                         }
                     }
                 } catch {
-                    print("❌ [DEBUG] Error fetching forecasts:", error)
+                    print("  [DEBUG] Error fetching forecasts:", error)
                     print("   Error details:", error.localizedDescription)
                     // Don't throw - continue to show success message
                 }
@@ -235,7 +234,7 @@ extension TrackerViewController {
                 )
 
             } catch {
-                print("❌ [DEBUG] Error:", error)
+                print("  [DEBUG] Error:", error)
                 await showDebugAlertAsync(
                     title: "Error",
                     message: "Failed to load user data: \(error.localizedDescription)"
@@ -260,7 +259,7 @@ extension TrackerViewController {
         do {
             // 1️⃣ Get user from SessionManager
             guard let user = SessionManager.shared.currentUser else {
-                print("❌ No user logged in")
+                print(" No user logged in")
                 return
             }
             
@@ -273,7 +272,7 @@ extension TrackerViewController {
                     }
                 }
             } catch {
-                print("⚠️ Error loading check-ins:", error.localizedDescription)
+                print("Error loading check-ins:", error.localizedDescription)
             }
             
             // 3️⃣ Fetch this user's 7 daily forecasts
@@ -281,7 +280,7 @@ extension TrackerViewController {
                 let forecasts = try await CycleDataController.shared.getDailyForecasts(forUser: user.id)
                 
                 guard !forecasts.isEmpty else {
-                    print("⚠️ No daily forecasts found")
+                    print("No daily forecasts found")
                     return
                 }
                 
@@ -291,12 +290,12 @@ extension TrackerViewController {
                     self.updateForecastUI(forecasts)   // <-- IMPORTANT
                 }
             } catch {
-                print("❌ Error loading forecasts:", error.localizedDescription)
+                print("Error loading forecasts:", error.localizedDescription)
                 print("   Full error:", error)
             }
             
         } catch {
-            print("❌ Error loading data:", error.localizedDescription)
+            print("Error loading data:", error.localizedDescription)
         }
     }
 
@@ -336,7 +335,7 @@ extension TrackerViewController {
                 }
                 
             } catch {
-                print("❌ Error in updateInsightUI:", error.localizedDescription)
+                print("Error in updateInsightUI:", error.localizedDescription)
             }
         }
     }
@@ -348,7 +347,7 @@ extension TrackerViewController {
     private func updateForecastUI(_ items: [DailyForecast]) {
         
         guard items.count >= 7 else {
-            print("⚠️ updateForecastUI: Expected 7 forecasts, got \(items.count)")
+            print("updateForecastUI: Expected 7 forecasts, got \(items.count)")
             return
         }
         
@@ -363,7 +362,7 @@ extension TrackerViewController {
               dateLabels.count == 7,
               moodLabels.count == 7,
               fertilityBoxes.count == 7 else {
-            print("❌ Forecast UI arrays are not length 7.")
+            print("Forecast UI arrays are not length 7.")
             return
         }
         
@@ -405,109 +404,6 @@ extension TrackerViewController {
         }
     }
 }
-//    private func loadCycleData() async {
-//
-//        // --------------------------------------
-//        // ✅ DUMMY DATA FOR INSTANT TESTING
-//        // --------------------------------------
-//
-//        let dummyCheckIn = CycleCheckIn(
-//            date: Date(),
-//            symptomsPresent: false,
-//            currentStress: 3,
-//            sleepHours: 7.5,
-//            sickOrMeds: false,
-//            exerciseChange: .same,
-//            periodStartedToday: false
-//        )
-//
-//        let dummyForecast: [DailyForecast] = [
-//            DailyForecast(
-//                date: Date(),
-//                phase: .follicular,
-//                fertility: .low,
-//                energy: .high,
-//                weatherDescription: "Sunny: strong focus + energy",
-//                mood: "Energetic",
-//                symptoms: [],
-//                recommendations: ["Go for a walk", "Start a new project"]
-//            ),
-//            DailyForecast(
-//                date: Date().addingTimeInterval(86400 * 1),
-//                phase: .follicular,
-//                fertility: .med,
-//                energy: .high,
-//                weatherDescription: "Clear skies: stable mood",
-//                mood: "Stable",
-//                symptoms: [Symptom(name: "Mild Bloating", intensity: 2)],
-//                recommendations: ["Eat well", "Focus on productivity"]
-//            ),
-//            DailyForecast(
-//                date: Date().addingTimeInterval(86400 * 2),
-//                phase: .ovulation,
-//                fertility: .high,
-//                energy: .high,
-//                weatherDescription: "Peak day: confidence high",
-//                mood: "Confident",
-//                symptoms: [Symptom(name: "Increased Libido", intensity: 8)],
-//                recommendations: ["Schedule social activities", "Do high-energy tasks"]
-//            ),
-//            DailyForecast(
-//                date: Date().addingTimeInterval(86400 * 3),
-//                phase: .luteal,
-//                fertility: .med,
-//                energy: .medium,
-//                weatherDescription: "Cloudy: slight emotional dip",
-//                mood: "Moody",
-//                symptoms: [Symptom(name: "Cramps", intensity: 3)],
-//                recommendations: ["Take rest breaks", "Eat magnesium-rich foods"]
-//            ),
-//            DailyForecast(
-//                date: Date().addingTimeInterval(86400 * 4),
-//                phase: .luteal,
-//                fertility: .low,
-//                energy: .medium,
-//                weatherDescription: "Light rain: take breaks",
-//                mood: "Calm",
-//                symptoms: [Symptom(name: "Headache", intensity: 1)],
-//                recommendations: ["Rest as needed"]
-//            ),
-//            DailyForecast(
-//                date: Date().addingTimeInterval(86400 * 5),
-//                phase: .menstrual,
-//                fertility: .low,
-//                energy: .low,
-//                weatherDescription: "Rainy day: rest recommended",
-//                mood: "Tired",
-//                symptoms: [Symptom(name: "Fatigue", intensity: 5)],
-//                recommendations: ["Use a heating pad", "Avoid intense workouts"]
-//            ),
-//            DailyForecast(
-//                date: Date().addingTimeInterval(86400 * 6),
-//                phase: .menstrual,
-//                fertility: .low,
-//                energy: .low,
-//                weatherDescription: "Heavy clouds: go easy today",
-//                mood: "Low",
-//                symptoms: [Symptom(name: "Back Pain", intensity: 4)],
-//                recommendations: ["Prioritize self-care"]
-//            )
-//        ]
-//
-//        // --------------------------------------
-//        // 🔥 INJECT DUMMY DATA INTO EXISTING UI
-//        // --------------------------------------
-//        DispatchQueue.main.async {
-//            self.updateCheckInUI(dummyCheckIn)
-////            self.updateInsightUI(dummyPrediction)
-//            self.updateForecastUI(dummyForecast)
-//        }
-//
-//        // --------------------------------------
-//        // ❗ REMOVE BELOW WHEN READY FOR SUPABASE
-//        // ❗ Just delete this whole function and restore your old one
-//        // --------------------------------------
-//    }
 
 extension DailyForecast {
     var phaseDescription: String {

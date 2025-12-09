@@ -224,7 +224,7 @@ class CommunityManager {
 //        private func loadSampleCommunities() -> [Community] {
 //            // 1. Find the file in the app bundle
 //            guard let url = Bundle.main.url(forResource: "sampleCommunities", withExtension: "json") else {
-//                print("❌ Error: Could not find sampleCommunities.json in bundle.")
+//                print("  Error: Could not find sampleCommunities.json in bundle.")
 //                return []
 //            }
 //            
@@ -239,7 +239,7 @@ class CommunityManager {
 //                return decodedCommunities
 //                
 //            } catch {
-//                print("❌ Error decoding sample data: \(error)")
+//                print("  Error decoding sample data: \(error)")
 //                return []
 //            }
 //        }
@@ -249,7 +249,7 @@ class CommunityManager {
         private func loadSampleCommunities() -> [Community] {
             // 1. Find the file
             guard let url = Bundle.main.url(forResource: "sampleCommunities", withExtension: "json") else {
-                print("❌ Error: Could not find sampleCommunities.json")
+                print("  Error: Could not find sampleCommunities.json")
                 return []
             }
             
@@ -283,7 +283,7 @@ class CommunityManager {
                 return decodedCommunities
                 
             } catch {
-                print("❌ Error decoding sample data: \(error)")
+                print("  Error decoding sample data: \(error)")
                 return []
             }
         }

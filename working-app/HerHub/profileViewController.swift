@@ -54,7 +54,7 @@ class profileViewController: UIViewController {
         if let user = SessionManager.shared.currentUser {
             loadUserData(email: user.email ?? "")
         } else {
-            print("⚠️ No user logged in")
+            print("   No user logged in")
         }
     }
     
@@ -68,7 +68,7 @@ class profileViewController: UIViewController {
     // MARK: - Actions
     @IBAction func editProfileButtonTapped(_ sender: Any) {
         guard let user = currentUser else {
-            print("⚠️ No user data available for editing")
+            print("   No user data available for editing")
             return
         }
         
@@ -80,7 +80,7 @@ class profileViewController: UIViewController {
             print("✅ Presenting edit profile with user data")
             present(editVC, animated: true, completion: nil)
         } else {
-            print("❌ Failed to instantiate EditProfileViewController")
+            print("  Failed to instantiate EditProfileViewController")
         }
     }
 }
@@ -196,7 +196,7 @@ extension profileViewController {
                 
                 // Fetch user
                 guard let user = try await UserController.shared.fetchUser(byEmail: email) else {
-                    print("❌ User not found")
+                    print("  User not found")
                     return
                 }
                 
@@ -208,7 +208,7 @@ extension profileViewController {
                 if let baseline = baseline {
                     print("✅ Baseline found: Cycle=\(baseline.baseCycleLength), Period=\(baseline.basePeriodLength)")
                 } else {
-                    print("⚠️ No baseline profile found")
+                    print("   No baseline profile found")
                 }
                 
                 // Update UI on main thread
@@ -216,7 +216,7 @@ extension profileViewController {
                     updateProfileUI(user: user, baseline: baseline)
                 }
             } catch {
-                print("❌ Error loading profile: \(error.localizedDescription)")
+                print("  Error loading profile: \(error.localizedDescription)")
             }
         }
     }

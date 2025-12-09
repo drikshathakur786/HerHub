@@ -12,15 +12,12 @@ class ResourceManager {
     // MARK: - Singleton Instance
     static let shared = ResourceManager()
 
-    // MARK: - File Paths
     private let documentsDirectory: URL
     private let archiveURL: URL
 
-    // MARK: - Data Store
     private var resources: [Resource] = []
 
     
-    // MARK: - Initializer
     private init() {
         documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         archiveURL = documentsDirectory
@@ -31,7 +28,6 @@ class ResourceManager {
     }
 
     
-    // MARK: - Public Access Methods
     func getAllResources() -> [Resource] {
         return resources
     }
@@ -58,7 +54,6 @@ class ResourceManager {
     }
 
     
-    // MARK: - Bookmark & Like Logic
 
     func toggleBookmark(for id: UUID) {
         if let index = resources.firstIndex(where: { $0.id == id }) {
@@ -86,7 +81,6 @@ class ResourceManager {
     }
 
 
-    // MARK: - Load Resources
     private func loadResources() {
 
         // 1. Load saved data from Documents folder
@@ -114,8 +108,7 @@ class ResourceManager {
         return try? decoder.decode([Resource].self, from: codedData)
     }
 
-    
-    // MARK: - Save Resources
+    //Save Resources
     private func saveResources() {
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -125,12 +118,11 @@ class ResourceManager {
         }
     }
 
-    
-    // MARK: - Load Bundled JSON (sample data)
+    //Load Bundled JSON
     private func loadSampleResourcesFromJSON() -> [Resource]? {
 
         guard let url = Bundle.main.url(forResource: "resources", withExtension: "json") else {
-            print("❌ JSON file not found in bundle")
+            print("  JSON file not found in bundle")
             return nil
         }
 
@@ -140,7 +132,7 @@ class ResourceManager {
             return try decoder.decode([Resource].self, from: data)
 
         } catch {
-            print("❌ Error decoding JSON: \(error)")
+            print("  Error decoding JSON: \(error)")
             return nil
         }
     }

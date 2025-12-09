@@ -76,7 +76,7 @@ extension ForecastViewController {
     // MARK: TOP DATE STRIP (rounded white box with shadow)
     private func setupDateStrip() {
         guard let topDateContainer = topDateContainer else {
-            print("⚠️ topDateContainer is nil in setupDateStrip")
+            print("   topDateContainer is nil in setupDateStrip")
             return
         }
         
@@ -102,7 +102,7 @@ extension ForecastViewController {
         guard let selectedDateView = selectedDateView,
               let selectedDayLabel = selectedDayLabel,
               let selectedDateLabel = selectedDateLabel else {
-            print("⚠️ Selected date view or labels are nil")
+            print("   Selected date view or labels are nil")
             return
         }
         
@@ -141,7 +141,7 @@ extension ForecastViewController {
     private func setupTagCards() {
         guard let fertilityCard = fertilityCard,
               let energyCard = energyCard else {
-            print("⚠️ Fertility or energy card is nil")
+            print("   Fertility or energy card is nil")
             return
         }
         
@@ -162,13 +162,13 @@ extension ForecastViewController {
     // MARK: Setup Date Buttons
     private func setupDateButtons() {
         guard let topDateContainer = topDateContainer else {
-            print("⚠️ topDateContainer is nil")
+            print("   topDateContainer is nil")
             return
         }
         
         // Find the stack view containing date buttons
         guard let stackView = topDateContainer.subviews.first(where: { $0 is UIStackView }) as? UIStackView else {
-            print("⚠️ Could not find date buttons stack view")
+            print("   Could not find date buttons stack view")
             return
         }
         
@@ -187,7 +187,7 @@ extension ForecastViewController {
     @objc private func dateButtonTapped(_ gesture: UITapGestureRecognizer) {
         guard let tappedView = gesture.view,
               let index = dateButtons.firstIndex(of: tappedView) else {
-            print("⚠️ dateButtonTapped: view not found")
+            print("   dateButtonTapped: view not found")
             return
         }
 
@@ -206,7 +206,7 @@ extension ForecastViewController {
         do {
             // 1️⃣ Get user from SessionManager
             guard let user = SessionManager.shared.currentUser else {
-                print("❌ No user logged in")
+                print("  No user logged in")
                 return
             }
             
@@ -214,7 +214,7 @@ extension ForecastViewController {
             let daily = try await CycleDataController.shared.getDailyForecasts(forUser: user.id)
             
             guard daily.count >= 7 else {
-                print("⚠️ No daily forecasts found or not enough data")
+                print("   No daily forecasts found or not enough data")
                 return
             }
             
@@ -230,7 +230,7 @@ extension ForecastViewController {
             }
         }
         catch {
-            print("❌ Error loading forecast data:", error.localizedDescription)
+            print("  Error loading forecast data:", error.localizedDescription)
         }
     }
 
@@ -241,12 +241,12 @@ extension ForecastViewController {
     
     private func updateDateStrip() {
         guard forecasts.count >= 7 else {
-            print("⚠️ Not enough forecasts to populate date strip")
+            print("   Not enough forecasts to populate date strip")
             return
         }
         
         guard !dateButtons.isEmpty else {
-            print("⚠️ Date buttons not initialized")
+            print("   Date buttons not initialized")
             return
         }
         
@@ -294,12 +294,12 @@ extension ForecastViewController {
     
     private func selectDate(at index: Int) {
         if forecasts.isEmpty {
-            print("⚠️ selectDate called but forecasts is EMPTY")
+            print("   selectDate called but forecasts is EMPTY")
             return
         }
         
         guard index >= 0 && index < forecasts.count else {
-            print("⚠️ Invalid index:", index, "count:", forecasts.count)
+            print("   Invalid index:", index, "count:", forecasts.count)
             return
         }
         
@@ -387,7 +387,7 @@ extension ForecastViewController {
     // MARK: Phase Card
     private func updatePhaseCard(forecast: DailyForecast) {
         guard let phaseCard = phaseCard else {
-            print("⚠️ phaseCard is nil")
+            print("   phaseCard is nil")
             return
         }
         
@@ -413,14 +413,14 @@ extension ForecastViewController {
     // MARK: Fertility Card
     private func updateFertilityCard(forecast: DailyForecast) {
         guard let fertilityCard = fertilityCard else {
-            print("⚠️ fertilityCard is nil")
+            print("   fertilityCard is nil")
             return
         }
         
         // Find fertility value label (the bold large label in fertility card)
         let labels = findAllLabels(in: fertilityCard)
         guard labels.count >= 2 else { 
-            print("⚠️ Found only \(labels.count) labels in fertility card")
+            print("   Found only \(labels.count) labels in fertility card")
             return 
         }
         
@@ -499,7 +499,7 @@ extension ForecastViewController {
         
         // Final safety: Update ALL large font labels except title (most aggressive approach)
         if updatedCount == 0 {
-            print("⚠️ No labels updated with normal logic, trying aggressive update...")
+            print("   No labels updated with normal logic, trying aggressive update...")
             for label in labels where label.font.pointSize >= 18 {
                 let text = label.text?.lowercased() ?? ""
                 if text != "fertility" {
@@ -515,21 +515,21 @@ extension ForecastViewController {
         }
         
         if updatedCount == 0 {
-            print("⚠️ No fertility value labels were updated!")
+            print("   No fertility value labels were updated!")
         }
     }
     
     // MARK: Energy Card
     private func updateEnergyCard(forecast: DailyForecast) {
         guard let energyCard = energyCard else {
-            print("⚠️ energyCard is nil")
+            print("   energyCard is nil")
             return
         }
         
         // Find energy value label (the bold large label in energy card)
         let labels = findAllLabels(in: energyCard)
         guard labels.count >= 2 else { 
-            print("⚠️ Found only \(labels.count) labels in energy card")
+            print("   Found only \(labels.count) labels in energy card")
             return 
         }
         
@@ -607,7 +607,7 @@ extension ForecastViewController {
         
         // Final safety: Update ALL large font labels except title (most aggressive approach)
         if updatedCount == 0 {
-            print("⚠️ No labels updated with normal logic, trying aggressive update...")
+            print("   No labels updated with normal logic, trying aggressive update...")
             for label in labels where label.font.pointSize >= 18 {
                 let text = label.text?.lowercased() ?? ""
                 if text != "energy level" && !text.contains("energy") {
@@ -623,20 +623,20 @@ extension ForecastViewController {
         }
         
         if updatedCount == 0 {
-            print("⚠️ No energy value labels were updated!")
+            print("   No energy value labels were updated!")
         }
     }
     
     // MARK: Symptoms Card
     private func updateSymptomsCard(forecast: DailyForecast) {
         guard let symptomsCard = symptomsCard else {
-            print("⚠️ symptomsCard is nil")
+            print("   symptomsCard is nil")
             return
         }
         
         // Find symptoms stack view
         guard let symptomsStackView = symptomsCard.subviews.first(where: { $0 is UIStackView }) as? UIStackView else {
-            print("⚠️ Could not find symptoms stack view")
+            print("   Could not find symptoms stack view")
             return
         }
         
@@ -695,13 +695,13 @@ extension ForecastViewController {
     // MARK: Recommendations Card
     private func updateRecommendationsCard(forecast: DailyForecast) {
         guard let recommendationsCard = recommendationsCard else {
-            print("⚠️ recommendationsCard is nil")
+            print("   recommendationsCard is nil")
             return
         }
         
         // Find recommendations stack view
         guard let recommendationsStackView = recommendationsCard.subviews.first(where: { $0 is UIStackView }) as? UIStackView else {
-            print("⚠️ Could not find recommendations stack view")
+            print("   Could not find recommendations stack view")
             return
         }
         
@@ -720,7 +720,7 @@ extension ForecastViewController {
                 updateRecommendationsInStackView(directStack, recommendations: forecast.recommendations)
                 return
             }
-            print("⚠️ Could not find recommendations items stack view")
+            print("   Could not find recommendations items stack view")
             return
         }
         
@@ -783,7 +783,7 @@ extension ForecastViewController {
     // MARK: About Card
     private func updateAboutCard(forecast: DailyForecast) {
         guard let aboutCard = aboutCard else {
-            print("⚠️ aboutCard is nil")
+            print("   aboutCard is nil")
             return
         }
         

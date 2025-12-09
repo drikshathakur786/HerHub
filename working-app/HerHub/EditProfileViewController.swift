@@ -50,7 +50,7 @@ class EditProfileViewController: UIViewController {
     
     private func loadUserData() {
         guard let user = currentUser else {
-            print("⚠️ No user data available")
+            print("   No user data available")
             return
         }
         
@@ -111,7 +111,7 @@ class EditProfileViewController: UIViewController {
                 }
             } catch {
                 await MainActor.run {
-                    print("❌ Error updating profile: \(error.localizedDescription)")
+                    print("  Error updating profile: \(error.localizedDescription)")
                     self.saveButton.isEnabled = true
                     self.saveButton.setTitle("Save Changes", for: .normal)
                     self.showAlert(title: "Error", message: "Failed to update profile: \(error.localizedDescription)")

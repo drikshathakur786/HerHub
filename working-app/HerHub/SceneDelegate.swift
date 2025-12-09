@@ -26,7 +26,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     private func autoLoginTestUser() async {
         do {
-            let testEmail = "alice@herhub.com"
+            let testEmail = "beth@herhub.com"
             
             // Try to load existing session first
             try await SessionManager.shared.loadSession()
@@ -36,7 +36,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     print("✅ Existing session loaded for \(testEmail)")
                     return
                 } else {
-                    print("⚠️ Session email mismatch (Found: \(currentUser.email ?? "nil"), Expected: \(testEmail)). Logging out...")
+                    print("   Session email mismatch (Found: \(currentUser.email ?? "nil"), Expected: \(testEmail)). Logging out...")
                     SessionManager.shared.logout()
                 }
             }
@@ -60,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 print("✅ Created and logged in new test user: \(testEmail)")
             }
         } catch {
-            print("❌ Auto-login failed: \(error.localizedDescription)")
+            print("  Auto-login failed: \(error.localizedDescription)")
         }
     }
 

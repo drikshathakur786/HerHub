@@ -39,21 +39,29 @@ class SessionManager {
     
     /// Load session from UserDefaults
     func loadSession() async throws {
-        guard let userId = getSavedUserId() else {
-            print("⚠️ No saved session found")
-            return
+        // First, try to load saved session
+        if let userId = getSavedUserId() {
+            print("🔄 Loading session for user ID: \(userId)")
+            
+            // Fetch user from JSON storage
+            if let user = try UserJsonManager.shared.fetchUser(byID: userId) {
+                self.currentUser = user
+                print("✅ Session loaded: \(user.email ?? user.userName ?? "Unknown")")
+                NotificationCenter.default.post(name: .userSessionUpdated, object: nil)
+                return
+            } else {
+                print("  User not found in storage, clearing session")
+                logout()
+            }
         }
         
-        print("🔄 Loading session for user ID: \(userId)")
-        
-        // Fetch user from database
-        if let user = try await UserDataManager().fetchUser(byID: userId) {
-            self.currentUser = user
-            print("✅ Session loaded: \(user.email ?? user.userName ?? "Unknown")")
-            NotificationCenter.default.post(name: .userSessionUpdated, object: nil)
+        // Auto-login with test user if no session exists (for local development)
+        print("🔄 No saved session, attempting auto-login with test user...")
+        if let testUser = try UserJsonManager.shared.fetchUser(byEmail: "test@herhub.com") {
+            login(user: testUser)
+            print("✅ Auto-logged in as test user: \(testUser.email ?? "Unknown")")
         } else {
-            print("❌ User not found in database, clearing session")
-            logout()
+            print("   No test user found")
         }
     }
     

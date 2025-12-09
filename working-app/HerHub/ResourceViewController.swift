@@ -42,7 +42,6 @@ class ResourceViewController: UIViewController {
         }
     }
 
-    // MARK: - UITableView Delegate & DataSource
     extension ResourceViewController: UITableViewDelegate, UITableViewDataSource {
         
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -64,7 +63,6 @@ class ResourceViewController: UIViewController {
             performSegue(withIdentifier: "detailPage", sender: indexPath)
         }
 
-        // MARK: - Navigation to Detail Page
         override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
             if segue.identifier == "detailPage",
                let destination = segue.destination as? ArticleDetailViewController,

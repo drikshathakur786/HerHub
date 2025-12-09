@@ -27,7 +27,6 @@ class LikedResourcesTableViewController: UITableViewController {
     
     }
 
-    // MARK: - Table view data source
     override func tableView(_ tableView: UITableView,
                             numberOfRowsInSection section: Int) -> Int {
         return likedResources.count
@@ -45,7 +44,7 @@ class LikedResourcesTableViewController: UITableViewController {
            cell.configure(with: item)   // same UI as Resources screen
            return cell
        }
-    // MARK: - When user taps a liked card → open detail page
+    //When user taps a liked card → open detail page
       override func tableView(_ tableView: UITableView,
                               didSelectRowAt indexPath: IndexPath) {
 

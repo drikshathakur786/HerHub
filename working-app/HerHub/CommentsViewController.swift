@@ -43,7 +43,7 @@ class CommentsViewController: UIViewController {
         func loadComments() {
             print("🔍 DEBUG: Attempting to load comments...")
             guard let pID = postID else {
-                        print("❌ ERROR: postID is nil! Navigation failed.")
+                        print("  ERROR: postID is nil! Navigation failed.")
                         return
                     }
                     
@@ -57,14 +57,14 @@ class CommentsViewController: UIViewController {
                         print("✅ SUCCESS: Found post: \(post.title). Comment Count: \(self.comments.count)")
                         
                         if self.comments.count == 0 {
-                            print("⚠️ WARNING: Post found, but it has 0 comments. Check CommunityManager sample data.")
+                            print("   WARNING: Post found, but it has 0 comments. Check CommunityManager sample data.")
                         }
                         
                         // 4. Refresh
                         tableView.reloadData()
                         
                     } else {
-                        print("❌ ERROR: Could not find any post with ID: \(pID)")
+                        print("  ERROR: Could not find any post with ID: \(pID)")
                     }
                 }
 
@@ -74,14 +74,14 @@ class CommentsViewController: UIViewController {
                     
                     // 1. Check Text
                     guard let text = commentTextField.text, !text.isEmpty else {
-                        print("❌ FAIL: Text field is empty.")
+                        print("  FAIL: Text field is empty.")
                         return
                     }
                     
                     // 2. Check IDs
                     // If these are nil, it means CommunityDetailViewController didn't pass them correctly
                     guard let cID = communityID, let pID = postID else {
-                        print("❌ FAIL: Missing IDs!")
+                        print("  FAIL: Missing IDs!")
                         print("   - Community ID: \(String(describing: communityID))")
                         print("   - Post ID: \(String(describing: postID))")
                         return
@@ -140,7 +140,7 @@ class CommentsViewController: UIViewController {
 //        if let id = postID {
 //            print("1. ✅ Received Post ID: \(id)")
 //        } else {
-//            print("1. ❌ ERROR: Post ID is NIL. Navigation logic is broken.")
+//            print("1.   ERROR: Post ID is NIL. Navigation logic is broken.")
 //        }
 //        
 //        // 2. Check the Manager
@@ -154,7 +154,7 @@ class CommentsViewController: UIViewController {
 //            self.comments = foundPost.comments
 //            tableView.reloadData()
 //        } else {
-//            print("3. ❌ Could not find this Post ID in the Database.")
+//            print("3.   Could not find this Post ID in the Database.")
 //            print("   (Did the app restart and generate new IDs?)")
 //        }
 //        
