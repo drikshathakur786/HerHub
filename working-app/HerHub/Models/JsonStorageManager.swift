@@ -2,39 +2,30 @@
 //  JsonStorageManager.swift
 //  HerHub
 //
-//  JSON storage helper - stores files in HerHub/HerHubData folder
+//  JSON storage helper for local data persistence in Models folder
 //
 
 import Foundation
 
-/// Generic manager for reading/writing Codable objects to JSON files
+/// Generic manager for reading/writing Codable objects to JSON files in the Models folder
 final class JsonStorageManager {
     
     static let shared = JsonStorageManager()
     
     private init() {
+        // Create data folder if it doesn't exist
         createDataFolderIfNeeded()
-        printDataPath()
     }
     
     // MARK: - File Paths
     
-    /// Path to HerHubData folder in the project directory
-    /// For Simulator: Uses project source folder so files are visible in Finder/Xcode
-    /// For Device: Falls back to Documents folder
+    /// Returns the URL for the data folder inside Documents/HerHubData
     private var dataFolderURL: URL {
-        #if targetEnvironment(simulator)
-        // Use project source folder for Simulator (visible in Finder)
-        let projectPath = "/Users/apple/Desktop/XcodeXperts-iOS-app 3/working-app/HerHub/HerHubData"
-        return URL(fileURLWithPath: projectPath)
-        #else
-        // Use Documents folder for real devices
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        return docs.appendingPathComponent("HerHubData", isDirectory: true)
-        #endif
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        return documentsDirectory.appendingPathComponent("HerHubData", isDirectory: true)
     }
     
-    /// Returns the URL for a JSON file
+    /// Returns the URL for a JSON file in the data folder
     private func fileURL(for fileName: String) -> URL {
         return dataFolderURL.appendingPathComponent("\(fileName).json")
     }
@@ -50,11 +41,6 @@ final class JsonStorageManager {
                 print("❌ [JSON] Failed to create data folder: \(error)")
             }
         }
-    }
-    
-    /// Print the data folder path for easy access
-    private func printDataPath() {
-        print("📁 [JSON] Data folder: \(dataFolderURL.path)")
     }
     
     // MARK: - Save
