@@ -20,49 +20,49 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Auto-login: Create/login test user
         Task {
-            await autoLoginTestUser()
+//            await autoLoginTestUser()
         }
     }
     
-    private func autoLoginTestUser() async {
-        do {
-            let testEmail = "beth@herhub.com"
-            
-            // Try to load existing session first
-            try await SessionManager.shared.loadSession()
-            
-            if let currentUser = SessionManager.shared.currentUser {
-                if currentUser.email == testEmail {
-                    print("✅ Existing session loaded for \(testEmail)")
-                    return
-                } else {
-                    print("   Session email mismatch (Found: \(currentUser.email ?? "nil"), Expected: \(testEmail)). Logging out...")
-                    SessionManager.shared.logout()
-                }
-            }
-            
-            // No existing session - try to fetch or create test user
-            if let existingUser = try await UserController.shared.fetchUser(byEmail: testEmail) {
-                // Login existing test user
-                SessionManager.shared.login(user: existingUser)
-                print("✅ Logged in existing test user: \(testEmail)")
-            } else {
-                // Create new test user
-                let newUser = User(
-                    email: testEmail,
-                    phoneNumber: nil,
-                    password: "test123",
-                    userName: "Test User",
-                    userPicture: nil
-                )
-                try await UserController.shared.registerUser(newUser)
-                SessionManager.shared.login(user: newUser)
-                print("✅ Created and logged in new test user: \(testEmail)")
-            }
-        } catch {
-            print("  Auto-login failed: \(error.localizedDescription)")
-        }
-    }
+//    private func autoLoginTestUser() async {
+//        do {
+//            let testEmail = "beth@herhub.com"
+//            
+//            // Try to load existing session first
+//            try await SessionManager.shared.loadSession()
+//            
+//            if let currentUser = SessionManager.shared.currentUser {
+//                if currentUser.email == testEmail {
+//                    print("✅ Existing session loaded for \(testEmail)")
+//                    return
+//                } else {
+//                    print("   Session email mismatch (Found: \(currentUser.email ?? "nil"), Expected: \(testEmail)). Logging out...")
+//                    SessionManager.shared.logout()
+//                }
+//            }
+//            
+//            // No existing session - try to fetch or create test user
+//            if let existingUser = try await UserController.shared.fetchUser(byEmail: testEmail) {
+//                // Login existing test user
+//                SessionManager.shared.login(user: existingUser)
+//                print("✅ Logged in existing test user: \(testEmail)")
+//            } else {
+//                // Create new test user
+//                let newUser = User(
+//                    email: testEmail,
+//                    phoneNumber: nil,
+//                    password: "test123",
+//                    userName: "Test User",
+//                    userPicture: nil
+//                )
+//                try await UserController.shared.registerUser(newUser)
+//                SessionManager.shared.login(user: newUser)
+//                print("✅ Created and logged in new test user: \(testEmail)")
+//            }
+//        } catch {
+//            print("  Auto-login failed: \(error.localizedDescription)")
+//        }
+//    }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.

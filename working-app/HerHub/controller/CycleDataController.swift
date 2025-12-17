@@ -1,37 +1,38 @@
 //
-//  CycleDataJsonManager.swift
+//  CycleDataController.swift
 //  HerHub
 //
-//  Local JSON storage for cycle data
-//
+//  Created by Dhruv on 10/11/25.
+
 
 import Foundation
 
-/// Manages local JSON storage for cycle-related data
-final class CycleDataJsonManager {
+// Controller for Cycle Data CRUD operations using local JSON storage
+final class CycleDataController {
     
-    static let shared = CycleDataJsonManager()
+    static let shared = CycleDataController()
     
     private let storage = JsonStorageManager.shared
     
-    // MARK: - File Names
+    // File names for each data type
     private let baselineFileName = "baseline_profiles"
     private let checkInsFileName = "check_ins"
     private let forecastsFileName = "daily_forecasts"
     
     private init() {
-        // Initialize with sample data if files don't exist
         initializeSampleDataIfNeeded()
     }
     
     // MARK: - Baseline Profile
     
-    func saveBaselineProfile(_ profile: CycleBaselineProfile, forUser userID: UUID) throws {
+    // Save or update baseline profile for a user
+    func saveBaselineProfile(_ profile: CycleBaselineProfile, forUser userID: UUID) async throws {
         var profile = profile
         profile.user_id = userID
         
         var profiles: [CycleBaselineProfile] = (try? storage.load(from: baselineFileName)) ?? []
         
+        // Replace if exists, else append
         if let index = profiles.firstIndex(where: { $0.user_id == userID }) {
             profiles[index] = profile
         } else {
@@ -41,14 +42,16 @@ final class CycleDataJsonManager {
         try storage.save(profiles, to: baselineFileName)
     }
     
-    func fetchBaselineProfile(forUser userID: UUID) throws -> [CycleBaselineProfile] {
+    // Fetch baseline profile for a user
+    func getBaselineProfile(forUser userID: UUID) async throws -> CycleBaselineProfile? {
         let profiles: [CycleBaselineProfile] = try storage.load(from: baselineFileName)
-        return profiles.filter { $0.user_id == userID }
+        return profiles.first { $0.user_id == userID }
     }
     
-    // MARK: - Check-In
+    // MARK: - Check-Ins
     
-    func saveCheckIn(_ checkIn: CycleCheckIn, forUser userID: UUID) throws {
+    // Save a new check-in for a user
+    func saveCheckIn(_ checkIn: CycleCheckIn, forUser userID: UUID) async throws {
         var checkIn = checkIn
         checkIn.user_id = userID
         
@@ -57,43 +60,62 @@ final class CycleDataJsonManager {
         try storage.save(checkIns, to: checkInsFileName)
     }
     
-    func fetchCheckIns(forUser userID: UUID) throws -> [CycleCheckIn] {
+    // Fetch all check-ins for a user
+    func getCheckIns(forUser userID: UUID) async throws -> [CycleCheckIn] {
         let checkIns: [CycleCheckIn] = try storage.load(from: checkInsFileName)
         return checkIns.filter { $0.user_id == userID }
     }
     
-    // MARK: - Daily Forecasts
-    
-    func saveDailyForecast(_ forecast: DailyForecast) throws {
-        var forecasts: [DailyForecast] = (try? storage.load(from: forecastsFileName)) ?? []
-        forecasts.append(forecast)
-        try storage.save(forecasts, to: forecastsFileName)
+    // Fetch today's check-in for a user
+    func getTodayCheckIn(forUser userID: UUID) async throws -> CycleCheckIn? {
+        let checkIns = try await getCheckIns(forUser: userID)
+        let today = Date()
+        return checkIns.first { Calendar.current.isDate($0.date, inSameDayAs: today) }
     }
     
-    func saveDailyForecastList(_ forecasts: [DailyForecast]) throws {
+    // MARK: - Daily Forecasts
+    
+    // Save list of forecasts (replaces existing for same user)
+    func saveDailyForecasts(_ forecasts: [DailyForecast]) async throws {
         var existingForecasts: [DailyForecast] = (try? storage.load(from: forecastsFileName)) ?? []
+        
+        // Remove old forecasts for users in the new list
         let newUserIDs = Set(forecasts.map { $0.user_id })
         existingForecasts.removeAll { newUserIDs.contains($0.user_id) }
+        
         existingForecasts.append(contentsOf: forecasts)
         try storage.save(existingForecasts, to: forecastsFileName)
     }
     
-    func fetchDailyForecasts(forUser userID: UUID) throws -> [DailyForecast] {
+    // Fetch forecasts for a user (sorted by date)
+    func getDailyForecasts(forUser userID: UUID) async throws -> [DailyForecast] {
         let forecasts: [DailyForecast] = try storage.load(from: forecastsFileName)
         return forecasts
             .filter { $0.user_id == userID }
             .sorted { $0.date < $1.date }
     }
     
+    // Fetch upcoming 7-day forecast for a user (from today)
+    func getUpcomingForecasts(forUser userID: UUID) async throws -> [DailyForecast] {
+        let forecasts = try await getDailyForecasts(forUser: userID)
+        let startOfToday = Calendar.current.startOfDay(for: Date())
+        
+        return Array(
+            forecasts
+                .filter { $0.date >= startOfToday }
+                .prefix(7)
+        )
+    }
+    
     // MARK: - Sample Data Initialization
     
     private func initializeSampleDataIfNeeded() {
         if storage.exists(fileName: forecastsFileName) {
-            print("📁 [CycleDataJson] Data files already exist")
+            print("[CycleDataController] Data files exist")
             return
         }
         
-        print("🌱 [CycleDataJson] Initializing sample data...")
+        print("[CycleDataController] Initializing sample data...")
         
         let testUserID = UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID()
         
@@ -109,6 +131,6 @@ final class CycleDataJsonManager {
         let forecasts = DailyForecast.sampleList(start: Date(), userID: testUserID)
         try? storage.save(forecasts, to: forecastsFileName)
         
-        print("✅ [CycleDataJson] Sample data initialized")
+        print("[CycleDataController] Sample data initialized")
     }
 }

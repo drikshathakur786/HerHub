@@ -95,9 +95,6 @@ class EditProfileViewController: UIViewController {
                 // Update user in database
                 try await UserController.shared.updateUser(user)
                 
-                // Update SessionManager
-                SessionManager.shared.updateCurrentUser(user)
-                
                 await MainActor.run {
                     print("✅ Profile updated successfully")
                     self.saveButton.isEnabled = true

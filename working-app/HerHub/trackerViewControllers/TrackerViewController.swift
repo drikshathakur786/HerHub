@@ -24,8 +24,7 @@ class TrackerViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupNavigationTitle()
-      
-
+        loadData() // Fetch data
     }
     
     // MARK: - UI Setup
@@ -34,32 +33,15 @@ class TrackerViewController: UIViewController {
         let bgGradientLayer = CAGradientLayer()
         bgGradientLayer.frame = view.bounds
         bgGradientLayer.colors = [
-            UIColor(hex: "#FFF0F5").cgColor, // Lavender Blush
-            UIColor(hex: "#F5D3EB").cgColor  // Soft pink
+            UIColor(red: 1.0, green: 0.941, blue: 0.961, alpha: 1.0).cgColor, // Lavender Blush #FFF0F5
+            UIColor(red: 0.961, green: 0.827, blue: 0.922, alpha: 1.0).cgColor  // Soft pink #F5D3EB
         ]
         bgGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         bgGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
         view.layer.insertSublayer(bgGradientLayer, at: 0)
-        
-        // Animate cards on load
-        let cards = [checkInContainerView, forecastContainerView, todayInsightContainerView]
-        for (index, card) in cards.enumerated() {
-            card?.animateIn(delay: 0.1 * Double(index))
-        }
-        
-        // Listen for session updates
-        NotificationCenter.default.addObserver(self, selector: #selector(handleSessionUpdate), name: .userSessionUpdated, object: nil)
-
-        // Load data from SessionManager
-        if let user = SessionManager.shared.currentUser {
-            debugLoadUserData(email: user.email ?? "")
-        }
     }
     
-    @objc private func handleSessionUpdate() {
-        print("🔄 TrackerViewController received session update")
-        Task { await loadCycleData() }
-    }
+
     
     private func setupNavigationTitle() {
         let titleLabel = UILabel()
@@ -109,193 +91,34 @@ class TrackerViewController: UIViewController {
 // MARK: - Load Cycle Data
 extension TrackerViewController {
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        Task { await loadCycleData() }
-    }
-    
-    // MARK: - Debug Function: Load User Data by Email
-    /// Call this to fetch + display ALL user-related data in console + UI
-    /// Example: debugLoadUserData(email: "alice@herhub.com")
-    func debugLoadUserData(email: String) {
+    func loadData() {
+        // Use Task since we're calling async functions
         Task {
             do {
-                print("\n🔍 [DEBUG] Loading user data for: \(email)")
-
-                // ------------------------------------------------------
-                // 1️⃣ Fetch USER
-                // ------------------------------------------------------
-                guard let user = try await UserController.shared.fetchUser(byEmail: email) else {
-                    print("  [DEBUG] User not found for email:", email)
-                    await showDebugAlertAsync(
-                        title: "User Not Found",
-                        message: "No user found with email: \(email)"
-                    )
-                    return
-                }
-
-                print("👤 [DEBUG] User found")
-                print("   - ID: \(user.id.uuidString)")
-                print("   - Email: \(user.email ?? "nil")")
-                print("   - Phone: \(user.phoneNumber ?? "nil")")
-
-                // ------------------------------------------------------
-                // 2️⃣ Fetch Baseline Profile
-                // ------------------------------------------------------
-                if let baseline = try await CycleDataController.shared.getBaselineProfile(forUser: user.id) {
-                    print("📊 [DEBUG] Baseline Profile:")
-                    print("   - Age: \(baseline.age)")
-                    print("   - Cycle Length: \(baseline.baseCycleLength)")
-                    print("   - Period Length: \(baseline.basePeriodLength)")
-                    print("   - Last Period Start: \(baseline.lastPeriodStart)")
-                    print("   - On Birth Control: \(baseline.onBirthControl)")
-                    print("   - Has PCOS: \(baseline.hasPCOS)")
-                } else {
-                    print("   [DEBUG] No baseline profile found for this user")
-                }
-
-                // ------------------------------------------------------
-                // 3️⃣ Fetch All Check-ins
-                // ------------------------------------------------------
-                let checkIns = try await CycleDataController.shared.getCheckIns(forUser: user.id)
+                // For MVP, we're using a hardcoded test user ID (same as in JsonManagers)
+                let testUserID = UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID()
                 
-                if !checkIns.isEmpty {
-                    print("📝 [DEBUG] Check-ins: \(checkIns.count) found")
-                    for (i, c) in checkIns.enumerated() {
-                        print("   Check-in \(i+1):")
-                        print("     - ID: \(c.id.uuidString)")
-                        print("     - Date: \(c.date)")
-                        print("     - Symptoms: \(c.symptomsPresent)")
-                        print("     - Stress: \(c.currentStress)")
-                        print("     - Sleep: \(c.sleepHours)")
-                        print("     - Period Started: \(c.periodStartedToday ?? false)")
-                    }
-
-                    // Update UI with latest
-                    if let last = checkIns.last {
-                        await MainActor.run {
-                            self.updateCheckInUI(last)
-                        }
-                    }
-                } else {
-                    print("   [DEBUG] No check-ins found")
-                }
-
-                // ------------------------------------------------------
-                // 4️⃣ Get Prediction from User (stored in user.latestPrediction JSONB field)
-                // ------------------------------------------------------
-                if let prediction = user.latestPrediction {
-                    print("🔮 [DEBUG] Latest Prediction (from user.latest_prediction):")
-                    print("   - Cycle Length: \(prediction.predicted_cycle_length)")
-                    print("   - Next Period: \(prediction.predicted_next_period_start)")
-                } else {
-                    print("   [DEBUG] No prediction found in user.latestPrediction")
-                }
-
-                // ------------------------------------------------------
-                // 5️⃣ Fetch DAILY FORECASTS for this user
-                // ------------------------------------------------------
-                do {
-                    let forecasts = try await CycleDataController.shared.getDailyForecasts(forUser: user.id)
-
-                    if forecasts.isEmpty {
-                        print("   [DEBUG] No daily forecasts found for user")
-                    } else {
-                        print("🌤️ [DEBUG] Daily Forecasts: \(forecasts.count) found")
-                        for (i, f) in forecasts.enumerated() {
-                            print("   Day \(i+1):")
-                            print("     - Date: \(f.date)")
-                            print("     - Phase: \(f.phase.rawValue)")
-                            print("     - Fertility: \(f.fertility.rawValue)")
-                            print("     - Energy: \(f.energy.rawValue)")
-                            print("     - Mood: \(f.mood)")
-                            print("     - Weather: \(f.weatherDescription)")
-                            print("     - Symptoms: \(f.symptoms.count)")
-                            print("     - Recommendations: \(f.recommendations.count)")
-                        }
-
-                        // Update UI
-                        await MainActor.run {
-                            self.updateForecastUI(forecasts)
-                            self.updateInsightUI(for: user.id)
-                        }
-                    }
-                } catch {
-                    print("  [DEBUG] Error fetching forecasts:", error)
-                    print("   Error details:", error.localizedDescription)
-                    // Don't throw - continue to show success message
-                }
-
-                // ------------------------------------------------------
-                print("✅ [DEBUG] FINISHED loading data for:", email)
-                await showDebugAlertAsync(
-                    title: "Debug Loaded",
-                    message: "User data for \(email) has been loaded and displayed."
-                )
-
-            } catch {
-                print("  [DEBUG] Error:", error)
-                await showDebugAlertAsync(
-                    title: "Error",
-                    message: "Failed to load user data: \(error.localizedDescription)"
-                )
-            }
-        }
-    }
-
-    // MARK: - Alert Helper (async)
-    @MainActor
-    private func showDebugAlertAsync(title: String, message: String) async {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        self.present(alert, animated: true)
-    }
-
-    
-    
-    
-    
-    private func loadCycleData() async {
-        do {
-            // 1️⃣ Get user from SessionManager
-            guard let user = SessionManager.shared.currentUser else {
-                print(" No user logged in")
-                return
-            }
-            
-            // 2️⃣ Get last check-in FOR this user
-            do {
-                let checkIns = try await CycleDataController.shared.getCheckIns(forUser: user.id)
-                if let last = checkIns.last {
-                    DispatchQueue.main.async {
-                        self.updateCheckInUI(last)
-                    }
-                }
-            } catch {
-                print("Error loading check-ins:", error.localizedDescription)
-            }
-            
-            // 3️⃣ Fetch this user's 7 daily forecasts
-            do {
-                let forecasts = try await CycleDataController.shared.getDailyForecasts(forUser: user.id)
+                // 1. Fetch all check-ins
+                let checkIns = try await CycleDataController.shared.getCheckIns(forUser: testUserID)
                 
-                guard !forecasts.isEmpty else {
-                    print("No daily forecasts found")
-                    return
+                // 2. Find check-in for TODAY
+                let today = Date()
+                if let todayCheckIn = checkIns.first(where: { Calendar.current.isDate($0.date, inSameDayAs: today) }) {
+                    updateCheckInUI(todayCheckIn)
+                } else {
+                    // Handle empty state if needed, or clear labels
+                     print("No check-in for today yet.")
                 }
                 
-                // 4️⃣ Update UI
-                DispatchQueue.main.async {
-                    self.updateInsightUI(for: user.id)
-                    self.updateForecastUI(forecasts)   // <-- IMPORTANT
-                }
+                // 3. Fetch upcoming 7-day forecasts (using dedicated method)
+                let upcomingForecasts = try await CycleDataController.shared.getUpcomingForecasts(forUser: testUserID)
+                
+                // 4. Update UI
+                updateForecastUI(upcomingForecasts)
+                
             } catch {
-                print("Error loading forecasts:", error.localizedDescription)
-                print("   Full error:", error)
+                print("Error loading tracker data: \(error)")
             }
-            
-        } catch {
-            print("Error loading data:", error.localizedDescription)
         }
     }
 
@@ -314,31 +137,7 @@ extension TrackerViewController {
         return "\(day)"
     }
     
-    // MARK: - Update Insight Section
-    private func updateInsightUI(for userID: UUID) {
-        Task {
-            do {
-                // 1️⃣ Fetch this user's 7-day forecasts
-                let forecasts = try await CycleDataController.shared.getDailyForecasts(forUser: userID)
-                
-                // 2️⃣ Find today's forecast
-                let todayDate = Calendar.current.startOfDay(for: Date())
-                let todayForecast = forecasts.first {
-                    Calendar.current.isDate($0.date, inSameDayAs: todayDate)
-                }
-                
-                // 3️⃣ Update UI
-                DispatchQueue.main.async {
-                    self.insightTitleLabel.text = "Today's Insight"
-                    self.insightDescriptionLabel.text =
-                    todayForecast?.weatherDescription ?? "No insight available."
-                }
-                
-            } catch {
-                print("Error in updateInsightUI:", error.localizedDescription)
-            }
-        }
-    }
+
     
     
     
@@ -358,11 +157,12 @@ extension TrackerViewController {
         dateFormatter.dateFormat = "d"
         
         // Safety check: Make sure IBOutlets have exactly 7 labels
-        guard dayLabels.count == 7,
-              dateLabels.count == 7,
-              moodLabels.count == 7,
-              fertilityBoxes.count == 7 else {
-            print("Forecast UI arrays are not length 7.")
+        // Note: Check if outlets are connected before accessing count to avoid crash if nil
+        guard let dayLabels = dayLabels, dayLabels.count == 7,
+              let dateLabels = dateLabels, dateLabels.count == 7,
+              let moodLabels = moodLabels, moodLabels.count == 7,
+              let fertilityBoxes = fertilityBoxes, fertilityBoxes.count == 7 else {
+            print("Forecast UI arrays are not connected or length != 7.")
             return
         }
         

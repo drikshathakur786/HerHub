@@ -18,15 +18,15 @@ class profileViewController: UIViewController {
     @IBOutlet weak var cycleValueLabel: UILabel!
     @IBOutlet weak var periodValueLabel: UILabel!
 
-    @IBOutlet weak var settingsStackContainer: UIView!   //  add outlet for full settings section bg
+    @IBOutlet weak var settingsStackContainer: UIView!
     @IBOutlet weak var notificationRow: UIView!
-    @IBOutlet weak var  EditProfile: UIView!
+    @IBOutlet weak var EditProfile: UIView!
     @IBOutlet weak var LogOut: UIView!
 
     private let profileGradient = CAGradientLayer()
-    private let backgroundGradient = CAGradientLayer()  // New background gradient
+    private let backgroundGradient = CAGradientLayer()
     
-    // Store current user for editing
+    // Store current user
     private var currentUser: User?
 
     override func viewDidLoad() {
@@ -35,7 +35,6 @@ class profileViewController: UIViewController {
         
         // Listen for profile updates
         NotificationCenter.default.addObserver(self, selector: #selector(reloadProfileData), name: NSNotification.Name("UserProfileUpdated"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadProfileData), name: .userSessionUpdated, object: nil)
     }
     
     deinit {
@@ -45,47 +44,36 @@ class profileViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         profileGradient.frame = profileCard.bounds
-        backgroundGradient.frame = view.bounds  // Update background gradient frame
+        backgroundGradient.frame = view.bounds
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        // Load user data from SessionManager
-        if let user = SessionManager.shared.currentUser {
-            loadUserData(email: user.email ?? "")
-        } else {
-            print("   No user logged in")
-        }
+        loadUserData()
     }
     
     @objc private func reloadProfileData() {
-        print("🔄 Reloading profile data after edit")
-        if let user = currentUser {
-            loadUserData(email: user.email ?? "")
-        }
+        print("🔄 Reloading profile data")
+        loadUserData()
     }
     
     // MARK: - Actions
     @IBAction func editProfileButtonTapped(_ sender: Any) {
         guard let user = currentUser else {
-            print("   No user data available for editing")
+            print("No user data available for editing")
             return
         }
         
-        // Instantiate EditProfileViewController from storyboard
         let storyboard = UIStoryboard(name: "editProfile", bundle: nil)
         if let editVC = storyboard.instantiateInitialViewController() as? EditProfileViewController {
             editVC.currentUser = user
             editVC.modalPresentationStyle = .fullScreen
-            print("✅ Presenting edit profile with user data")
             present(editVC, animated: true, completion: nil)
-        } else {
-            print("  Failed to instantiate EditProfileViewController")
         }
     }
 }
 
-// MARK: - UI SETUP
+// MARK: - UI Setup
 extension profileViewController {
 
     func setupUI() {
@@ -96,30 +84,30 @@ extension profileViewController {
         setupSettingsRows()
     }
     
-    // MARK: Background Gradient (matching Tracker & Forecast)
+    // MARK: - Background Gradient
     private func setupBackgroundGradient() {
         backgroundGradient.frame = view.bounds
         backgroundGradient.colors = [
-            UIColor(hex: "#FFF0F5").cgColor, // Lavender Blush
-            UIColor(hex: "#F5D3EB").cgColor  // Soft pink
+            UIColor(red: 1.0, green: 0.941, blue: 0.961, alpha: 1.0).cgColor, // #FFF0F5
+            UIColor(red: 0.961, green: 0.827, blue: 0.922, alpha: 1.0).cgColor  // #F5D3EB
         ]
         backgroundGradient.startPoint = CGPoint(x: 0.5, y: 0)
         backgroundGradient.endPoint = CGPoint(x: 0.5, y: 1)
         view.layer.insertSublayer(backgroundGradient, at: 0)
     }
 
-    // MARK: Navigation Bar
+    // MARK: - Navigation Bar
     private func setupNavigationBar() {
         navigationItem.title = "Profile"
         navigationController?.navigationBar.prefersLargeTitles = false
     }
 
-    // MARK: Profile Card (Gradient + Round Corners)
+    // MARK: - Profile Card
     private func setupProfileCard() {
         profileCard.layer.cornerRadius = 24
         profileCard.clipsToBounds = true
 
-        // gradient
+        // Gradient
         profileGradient.colors = [
             UIColor.systemPurple.withAlphaComponent(0.75).cgColor,
             UIColor.systemPink.withAlphaComponent(0.75).cgColor
@@ -128,7 +116,7 @@ extension profileViewController {
         profileGradient.endPoint = CGPoint(x: 1, y: 1)
         profileCard.layer.insertSublayer(profileGradient, at: 0)
 
-        // profile image
+        // Profile image
         profileImage.layer.cornerRadius = profileImage.frame.height / 2
         profileImage.clipsToBounds = true
         profileImage.backgroundColor = UIColor.white.withAlphaComponent(0.35)
@@ -137,7 +125,7 @@ extension profileViewController {
         nameLabel.textColor = .white
     }
 
-    // MARK: Metric Cards
+    // MARK: - Metric Cards
     private func setupMetricCards() {
         let cards = [cycleCard, periodCard]
 
@@ -145,8 +133,6 @@ extension profileViewController {
             guard let card = card else { continue }
             card.layer.cornerRadius = 18
             card.backgroundColor = .white
-
-            // Enhanced shadow (matching Tracker/Forecast)
             card.layer.shadowColor = UIColor.black.cgColor
             card.layer.shadowOpacity = 0.06
             card.layer.shadowOffset = CGSize(width: 0, height: 8)
@@ -155,29 +141,28 @@ extension profileViewController {
         }
     }
 
-    // MARK: Settings Rows (Rounded only TOP + BOTTOM rows)
+    // MARK: - Settings Rows
     private func setupSettingsRows() {
-
-        // Round full container
+        // Container
         settingsStackContainer.layer.cornerRadius = 18
         settingsStackContainer.clipsToBounds = true
         settingsStackContainer.backgroundColor = .clear
 
-        // 🔥 Top row
+        // Top row
         notificationRow.layer.cornerRadius = 18
         notificationRow.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
         notificationRow.backgroundColor = .white
 
-        // Middle row – no rounding
+        // Middle row
         EditProfile.layer.cornerRadius = 0
         EditProfile.backgroundColor = .white
 
-        // 🔥 Bottom row
-       LogOut.layer.cornerRadius = 18
+        // Bottom row
+        LogOut.layer.cornerRadius = 18
         LogOut.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         LogOut.backgroundColor = .white
 
-        // Shadow on the container (enhanced to match Tracker/Forecast)
+        // Shadow on container
         settingsStackContainer.layer.shadowColor = UIColor.black.cgColor
         settingsStackContainer.layer.shadowOpacity = 0.06
         settingsStackContainer.layer.shadowOffset = CGSize(width: 0, height: 8)
@@ -189,44 +174,36 @@ extension profileViewController {
 // MARK: - Data Loading
 extension profileViewController {
     
-    func loadUserData(email: String) {
+    func loadUserData() {
         Task {
             do {
-                print("🔍 Loading profile data for: \(email)")
+                // Use test user ID
+                let testUserID = UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID()
                 
                 // Fetch user
-                guard let user = try await UserController.shared.fetchUser(byEmail: email) else {
-                    print("  User not found")
+                guard let user = try await UserController.shared.fetchUser(byID: testUserID) else {
+                    print("User not found")
                     return
                 }
                 
-                print("✅ User found: \(user.email ?? "no email")")
-                
                 // Fetch baseline profile
                 let baseline = try await CycleDataController.shared.getBaselineProfile(forUser: user.id)
-                
-                if let baseline = baseline {
-                    print("✅ Baseline found: Cycle=\(baseline.baseCycleLength), Period=\(baseline.basePeriodLength)")
-                } else {
-                    print("   No baseline profile found")
-                }
                 
                 // Update UI on main thread
                 await MainActor.run {
                     updateProfileUI(user: user, baseline: baseline)
                 }
             } catch {
-                print("  Error loading profile: \(error.localizedDescription)")
+                print("Error loading profile: \(error)")
             }
         }
     }
     
-    
-    // here we are assigning the label values from supabase
     func updateProfileUI(user: User, baseline: CycleBaselineProfile?) {
         // Store user for editing
         self.currentUser = user
-        // Update name label - show userName first, then fallback to email/phone
+        
+        // Update name
         nameLabel.text = user.userName ?? user.email ?? user.phoneNumber ?? "User"
         
         // Update cycle length
