@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "PHOTO-2025-12-20-15-55-22.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "PHOTO-2025-12-20-15-55-22 1.jpg",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "PHOTO-2025-12-20-15-55-22 2.jpg",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

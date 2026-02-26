@@ -15,12 +15,26 @@
 		186773462ED6B19000D248A0 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 186773452ED6B19000D248A0 /* Supabase */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildRule section */
+		18FFCEA82EF3F4D000D1E019 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			fileType = folder.mlpackage;
+			inputFiles = (
+			);
+			isEditable = 1;
+			outputFiles = (
+			);
+			script = "# coremlc\n";
+		};
+/* End PBXBuildRule section */
+
 /* Begin PBXFileReference section */
 		FEF6EA762EB07E9700446BBF /* HerHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HerHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		FEF6EA882EB07E9900446BBF /* Exceptions for "HerHub" folder in "HerHub" target */ = {
+		FEF6EA882EB07E9900446BBF /* Exceptions for " " folder in "HerHub" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -30,12 +44,12 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FEF6EA782EB07E9700446BBF /* HerHub */ = {
+		FEF6EA782EB07E9700446BBF /*   */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				FEF6EA882EB07E9900446BBF /* Exceptions for "HerHub" folder in "HerHub" target */,
+				FEF6EA882EB07E9900446BBF /* Exceptions for " " folder in "HerHub" target */,
 			);
-			path = HerHub;
+			path = " ";
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -67,7 +81,7 @@
 		FEF6EA6D2EB07E9700446BBF = {
 			isa = PBXGroup;
 			children = (
-				FEF6EA782EB07E9700446BBF /* HerHub */,
+				FEF6EA782EB07E9700446BBF /*   */,
 				18269E572EC1DF24006F6D9B /* Frameworks */,
 				FEF6EA772EB07E9700446BBF /* Products */,
 			);
@@ -93,11 +107,12 @@
 				FEF6EA742EB07E9700446BBF /* Resources */,
 			);
 			buildRules = (
+				18FFCEA82EF3F4D000D1E019 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				FEF6EA782EB07E9700446BBF /* HerHub */,
+				FEF6EA782EB07E9700446BBF /*   */,
 			);
 			name = HerHub;
 			packageProductDependencies = (
@@ -179,10 +194,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 48RFU8YKR2;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = HerHub/Info.plist;
+				INFOPLIST_FILE = " /Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -190,8 +206,39 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = engineer.niharsandhu.HerHub;
+				PRODUCT_BUNDLE_IDENTIFIER = niharsandhu.HerHub;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -212,10 +259,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 48RFU8YKR2;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = HerHub/Info.plist;
+				INFOPLIST_FILE = " /Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -223,8 +271,39 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/_core/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/numpy/random/lib",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/scipy/.dylibs",
+					"$(PROJECT_DIR)/HerHub/herhub\\ /.venv/lib/python3.9/site-packages/sklearn/.dylibs",
+				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = engineer.niharsandhu.HerHub;
+				PRODUCT_BUNDLE_IDENTIFIER = niharsandhu.HerHub;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
