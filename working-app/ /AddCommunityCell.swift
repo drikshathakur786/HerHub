@@ -14,3 +14,4 @@ class AddCommunityCell: UICollectionViewCell {
             contentView.layer.masksToBounds = true
     }
 }
+

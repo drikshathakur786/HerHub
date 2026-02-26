@@ -128,7 +128,7 @@ class CommunityManager {
         guard let userID = currentUserID,
               let community = getCommunity(by: communityID) else { return false }
         return community.members.contains(userID)
-    }    
+    }
    
     
     func addComment(to postID: UUID, in communityID: UUID, authorID: UUID, authorName: String, text: String) {
@@ -153,6 +153,15 @@ class CommunityManager {
         
         if !communities[index].members.contains(userID) {
             communities[index].members.append(userID)
+            saveCommunities()
+        }
+    }
+    
+    func leaveCommunity(communityID: UUID, userID: UUID) {
+        guard let index = communities.firstIndex(where: { $0.id == communityID }) else { return }
+        
+        if let memberIndex = communities[index].members.firstIndex(of: userID) {
+            communities[index].members.remove(at: memberIndex)
             saveCommunities()
         }
     }
@@ -280,3 +289,4 @@ class CommunityManager {
     }
     
 }
+

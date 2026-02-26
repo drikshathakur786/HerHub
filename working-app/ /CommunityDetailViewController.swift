@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CommunityDetailViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class CommunityDetailViewController: UIViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var bottomInputView: UIView!
@@ -20,6 +20,13 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     
     var originalY: CGFloat?
     private var selectedImage: UIImage?
+    
+
+    private var filteredPostIndices: [Int] = []
+    private var currentSearchText: String = ""
+    private var isFiltering: Bool {
+        return !currentSearchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
         
     override func viewDidLoad() {
             
@@ -36,12 +43,61 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
             
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 300
-          
+        setupSearchBar()
         setupPhotoButton()
         
         setupKeyboardHandling()
         
         
+    }
+    
+    @IBAction func leaveCommunityTapped(_ sender: Any) {
+        guard let currentCommunity = community,
+              let currentUser = AuthManager.shared.currentUser else { return }
+        
+        let alert = UIAlertController(
+            title: "Leave Community?",
+            message: "You will no longer see posts from this community on your Community screen.",
+            preferredStyle: .actionSheet
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Leave", style: .destructive, handler: { _ in
+            CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
+            
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+         
+            self.navigationController?.popViewController(animated: true)
+        }))
+        
+        if let popover = alert.popoverPresentationController {
+            popover.barButtonItem = navigationItem.rightBarButtonItem
+        }
+        
+        present(alert, animated: true)
+    }
+    
+    private func setupSearchBar() {
+        let searchBar = UISearchBar()
+        searchBar.placeholder = "Search posts"
+        searchBar.delegate = self
+        searchBar.autocapitalizationType = .none
+        searchBar.returnKeyType = .done
+        searchBar.sizeToFit()
+      
+        let bgColor = tableView.backgroundColor ?? view.backgroundColor ?? .systemBackground
+        searchBar.barTintColor = bgColor
+        searchBar.backgroundColor = bgColor
+        searchBar.isTranslucent = false
+        
+        searchBar.backgroundImage = UIImage()
+        
+        if #available(iOS 13.0, *) {
+            let textField = searchBar.searchTextField
+            textField.backgroundColor = .white.withAlphaComponent(0.9)
+        }
+        
+        tableView.tableHeaderView = searchBar
     }
         
    
@@ -129,7 +185,8 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             if section == 0 {
                 return 1
             } else {
-                return community?.posts.count ?? 0
+                guard let posts = community?.posts else { return 0 }
+                return isFiltering ? filteredPostIndices.count : posts.count
             }
         }
         
@@ -142,22 +199,29 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as! PostCellTableViewCell
-                        
-                    if let post = community?.posts[indexPath.row] {
-                            
-                        let currentUserID = AuthManager.shared.currentUser?.id
-                        cell.configure(post: post, currentUserID: currentUserID)
-                            
-                        cell.likeButton.tag = indexPath.row
-                        cell.likeButton.addTarget(self, action: #selector(handleLike(_:)), for: .touchUpInside)
-                            
-                        cell.flagButton.tag = indexPath.row
-                        cell.flagButton.addTarget(self, action: #selector(handleFlag(_:)), for: .touchUpInside)
-                           
-                        cell.commentButton.tag = indexPath.row
-                        cell.commentButton.addTarget(self, action: #selector(handleComment(_:)), for: .touchUpInside)
+                    
+                    guard let posts = community?.posts else { return cell }
+                    let postIndex: Int
+                    if isFiltering {
+                        postIndex = filteredPostIndices[indexPath.row]
+                    } else {
+                        postIndex = indexPath.row
                     }
+                    
+                    let post = posts[postIndex]
+                            
+                    let currentUserID = AuthManager.shared.currentUser?.id
+                    cell.configure(post: post, currentUserID: currentUserID)
                         
+                    cell.likeButton.tag = postIndex
+                    cell.likeButton.addTarget(self, action: #selector(handleLike(_:)), for: .touchUpInside)
+                        
+                    cell.flagButton.tag = postIndex
+                    cell.flagButton.addTarget(self, action: #selector(handleFlag(_:)), for: .touchUpInside)
+                       
+                    cell.commentButton.tag = postIndex
+                    cell.commentButton.addTarget(self, action: #selector(handleComment(_:)), for: .touchUpInside)
+                    
                     return cell
                 }
         }
@@ -254,7 +318,7 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                 self.community = updatedCommunity
                 tableView.reloadData()
                 
-                let lastRow = updatedCommunity.posts.count - 1
+                let lastRow = (isFiltering ? filteredPostIndices.count : updatedCommunity.posts.count) - 1
                 
                 if lastRow >= 0 {
                     let indexPath = IndexPath(row: lastRow, section: 1)
@@ -264,3 +328,35 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
         }
 
 }
+
+extension CommunityDetailViewController {
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        currentSearchText = searchText
+        applyFilter()
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    private func applyFilter() {
+        guard let posts = community?.posts else {
+            filteredPostIndices = []
+            tableView.reloadData()
+            return
+        }
+        
+        let query = currentSearchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if query.isEmpty {
+            filteredPostIndices = []
+        } else {
+            filteredPostIndices = posts.enumerated().compactMap { index, post in
+                let haystack = "\(post.title) \(post.text)".lowercased()
+                return haystack.contains(query) ? index : nil
+            }
+        }
+        tableView.reloadData()
+    }
+}
+

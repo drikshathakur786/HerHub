@@ -18,7 +18,7 @@ class FeaturedPostCell: UITableViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.selectionStyle = .none 
+        self.selectionStyle = .none
         self.selectedBackgroundView = UIView()
     }
 
@@ -50,3 +50,4 @@ class FeaturedPostCell: UITableViewCell {
     }
 
 }
+

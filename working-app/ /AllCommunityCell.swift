@@ -94,3 +94,4 @@ class AllCommunityCell: UITableViewCell {
         
     }
 }
+

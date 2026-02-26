@@ -22,7 +22,7 @@ class AllCommunitiesViewController: UIViewController {
         super.viewDidLoad()
         
         title = "All Communities"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
         
         loadData()
         tableView.delegate = self
@@ -30,9 +30,13 @@ class AllCommunitiesViewController: UIViewController {
             
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 120
-            
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadData()
+        tableView.reloadData()
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
@@ -110,5 +114,6 @@ extension AllCommunitiesViewController: UITableViewDelegate, UITableViewDataSour
     
 
     
+
 
 
