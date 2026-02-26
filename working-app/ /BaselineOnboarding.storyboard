@@ -1,0 +1,650 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="WCQ-rb-4Ba">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Step 1 - Cycle Length-->
+        <scene sceneID="s0d-6b-0kx">
+            <objects>
+                <viewController storyboardIdentifier="BaselineStep1VC" id="Y6W-OH-hqX" customClass="onBoardingViewController" customModule="HerHub" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5EZ-qb-Rvc">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <!-- Content Card -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ContentCard1">
+                                <rect key="frame" x="24" y="200" width="345" height="380"/>
+                                <subviews>
+                                    <!-- Back Button -->
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BackBtn1">
+                                        <rect key="frame" x="16" y="20" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="BackW1"/>
+                                            <constraint firstAttribute="height" constant="32" id="BackH1"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.2" green="0.2" blue="0.2" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" image="arrow.left" catalog="system"/>
+                                        <connections>
+                                            <action selector="backButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="BackAction1"/>
+                                        </connections>
+                                    </button>
+                                    <!-- Title Label -->
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="How long is your cycle?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TitleLabel1">
+                                        <rect key="frame" x="56" y="24" width="273" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                        <color key="textColor" red="0.1" green="0.1" blue="0.1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </label>
+                                    <!-- Cycle Input TextField -->
+                                    <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="none" placeholder="28" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CycleField1">
+                                        <rect key="frame" x="24" y="140" width="297" height="60"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="60" id="CycleH1"/>
+                                        </constraints>
+                                        <color key="backgroundColor" red="0.96" green="0.96" blue="0.96" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="28"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                    </textField>
+                                    <!-- Range Label -->
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Typical range: 21-35 days" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RangeLabel1">
+                                        <rect key="frame" x="24" y="210" width="297" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </label>
+                                    <!-- Next Button -->
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NextBtn1">
+                                        <rect key="frame" x="24" y="310" width="297" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="NextH1"/>
+                                        </constraints>
+                                        <state key="normal" title="Next">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="nextButtonTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="NextAction1"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="BackBtn1" firstAttribute="top" secondItem="ContentCard1" secondAttribute="top" constant="20" id="c1a"/>
+                                    <constraint firstItem="BackBtn1" firstAttribute="leading" secondItem="ContentCard1" secondAttribute="leading" constant="16" id="c1b"/>
+                                    <constraint firstItem="TitleLabel1" firstAttribute="centerY" secondItem="BackBtn1" secondAttribute="centerY" id="c1c"/>
+                                    <constraint firstItem="TitleLabel1" firstAttribute="leading" secondItem="BackBtn1" secondAttribute="trailing" constant="8" id="c1d"/>
+                                    <constraint firstAttribute="trailing" secondItem="TitleLabel1" secondAttribute="trailing" constant="16" id="c1e"/>
+                                    <constraint firstItem="CycleField1" firstAttribute="centerY" secondItem="ContentCard1" secondAttribute="centerY" constant="-20" id="c1f"/>
+                                    <constraint firstItem="CycleField1" firstAttribute="leading" secondItem="ContentCard1" secondAttribute="leading" constant="24" id="c1g"/>
+                                    <constraint firstAttribute="trailing" secondItem="CycleField1" secondAttribute="trailing" constant="24" id="c1h"/>
+                                    <constraint firstItem="RangeLabel1" firstAttribute="top" secondItem="CycleField1" secondAttribute="bottom" constant="10" id="c1i"/>
+                                    <constraint firstItem="RangeLabel1" firstAttribute="leading" secondItem="ContentCard1" secondAttribute="leading" constant="24" id="c1j"/>
+                                    <constraint firstAttribute="trailing" secondItem="RangeLabel1" secondAttribute="trailing" constant="24" id="c1k"/>
+                                    <constraint firstItem="NextBtn1" firstAttribute="leading" secondItem="ContentCard1" secondAttribute="leading" constant="24" id="c1l"/>
+                                    <constraint firstAttribute="trailing" secondItem="NextBtn1" secondAttribute="trailing" constant="24" id="c1m"/>
+                                    <constraint firstAttribute="bottom" secondItem="NextBtn1" secondAttribute="bottom" constant="20" id="c1n"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="vDu-zF-Fre"/>
+                        <color key="backgroundColor" red="0.98" green="0.78" blue="0.92" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ContentCard1" firstAttribute="centerY" secondItem="5EZ-qb-Rvc" secondAttribute="centerY" id="CardCenterY"/>
+                            <constraint firstItem="ContentCard1" firstAttribute="leading" secondItem="vDu-zF-Fre" secondAttribute="leading" constant="24" id="CardLeading"/>
+                            <constraint firstItem="vDu-zF-Fre" firstAttribute="trailing" secondItem="ContentCard1" secondAttribute="trailing" constant="24" id="CardTrailing"/>
+                            <constraint firstItem="ContentCard1" firstAttribute="height" constant="380" id="CardHeight"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="IVx-Ie-NaC"/>
+                    <connections>
+                        <outlet property="contentCardView" destination="ContentCard1" id="CardOutlet1"/>
+                        <outlet property="cycleLengthTextField" destination="CycleField1" id="CycleOutlet1"/>
+                        <outlet property="nextBtn" destination="NextBtn1" id="NextOutlet1"/>
+                        <outlet property="backBtn" destination="BackBtn1" id="BackOutlet1"/>
+                        <outlet property="titleLabel" destination="TitleLabel1" id="TitleOutlet1"/>
+                        <segue destination="Step2VC" kind="show" identifier="toStep2" id="SegueToStep2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Ief-a0-LHa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1066" y="92"/>
+        </scene>
+        <!--Step 2 - Health Factors-->
+        <scene sceneID="Step2Scene">
+            <objects>
+                <viewController storyboardIdentifier="Step2VC" id="Step2VC" customClass="OnboardingStep2ViewController" customModule="HerHub" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Step2View">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <!-- Content Card -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ContentCard2">
+                                <rect key="frame" x="24" y="150" width="345" height="480"/>
+                                <subviews>
+                                    <!-- Back Button -->
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BackBtn2">
+                                        <rect key="frame" x="16" y="20" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="BackW2"/>
+                                            <constraint firstAttribute="height" constant="32" id="BackH2"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.2" green="0.2" blue="0.2" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" image="arrow.left" catalog="system"/>
+                                        <connections>
+                                            <action selector="backButtonTapped:" destination="Step2VC" eventType="touchUpInside" id="BackAction2"/>
+                                        </connections>
+                                    </button>
+                                    <!-- Title Label -->
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="Step 1 - Tell us about your health" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TitleLabel2">
+                                        <rect key="frame" x="56" y="24" width="273" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                        <color key="textColor" red="0.1" green="0.1" blue="0.1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </label>
+                                    <!-- Age TextField -->
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="none" placeholder="Your Age" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AgeField2">
+                                        <rect key="frame" x="24" y="80" width="297" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="AgeH2"/>
+                                        </constraints>
+                                        <color key="backgroundColor" red="0.96" green="0.96" blue="0.96" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                    </textField>
+                                    <!-- PCOS Switch Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="PCOSStack2">
+                                        <rect key="frame" x="24" y="150" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Do you have PCOS?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PCOSLabel2">
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="PCOSSwitch2">
+                                                <color key="onTintColor" red="0.95" green="0.45" blue="0.70" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Thyroid Switch Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="ThyroidStack2">
+                                        <rect key="frame" x="24" y="210" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Thyroid issues?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ThyroidLabel2">
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ThyroidSwitch2">
+                                                <color key="onTintColor" red="0.95" green="0.45" blue="0.70" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Birth Control Switch Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="BCStack2">
+                                        <rect key="frame" x="24" y="270" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="On birth control?" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BCLabel2">
+                                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            </label>
+                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="BCSwitch2">
+                                                <color key="onTintColor" red="0.95" green="0.45" blue="0.70" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            </switch>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Next Button -->
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NextBtn2">
+                                        <rect key="frame" x="24" y="410" width="297" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="NextH2"/>
+                                        </constraints>
+                                        <state key="normal" title="Next">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="nextButtonTapped:" destination="Step2VC" eventType="touchUpInside" id="NextAction2"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="BackBtn2" firstAttribute="top" secondItem="ContentCard2" secondAttribute="top" constant="20" id="s2c1"/>
+                                    <constraint firstItem="BackBtn2" firstAttribute="leading" secondItem="ContentCard2" secondAttribute="leading" constant="16" id="s2c2"/>
+                                    <constraint firstItem="TitleLabel2" firstAttribute="centerY" secondItem="BackBtn2" secondAttribute="centerY" id="s2c3"/>
+                                    <constraint firstItem="TitleLabel2" firstAttribute="leading" secondItem="BackBtn2" secondAttribute="trailing" constant="8" id="s2c4"/>
+                                    <constraint firstItem="AgeField2" firstAttribute="top" secondItem="BackBtn2" secondAttribute="bottom" constant="28" id="s2c5"/>
+                                    <constraint firstItem="AgeField2" firstAttribute="leading" secondItem="ContentCard2" secondAttribute="leading" constant="24" id="s2c6"/>
+                                    <constraint firstAttribute="trailing" secondItem="AgeField2" secondAttribute="trailing" constant="24" id="s2c7"/>
+                                    <constraint firstItem="PCOSStack2" firstAttribute="top" secondItem="AgeField2" secondAttribute="bottom" constant="20" id="s2c8"/>
+                                    <constraint firstItem="PCOSStack2" firstAttribute="leading" secondItem="ContentCard2" secondAttribute="leading" constant="24" id="s2c9"/>
+                                    <constraint firstAttribute="trailing" secondItem="PCOSStack2" secondAttribute="trailing" constant="24" id="s2c10"/>
+                                    <constraint firstItem="ThyroidStack2" firstAttribute="top" secondItem="PCOSStack2" secondAttribute="bottom" constant="16" id="s2c11"/>
+                                    <constraint firstItem="ThyroidStack2" firstAttribute="leading" secondItem="ContentCard2" secondAttribute="leading" constant="24" id="s2c12"/>
+                                    <constraint firstAttribute="trailing" secondItem="ThyroidStack2" secondAttribute="trailing" constant="24" id="s2c13"/>
+                                    <constraint firstItem="BCStack2" firstAttribute="top" secondItem="ThyroidStack2" secondAttribute="bottom" constant="16" id="s2c14"/>
+                                    <constraint firstItem="BCStack2" firstAttribute="leading" secondItem="ContentCard2" secondAttribute="leading" constant="24" id="s2c15"/>
+                                    <constraint firstAttribute="trailing" secondItem="BCStack2" secondAttribute="trailing" constant="24" id="s2c16"/>
+                                    <constraint firstItem="NextBtn2" firstAttribute="leading" secondItem="ContentCard2" secondAttribute="leading" constant="24" id="s2c17"/>
+                                    <constraint firstAttribute="trailing" secondItem="NextBtn2" secondAttribute="trailing" constant="24" id="s2c18"/>
+                                    <constraint firstAttribute="bottom" secondItem="NextBtn2" secondAttribute="bottom" constant="20" id="s2c19"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Step2SafeArea"/>
+                        <color key="backgroundColor" red="0.98" green="0.78" blue="0.92" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ContentCard2" firstAttribute="centerY" secondItem="Step2View" secondAttribute="centerY" id="Card2CenterY"/>
+                            <constraint firstItem="ContentCard2" firstAttribute="leading" secondItem="Step2SafeArea" secondAttribute="leading" constant="24" id="Card2Leading"/>
+                            <constraint firstItem="Step2SafeArea" firstAttribute="trailing" secondItem="ContentCard2" secondAttribute="trailing" constant="24" id="Card2Trailing"/>
+                            <constraint firstItem="ContentCard2" firstAttribute="height" constant="480" id="Card2Height"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Step2NavItem"/>
+                    <connections>
+                        <outlet property="contentCardView" destination="ContentCard2" id="CardOutlet2"/>
+                        <outlet property="nextBtn" destination="NextBtn2" id="NextOutlet2"/>
+                        <outlet property="ageTextField" destination="AgeField2" id="AgeOutlet2"/>
+                        <outlet property="pcosSwitch" destination="PCOSSwitch2" id="PCOSOutlet2"/>
+                        <outlet property="thyroidSwitch" destination="ThyroidSwitch2" id="ThyroidOutlet2"/>
+                        <outlet property="birthControlSwitch" destination="BCSwitch2" id="BCOutlet2"/>
+                        <segue destination="Step3VC" kind="show" identifier="toStep3" id="SegueToStep3"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Step2FR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1966" y="92"/>
+        </scene>
+        <!--Step 3 - Lifestyle-->
+        <scene sceneID="Step3Scene">
+            <objects>
+                <viewController storyboardIdentifier="Step3VC" id="Step3VC" customClass="OnboardingStep3ViewController" customModule="HerHub" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Step3View">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <!-- Content Card -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ContentCard3">
+                                <rect key="frame" x="24" y="100" width="345" height="600"/>
+                                <subviews>
+                                    <!-- Back/Title Row -->
+                                    <button opaque="NO" contentMode="scaleToFill" buttonType="system" translatesAutoresizingMaskIntoConstraints="NO" id="BackBtn3">
+                                        <rect key="frame" x="16" y="20" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="BackW3"/>
+                                            <constraint firstAttribute="height" constant="32" id="BackH3"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.2" green="0.2" blue="0.2" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" image="arrow.left" catalog="system"/>
+                                        <connections>
+                                            <action selector="backButtonTapped:" destination="Step3VC" eventType="touchUpInside" id="BackAction3"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" text="Step 2 - Your lifestyle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TitleLabel3">
+                                        <rect key="frame" x="56" y="24" width="273" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                        <color key="textColor" red="0.1" green="0.1" blue="0.1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </label>
+                                    <!-- Exercise Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="ExerciseStack">
+                                        <rect key="frame" x="24" y="80" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Exercise per week" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ExerciseLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" selectedSegmentIndex="2" translatesAutoresizingMaskIntoConstraints="NO" id="ExerciseSegment">
+                                                <rect key="frame" x="150" y="7" width="147" height="30"/>
+                                                <segments>
+                                                    <segment title="0"/>
+                                                    <segment title="1-2"/>
+                                                    <segment title="3-5"/>
+                                                    <segment title="7"/>
+                                                </segments>
+                                            </segmentedControl>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Sleep Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="SleepStack">
+                                        <rect key="frame" x="24" y="140" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Sleep hours (4-10)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SleepLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="7" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SleepField">
+                                                <rect key="frame" x="220" y="7" width="77" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="77" id="SleepW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Stress Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="StressStack">
+                                        <rect key="frame" x="24" y="200" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Stress level (1-10)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="StressLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="5" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="StressField">
+                                                <rect key="frame" x="220" y="7" width="77" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="77" id="StressW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Diet Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="DietStack">
+                                        <rect key="frame" x="24" y="260" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Diet quality (1-10)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DietLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="5" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DietField">
+                                                <rect key="frame" x="220" y="7" width="77" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="77" id="DietW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Caffeine Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="CaffeineStack">
+                                        <rect key="frame" x="24" y="320" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Caffeine (cups/day)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CaffeineLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="CaffeineSegment">
+                                                <rect key="frame" x="180" y="7" width="117" height="30"/>
+                                                <segments>
+                                                    <segment title="0"/>
+                                                    <segment title="1-2"/>
+                                                    <segment title="3+"/>
+                                                </segments>
+                                            </segmentedControl>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Work Schedule Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="WorkStack">
+                                        <rect key="frame" x="24" y="380" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Work schedule" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WorkLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="WorkSegment">
+                                                <rect key="frame" x="180" y="7" width="117" height="30"/>
+                                                <segments>
+                                                    <segment title="Day"/>
+                                                    <segment title="Night"/>
+                                                </segments>
+                                            </segmentedControl>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Cycle Length Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="CycleStack">
+                                        <rect key="frame" x="24" y="440" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Cycle length (days)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CycleLenLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="28" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="CycleLenField">
+                                                <rect key="frame" x="220" y="7" width="77" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="77" id="CycleW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Next Button -->
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" translatesAutoresizingMaskIntoConstraints="NO" id="NextBtn3">
+                                        <rect key="frame" x="24" y="510" width="297" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="NextH3"/>
+                                        </constraints>
+                                        <state key="normal" title="Next">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="nextButtonTapped:" destination="Step3VC" eventType="touchUpInside" id="NextAction3"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="BackBtn3" firstAttribute="top" secondItem="ContentCard3" secondAttribute="top" constant="20" id="s3c1"/>
+                                    <constraint firstItem="BackBtn3" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="16" id="s3c2"/>
+                                    <constraint firstItem="TitleLabel3" firstAttribute="centerY" secondItem="BackBtn3" secondAttribute="centerY" id="s3c3"/>
+                                    <constraint firstItem="TitleLabel3" firstAttribute="leading" secondItem="BackBtn3" secondAttribute="trailing" constant="8" id="s3c4"/>
+                                    <constraint firstItem="ExerciseStack" firstAttribute="top" secondItem="TitleLabel3" secondAttribute="bottom" constant="32" id="s3c5"/>
+                                    <constraint firstItem="ExerciseStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c6"/>
+                                    <constraint firstAttribute="trailing" secondItem="ExerciseStack" secondAttribute="trailing" constant="24" id="s3c7"/>
+                                    <constraint firstItem="SleepStack" firstAttribute="top" secondItem="ExerciseStack" secondAttribute="bottom" constant="16" id="s3c8"/>
+                                    <constraint firstItem="SleepStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c9"/>
+                                    <constraint firstAttribute="trailing" secondItem="SleepStack" secondAttribute="trailing" constant="24" id="s3c10"/>
+                                    <constraint firstItem="StressStack" firstAttribute="top" secondItem="SleepStack" secondAttribute="bottom" constant="16" id="s3c11"/>
+                                    <constraint firstItem="StressStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c12"/>
+                                    <constraint firstAttribute="trailing" secondItem="StressStack" secondAttribute="trailing" constant="24" id="s3c13"/>
+                                    <constraint firstItem="DietStack" firstAttribute="top" secondItem="StressStack" secondAttribute="bottom" constant="16" id="s3c14"/>
+                                    <constraint firstItem="DietStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c15"/>
+                                    <constraint firstAttribute="trailing" secondItem="DietStack" secondAttribute="trailing" constant="24" id="s3c16"/>
+                                    <constraint firstItem="CaffeineStack" firstAttribute="top" secondItem="DietStack" secondAttribute="bottom" constant="16" id="s3c17"/>
+                                    <constraint firstItem="CaffeineStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c18"/>
+                                    <constraint firstAttribute="trailing" secondItem="CaffeineStack" secondAttribute="trailing" constant="24" id="s3c19"/>
+                                    <constraint firstItem="WorkStack" firstAttribute="top" secondItem="CaffeineStack" secondAttribute="bottom" constant="16" id="s3c20"/>
+                                    <constraint firstItem="WorkStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c21"/>
+                                    <constraint firstAttribute="trailing" secondItem="WorkStack" secondAttribute="trailing" constant="24" id="s3c22"/>
+                                    <constraint firstItem="CycleStack" firstAttribute="top" secondItem="WorkStack" secondAttribute="bottom" constant="16" id="s3c23"/>
+                                    <constraint firstItem="CycleStack" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c24"/>
+                                    <constraint firstAttribute="trailing" secondItem="CycleStack" secondAttribute="trailing" constant="24" id="s3c25"/>
+                                    <constraint firstItem="NextBtn3" firstAttribute="leading" secondItem="ContentCard3" secondAttribute="leading" constant="24" id="s3c26"/>
+                                    <constraint firstAttribute="trailing" secondItem="NextBtn3" secondAttribute="trailing" constant="24" id="s3c27"/>
+                                    <constraint firstAttribute="bottom" secondItem="NextBtn3" secondAttribute="bottom" constant="20" id="s3c28"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Step3SafeArea"/>
+                        <color key="backgroundColor" red="0.98" green="0.78" blue="0.92" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ContentCard3" firstAttribute="centerY" secondItem="Step3View" secondAttribute="centerY" id="Card3CenterY"/>
+                            <constraint firstItem="ContentCard3" firstAttribute="leading" secondItem="Step3SafeArea" secondAttribute="leading" constant="24" id="Card3Leading"/>
+                            <constraint firstItem="Step3SafeArea" firstAttribute="trailing" secondItem="ContentCard3" secondAttribute="trailing" constant="24" id="Card3Trailing"/>
+                            <constraint firstItem="ContentCard3" firstAttribute="height" constant="580" id="Card3Height"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Step3NavItem"/>
+                    <connections>
+                        <outlet property="exerciseSegment" destination="ExerciseSegment" id="ExOutlet"/>
+                        <outlet property="sleepTextField" destination="SleepField" id="SleepOutlet"/>
+                        <outlet property="stressTextField" destination="StressField" id="StressOutlet"/>
+                        <outlet property="dietTextField" destination="DietField" id="DietOutlet"/>
+                        <outlet property="caffeineSegment" destination="CaffeineSegment" id="CaffOutlet"/>
+                        <outlet property="workSegment" destination="WorkSegment" id="WorkOutlet"/>
+                        <outlet property="cycleLengthTextField" destination="CycleLenField" id="CycleOutlet"/>
+                        <outlet property="nextBtn" destination="NextBtn3" id="NextOutlet3"/>
+                        <outlet property="contentCardView" destination="ContentCard3" id="CardOutlet3"/>
+                        <segue destination="Step4VC" kind="show" identifier="toStep4" id="SegueToStep4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Step3FR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2866" y="92"/>
+        </scene>
+        <!--Step 4 - Complete-->
+        <scene sceneID="Step4Scene">
+            <objects>
+                <viewController storyboardIdentifier="Step4VC" id="Step4VC" customClass="OnboardingStep4ViewController" customModule="HerHub" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Step4View">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <!-- Content Card -->
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ContentCard4">
+                                <rect key="frame" x="24" y="130" width="345" height="520"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" buttonType="system" translatesAutoresizingMaskIntoConstraints="NO" id="BackBtn4">
+                                        <rect key="frame" x="16" y="20" width="32" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="BackW4"/>
+                                            <constraint firstAttribute="height" constant="32" id="BackH4"/>
+                                        </constraints>
+                                        <color key="tintColor" red="0.2" green="0.2" blue="0.2" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <state key="normal" image="arrow.left" catalog="system"/>
+                                        <connections>
+                                            <action selector="backButtonTapped:" destination="Step4VC" eventType="touchUpInside" id="BackAction4"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" text="Step 3 - Final details" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TitleLabel4">
+                                        <rect key="frame" x="56" y="24" width="273" height="24"/>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                        <color key="textColor" red="0.1" green="0.1" blue="0.1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </label>
+                                    <!-- Height Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="HeightStack">
+                                        <rect key="frame" x="24" y="80" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Height (cm)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HeightLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="165" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="HeightField">
+                                                <rect key="frame" x="200" y="7" width="97" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="97" id="HeightW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Weight Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="WeightStack">
+                                        <rect key="frame" x="24" y="140" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Weight (kg)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WeightLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="60" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="WeightField">
+                                                <rect key="frame" x="200" y="7" width="97" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="97" id="WeightW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="decimalPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Period Length Row -->
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="PeriodStack">
+                                        <rect key="frame" x="24" y="200" width="297" height="44"/>
+                                        <subviews>
+                                            <label opaque="NO" contentMode="left" text="Period length (days)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PeriodLabel">
+                                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                            </label>
+                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="5" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PeriodField">
+                                                <rect key="frame" x="200" y="7" width="97" height="30"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="97" id="PeriodW"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                            </textField>
+                                        </subviews>
+                                    </stackView>
+                                    <!-- Last Period Label -->
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="When did your last period start?" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LastPeriodLabel">
+                                        <rect key="frame" x="24" y="270" width="297" height="20"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <color key="textColor" red="0.3" green="0.3" blue="0.3" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </label>
+                                    <!-- Date Picker -->
+                                    <datePicker contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" style="compact" translatesAutoresizingMaskIntoConstraints="NO" id="LastPeriodPicker">
+                                        <rect key="frame" x="24" y="300" width="297" height="50"/>
+                                        <color key="tintColor" red="0.95" green="0.45" blue="0.70" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    </datePicker>
+                                    <!-- Complete Button -->
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" translatesAutoresizingMaskIntoConstraints="NO" id="CompleteBtn">
+                                        <rect key="frame" x="24" y="450" width="297" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="CompleteH"/>
+                                        </constraints>
+                                        <state key="normal" title="Complete">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="completeButtonTapped:" destination="Step4VC" eventType="touchUpInside" id="CompleteAction"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="BackBtn4" firstAttribute="top" secondItem="ContentCard4" secondAttribute="top" constant="20" id="s4c1"/>
+                                    <constraint firstItem="BackBtn4" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="16" id="s4c2"/>
+                                    <constraint firstItem="TitleLabel4" firstAttribute="centerY" secondItem="BackBtn4" secondAttribute="centerY" id="s4c3"/>
+                                    <constraint firstItem="TitleLabel4" firstAttribute="leading" secondItem="BackBtn4" secondAttribute="trailing" constant="8" id="s4c4"/>
+                                    <constraint firstItem="HeightStack" firstAttribute="top" secondItem="TitleLabel4" secondAttribute="bottom" constant="32" id="s4c5"/>
+                                    <constraint firstItem="HeightStack" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="24" id="s4c6"/>
+                                    <constraint firstAttribute="trailing" secondItem="HeightStack" secondAttribute="trailing" constant="24" id="s4c7"/>
+                                    <constraint firstItem="WeightStack" firstAttribute="top" secondItem="HeightStack" secondAttribute="bottom" constant="16" id="s4c8"/>
+                                    <constraint firstItem="WeightStack" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="24" id="s4c9"/>
+                                    <constraint firstAttribute="trailing" secondItem="WeightStack" secondAttribute="trailing" constant="24" id="s4c10"/>
+                                    <constraint firstItem="PeriodStack" firstAttribute="top" secondItem="WeightStack" secondAttribute="bottom" constant="16" id="s4c11"/>
+                                    <constraint firstItem="PeriodStack" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="24" id="s4c12"/>
+                                    <constraint firstAttribute="trailing" secondItem="PeriodStack" secondAttribute="trailing" constant="24" id="s4c13"/>
+                                    <constraint firstItem="LastPeriodLabel" firstAttribute="top" secondItem="PeriodStack" secondAttribute="bottom" constant="24" id="s4c14"/>
+                                    <constraint firstItem="LastPeriodLabel" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="24" id="s4c15"/>
+                                    <constraint firstItem="LastPeriodPicker" firstAttribute="top" secondItem="LastPeriodLabel" secondAttribute="bottom" constant="8" id="s4c16"/>
+                                    <constraint firstItem="LastPeriodPicker" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="24" id="s4c17"/>
+                                    <constraint firstItem="CompleteBtn" firstAttribute="leading" secondItem="ContentCard4" secondAttribute="leading" constant="24" id="s4c18"/>
+                                    <constraint firstAttribute="trailing" secondItem="CompleteBtn" secondAttribute="trailing" constant="24" id="s4c19"/>
+                                    <constraint firstAttribute="bottom" secondItem="CompleteBtn" secondAttribute="bottom" constant="20" id="s4c20"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Step4SafeArea"/>
+                        <color key="backgroundColor" red="0.98" green="0.78" blue="0.92" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="ContentCard4" firstAttribute="centerY" secondItem="Step4View" secondAttribute="centerY" id="Card4CenterY"/>
+                            <constraint firstItem="ContentCard4" firstAttribute="leading" secondItem="Step4SafeArea" secondAttribute="leading" constant="24" id="Card4Leading"/>
+                            <constraint firstItem="Step4SafeArea" firstAttribute="trailing" secondItem="ContentCard4" secondAttribute="trailing" constant="24" id="Card4Trailing"/>
+                            <constraint firstItem="ContentCard4" firstAttribute="height" constant="520" id="Card4Height"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="Step4NavItem"/>
+                    <connections>
+                        <outlet property="contentCardView" destination="ContentCard4" id="CardOutlet4"/>
+                        <outlet property="completeButton" destination="CompleteBtn" id="CompleteOutlet"/>
+                        <outlet property="heightTextField" destination="HeightField" id="HeightOutlet"/>
+                        <outlet property="weightTextField" destination="WeightField" id="WeightOutlet"/>
+                        <outlet property="periodLengthTextField" destination="PeriodField" id="PeriodOutlet"/>
+                        <outlet property="lastPeriodDatePicker" destination="LastPeriodPicker" id="DateOutlet"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Step4FR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3766" y="92"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="5aW-Kh-089">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="WCQ-rb-4Ba" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="xxE-i7-qsR">
+                        <rect key="frame" x="0.0" y="118" width="393" height="54"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="Step2VC" kind="relationship" relationship="rootViewController" id="ViA-pP-qmj"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LWR-uz-0nC" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="140" y="92"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="arrow.left" catalog="system" width="128" height="107"/>
+    </resources>
+</document>

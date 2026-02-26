@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24128" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="SignInNav">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24063"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Sign In View Controller-->
+        <scene sceneID="SignIn-Scene">
+            <objects>
+                <viewController storyboardIdentifier="SignInVC" id="SignInVC" customClass="SignInViewController" customModule="HerHub" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="SignIn-View">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="HerHub" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TitleLabel">
+                                <rect key="frame" x="16" y="218" width="361" height="43"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
+                                <color key="textColor" red="0.84599999999999997" green="0.5" blue="0.76600000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome back!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SubtitleLabel">
+                                <rect key="frame" x="16" y="277" width="361" height="21.666666666666686"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                <color key="textColor" systemColor="secondaryLabelColor"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="EmailField">
+                                <rect key="frame" x="32" y="346.66666666666669" width="329" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="EmailHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="PasswordField">
+                                <rect key="frame" x="32" y="412.66666666666669" width="329" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="PasswordHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                            </textField>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ErrorLabel">
+                                <rect key="frame" x="32" y="474.66666666666669" width="329" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SignInButton">
+                                <rect key="frame" x="32" y="511.66666666666674" width="329" height="50"/>
+                                <color key="backgroundColor" red="0.84599999999999997" green="0.5" blue="0.76600000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="SignInBtnHeight"/>
+                                </constraints>
+                                <state key="normal" title="Sign In">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="signInButtonTapped:" destination="SignInVC" eventType="touchUpInside" id="SignInAction"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CreateAccountBtn">
+                                <rect key="frame" x="76.666666666666686" y="577.66666666666663" width="240" height="30"/>
+                                <state key="normal" title="Don't have an account? Create one"/>
+                                <connections>
+                                    <segue destination="SignUpVC" kind="push" id="tX9-am-14W"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="SignIn-SafeArea"/>
+                        <color key="backgroundColor" name="Bg_Color"/>
+                        <constraints>
+                            <constraint firstItem="TitleLabel" firstAttribute="top" secondItem="SignIn-SafeArea" secondAttribute="top" constant="230" id="c1"/>
+                            <constraint firstItem="PasswordField" firstAttribute="top" secondItem="EmailField" secondAttribute="bottom" constant="16" id="c10"/>
+                            <constraint firstItem="PasswordField" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="c11"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="PasswordField" secondAttribute="trailing" constant="32" id="c12"/>
+                            <constraint firstItem="ErrorLabel" firstAttribute="top" secondItem="PasswordField" secondAttribute="bottom" constant="12" id="c13"/>
+                            <constraint firstItem="ErrorLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="c14"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="ErrorLabel" secondAttribute="trailing" constant="32" id="c15"/>
+                            <constraint firstItem="SignInButton" firstAttribute="top" secondItem="ErrorLabel" secondAttribute="bottom" constant="20" id="c16"/>
+                            <constraint firstItem="SignInButton" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="c17"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="SignInButton" secondAttribute="trailing" constant="32" id="c18"/>
+                            <constraint firstItem="CreateAccountBtn" firstAttribute="top" secondItem="SignInButton" secondAttribute="bottom" constant="16" id="c19"/>
+                            <constraint firstItem="TitleLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="16" id="c2"/>
+                            <constraint firstItem="CreateAccountBtn" firstAttribute="centerX" secondItem="SignIn-SafeArea" secondAttribute="centerX" id="c20"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="TitleLabel" secondAttribute="trailing" constant="16" id="c3"/>
+                            <constraint firstItem="SubtitleLabel" firstAttribute="top" secondItem="TitleLabel" secondAttribute="bottom" constant="16" id="c4"/>
+                            <constraint firstItem="SubtitleLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="16" id="c5"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="SubtitleLabel" secondAttribute="trailing" constant="16" id="c6"/>
+                            <constraint firstItem="EmailField" firstAttribute="top" secondItem="SubtitleLabel" secondAttribute="bottom" constant="48" id="c7"/>
+                            <constraint firstItem="EmailField" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="c8"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="EmailField" secondAttribute="trailing" constant="32" id="c9"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="SignIn-NavItem"/>
+                    <connections>
+                        <outlet property="createAccountButton" destination="CreateAccountBtn" id="CreateAcctOutlet"/>
+                        <outlet property="emailTextField" destination="EmailField" id="EmailOutlet"/>
+                        <outlet property="errorLabel" destination="ErrorLabel" id="ErrorOutlet"/>
+                        <outlet property="passwordTextField" destination="PasswordField" id="PasswordOutlet"/>
+                        <outlet property="signInButton" destination="SignInButton" id="SignInBtnOutlet"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SignIn-FR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1100" y="100"/>
+        </scene>
+        <!--Sign Up View Controller-->
+        <scene sceneID="SignUp-Scene">
+            <objects>
+                <viewController storyboardIdentifier="SignUpVC" id="SignUpVC" customClass="SignUpViewController" customModule="HerHub" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="SignUp-View">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Create Account" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SignUpTitle">
+                                <rect key="frame" x="16" y="198" width="361" height="38.333333333333343"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="32"/>
+                                <color key="textColor" red="0.84599999999999997" green="0.5" blue="0.76600000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </label>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Full Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="NameField">
+                                <rect key="frame" x="32" y="268.33333333333331" width="329" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="NameHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SignUpEmailField">
+                                <rect key="frame" x="32" y="334.33333333333331" width="329" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="SignUpEmailHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Password (min 6 characters)" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="SignUpPasswordField">
+                                <rect key="frame" x="32" y="400.33333333333331" width="329" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="SignUpPasswordHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                            </textField>
+                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Confirm Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ConfirmPasswordField">
+                                <rect key="frame" x="32" y="466.33333333333331" width="329" height="49.999999999999943"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="ConfirmPasswordHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                            </textField>
+                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Error message" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SignUpErrorLabel">
+                                <rect key="frame" x="32" y="528.33333333333337" width="329" height="17"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SignUpButton">
+                                <rect key="frame" x="32" y="565.33333333333337" width="329" height="50"/>
+                                <color key="backgroundColor" red="0.84599999999999997" green="0.5" blue="0.76600000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="SignUpBtnHeight"/>
+                                </constraints>
+                                <state key="normal" title="Create Account">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
+                                <connections>
+                                    <action selector="signUpButtonTapped:" destination="SignUpVC" eventType="touchUpInside" id="SignUpAction"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AlreadyHaveAccountBtn">
+                                <rect key="frame" x="83.666666666666686" y="631.33333333333337" width="226" height="30"/>
+                                <state key="normal" title="Already have an account? Sign In"/>
+                                <connections>
+                                    <action selector="signInTapped:" destination="SignUpVC" eventType="touchUpInside" id="SignInTappedAction"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="SignUp-SafeArea"/>
+                        <color key="backgroundColor" name="Bg_Color"/>
+                        <constraints>
+                            <constraint firstItem="SignUpTitle" firstAttribute="top" secondItem="SignUp-SafeArea" secondAttribute="top" constant="80" id="su-c1"/>
+                            <constraint firstItem="SignUpPasswordField" firstAttribute="top" secondItem="SignUpEmailField" secondAttribute="bottom" constant="16" id="su-c10"/>
+                            <constraint firstItem="SignUpPasswordField" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c11"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="SignUpPasswordField" secondAttribute="trailing" constant="32" id="su-c12"/>
+                            <constraint firstItem="ConfirmPasswordField" firstAttribute="top" secondItem="SignUpPasswordField" secondAttribute="bottom" constant="16" id="su-c13"/>
+                            <constraint firstItem="ConfirmPasswordField" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c14"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="ConfirmPasswordField" secondAttribute="trailing" constant="32" id="su-c15"/>
+                            <constraint firstItem="SignUpErrorLabel" firstAttribute="top" secondItem="ConfirmPasswordField" secondAttribute="bottom" constant="12" id="su-c16"/>
+                            <constraint firstItem="SignUpErrorLabel" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c17"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="SignUpErrorLabel" secondAttribute="trailing" constant="32" id="su-c18"/>
+                            <constraint firstItem="SignUpButton" firstAttribute="top" secondItem="SignUpErrorLabel" secondAttribute="bottom" constant="20" id="su-c19"/>
+                            <constraint firstItem="SignUpTitle" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="16" id="su-c2"/>
+                            <constraint firstItem="SignUpButton" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c20"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="SignUpButton" secondAttribute="trailing" constant="32" id="su-c21"/>
+                            <constraint firstItem="AlreadyHaveAccountBtn" firstAttribute="top" secondItem="SignUpButton" secondAttribute="bottom" constant="16" id="su-c22"/>
+                            <constraint firstItem="AlreadyHaveAccountBtn" firstAttribute="centerX" secondItem="SignUp-SafeArea" secondAttribute="centerX" id="su-c23"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="SignUpTitle" secondAttribute="trailing" constant="16" id="su-c3"/>
+                            <constraint firstItem="NameField" firstAttribute="top" secondItem="SignUpTitle" secondAttribute="bottom" constant="32" id="su-c4"/>
+                            <constraint firstItem="NameField" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c5"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="NameField" secondAttribute="trailing" constant="32" id="su-c6"/>
+                            <constraint firstItem="SignUpEmailField" firstAttribute="top" secondItem="NameField" secondAttribute="bottom" constant="16" id="su-c7"/>
+                            <constraint firstItem="SignUpEmailField" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c8"/>
+                            <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="SignUpEmailField" secondAttribute="trailing" constant="32" id="su-c9"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="SignUp-NavItem"/>
+                    <connections>
+                        <outlet property="confirmPasswordTextField" destination="ConfirmPasswordField" id="ConfirmOutlet"/>
+                        <outlet property="emailTextField" destination="SignUpEmailField" id="EmailOutlet2"/>
+                        <outlet property="errorLabel" destination="SignUpErrorLabel" id="ErrorOutlet2"/>
+                        <outlet property="nameTextField" destination="NameField" id="NameOutlet"/>
+                        <outlet property="passwordTextField" destination="SignUpPasswordField" id="PasswordOutlet2"/>
+                        <outlet property="signInButton" destination="AlreadyHaveAccountBtn" id="SignInBtnOutlet2"/>
+                        <outlet property="signUpButton" destination="SignUpButton" id="SignUpBtnOutlet"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SignUp-FR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2200" y="100"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="Nav-Scene">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="SignInNav" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="NavBar">
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="SignInVC" kind="relationship" relationship="rootViewController" id="RootSegue"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nav-FR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="100" y="100"/>
+        </scene>
+    </scenes>
+    <resources>
+        <namedColor name="Bg_Color">
+            <color red="1" green="0.92549019607843142" blue="0.97254901960784312" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411759999999" green="0.23529411759999999" blue="0.26274509800000001" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>
