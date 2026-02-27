@@ -76,9 +76,6 @@ class AllCommunityCell: UITableViewCell {
        
         if isJoined {
             joinButton.setTitle("Joined", for: .normal)
-            //joinButton.backgroundColor = .systemGreen.withAlphaComponent(0.5)
-            //joinButton.setTitleColor(.white, for: .normal)
-            
             joinButton.backgroundColor = .systemGray5
             joinButton.setTitleColor(.systemGreen, for: .normal)
             

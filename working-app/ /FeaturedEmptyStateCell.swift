@@ -34,7 +34,6 @@ class FeaturedEmptyStateCell: UICollectionViewCell {
         cardView.layer.masksToBounds = true
         contentView.addSubview(cardView)
         
-        // Icon
         iconView.translatesAutoresizingMaskIntoConstraints = false
         let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .semibold)
         iconView.image = UIImage(systemName: "sparkles", withConfiguration: config)
