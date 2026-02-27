@@ -138,7 +138,7 @@
                             </view>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="9IY-tR-hPL">
                                 <rect key="frame" x="0.0" y="118" width="393" height="548"/>
-                                <color key="backgroundColor" red="1" green="0.81176470588235294" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="backgroundColor" red="0.98823529480000005" green="0.92941176889999999" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="NoticeCell" id="c4M-ki-L1e">
                                         <rect key="frame" x="0.0" y="50" width="393" height="142.33332824707031"/>
@@ -182,7 +182,7 @@
                                                             </subviews>
                                                         </stackView>
                                                     </subviews>
-                                                    <color key="backgroundColor" red="0.81568627450980391" green="0.49803921568627452" blue="0.78823529411764703" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                    <color key="backgroundColor" red="0.81568627450980391" green="0.53951987044817928" blue="0.75932372949179661" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                                     <constraints>
                                                         <constraint firstItem="JQW-pf-vEW" firstAttribute="leading" secondItem="vAw-Wb-ETs" secondAttribute="leading" constant="12" id="I7D-MZ-v3j"/>
                                                         <constraint firstAttribute="bottom" secondItem="JQW-pf-vEW" secondAttribute="bottom" constant="12" id="U99-5I-uAB"/>
@@ -203,7 +203,7 @@
                                                 <constraint firstItem="vAw-Wb-ETs" firstAttribute="top" secondItem="rf9-Sa-jdg" secondAttribute="top" constant="8" id="Nvb-bD-22D"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.81176470588235294" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="backgroundColor" red="0.98823529480000005" green="0.92941176889999999" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="PostCell" id="gpq-SQ-ora" customClass="PostCellTableViewCell" customModule="HerHub" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="192.33332824707031" width="393" height="369.33334350585938"/>
@@ -315,7 +315,7 @@
                                                 <constraint firstItem="o4e-fJ-UqB" firstAttribute="leading" secondItem="UfL-97-ALn" secondAttribute="leading" constant="16" id="qpD-9T-PVU"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.81176470588235294" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="backgroundColor" red="0.98823529480000005" green="0.92941176889999999" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <connections>
                                             <outlet property="avatarImageView" destination="dih-eb-uij" id="nsa-Sx-7kY"/>
                                             <outlet property="cardView" destination="o4e-fJ-UqB" id="987-1n-j9j"/>
@@ -784,7 +784,7 @@
                                                 <constraint firstAttribute="trailing" secondItem="OEu-fX-NND" secondAttribute="trailing" constant="16" id="xpt-OX-ZMs"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.81176470588235294" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <color key="backgroundColor" red="0.98823529480000005" green="0.92941176889999999" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                         <connections>
                                             <outlet property="avatarImageView" destination="egO-2E-fOL" id="r8L-MH-oNJ"/>
                                             <outlet property="cardView" destination="OEu-fX-NND" id="hK6-nP-9CH"/>
@@ -946,7 +946,7 @@
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="vFJ-py-4Ti"/>
-                        <color key="backgroundColor" red="0.96862745289999996" green="0.84476854363061227" blue="0.91873968948707474" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" red="0.98823529480000005" green="0.88216474509047615" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="vFJ-py-4Ti" firstAttribute="trailing" secondItem="Qer-BR-XC7" secondAttribute="trailing" constant="16" id="1oo-di-Dvm"/>
                             <constraint firstItem="vFJ-py-4Ti" firstAttribute="trailing" secondItem="6Ko-Tm-VTL" secondAttribute="trailing" constant="16" id="5d1-Zf-hjp"/>
@@ -1213,7 +1213,7 @@
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="ITQ-2s-fu8">
                                 <rect key="frame" x="0.0" y="118" width="393" height="666"/>
-                                <color key="backgroundColor" red="1" green="0.81176470590000005" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="backgroundColor" red="0.98823529480000005" green="0.92941176889999999" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="AllCommunityCell" id="6x7-xK-unC" customClass="AllCommunityCell" customModule="HerHub" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="50" width="393" height="232.66667175292969"/>
@@ -1305,7 +1305,7 @@
                                                     </userDefinedRuntimeAttributes>
                                                 </view>
                                             </subviews>
-                                            <color key="backgroundColor" red="1" green="0.81176470590000005" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                            <color key="backgroundColor" red="0.98823529480000005" green="0.93333333730000001" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                             <constraints>
                                                 <constraint firstItem="lde-Zz-A8r" firstAttribute="leading" secondItem="av7-k9-WE7" secondAttribute="leading" constant="16" id="ARX-ZX-V7s"/>
                                                 <constraint firstAttribute="trailing" secondItem="lde-Zz-A8r" secondAttribute="trailing" constant="16" id="Wfo-1Y-C3t"/>
@@ -1327,7 +1327,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="xez-WB-t2q"/>
-                        <color key="backgroundColor" red="1" green="0.81176470588235294" blue="0.90196078431372551" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" red="0.98823529480000005" green="0.92941176889999999" blue="0.95686274770000002" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="ITQ-2s-fu8" firstAttribute="top" secondItem="xez-WB-t2q" secondAttribute="top" id="E4V-ZB-VhC"/>
                             <constraint firstItem="ITQ-2s-fu8" firstAttribute="leading" secondItem="xez-WB-t2q" secondAttribute="leading" id="Lew-sS-dqX"/>
@@ -1382,13 +1382,13 @@
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray6Color">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
