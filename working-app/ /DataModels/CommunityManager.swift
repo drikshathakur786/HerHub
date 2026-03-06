@@ -20,8 +20,14 @@ class CommunityManager {
     }
 
     private var communities: [Community] = []
+    private let supabaseService = SupabaseService.shared
     
     private let fileURL: URL
+    
+    // Flag to determine if using Supabase or local storage
+    private var useSupabase: Bool {
+        return SupabaseManager.shared.isAuthenticated
+    }
     
     private init() {
         let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
@@ -41,17 +47,23 @@ class CommunityManager {
     
     
     func addCommunity(name: String, description: String, themeColor: String, isFeatured: Bool, createdBy: UUID) {
+        var newCommunity = Community(
+            name: name,
+            description: description,
+            themeColor: themeColor,
+            isFeatured: isFeatured,
+            createdBy: createdBy
+        )
+        newCommunity.members.append(createdBy)
+        communities.append(newCommunity)
         
-            var newCommunity = Community(
-                name: name,
-                description: description,
-                themeColor: themeColor,
-                isFeatured: isFeatured,
-                createdBy: createdBy
-            )
-            newCommunity.members.append(createdBy)
-            communities.append(newCommunity)
-            saveCommunities()
+        if useSupabase {
+            Task {
+                try? await supabaseService.createCommunity(newCommunity)
+                print("[CommunityManager] Created community in Supabase: \(newCommunity.id)")
+            }
+        }
+        saveCommunities()
     }
     
     
@@ -82,6 +94,14 @@ class CommunityManager {
     func updateCommunity(_ updated: Community) {
         if let index = communities.firstIndex(where: { $0.id == updated.id }) {
             communities[index] = updated
+            
+            if useSupabase {
+                Task {
+                    try? await supabaseService.updateCommunity(updated)
+                    print("[CommunityManager] Updated community in Supabase: \(updated.id)")
+                }
+            }
+            
             saveCommunities()
         }
     }
@@ -98,6 +118,14 @@ class CommunityManager {
             imageURL: imageURL
         )
         communities[index].posts.append(post)
+        
+        if useSupabase {
+            Task {
+                try? await supabaseService.createPost(post)
+                print("[CommunityManager] Created post in Supabase: \(post.id)")
+            }
+        }
+        
         saveCommunities()
     }
     
@@ -144,6 +172,14 @@ class CommunityManager {
         )
         
         communities[cIndex].posts[pIndex].comments.append(comment)
+        
+        if useSupabase {
+            Task {
+                try? await supabaseService.createComment(comment)
+                print("[CommunityManager] Created comment in Supabase: \(comment.id)")
+            }
+        }
+        
         saveCommunities()
     }
     
@@ -153,6 +189,14 @@ class CommunityManager {
         
         if !communities[index].members.contains(userID) {
             communities[index].members.append(userID)
+            
+            if useSupabase {
+                Task {
+                    try? await supabaseService.joinCommunity(communityID: communityID, userID: userID)
+                    print("[CommunityManager] Joined community in Supabase: \(communityID)")
+                }
+            }
+            
             saveCommunities()
         }
     }
@@ -165,7 +209,7 @@ class CommunityManager {
             saveCommunities()
         }
     }
-    
+
 
     func likePost(postID: UUID, communityID: UUID, userID: UUID) {
         
@@ -178,6 +222,13 @@ class CommunityManager {
             communities[cIndex].posts[pIndex].likedBy.remove(at: existingIndex)
         } else {
             communities[cIndex].posts[pIndex].likedBy.append(userID)
+        }
+        
+        if useSupabase {
+            Task {
+                try? await supabaseService.togglePostLike(postID: postID, userID: userID)
+                print("[CommunityManager] Toggled post like in Supabase: \(postID)")
+            }
         }
         
         saveCommunities()
@@ -228,19 +279,38 @@ class CommunityManager {
     
     
     private func loadCommunities() {
-
-        if let data = try? Data(contentsOf: fileURL) {
-                let decoder = JSONDecoder()
-                if let decoded = try? decoder.decode([Community].self, from: data) {
-                    communities = decoded
-                    return
+        // Try to load from Supabase first if authenticated
+        if useSupabase {
+            Task {
+                do {
+                    communities = try await supabaseService.fetchAllCommunities()
+                    print("[CommunityManager] Loaded \(communities.count) communities from Supabase")
+                    await MainActor.run {
+                        saveCommunities()
+                    }
+                } catch {
+                    print("[CommunityManager] Error loading from Supabase: \(error)")
+                    loadFromLocalStorage()
                 }
             }
-            
+        } else {
+            loadFromLocalStorage()
+        }
+    }
+    
+    private func loadFromLocalStorage() {
+        if let data = try? Data(contentsOf: fileURL) {
+            let decoder = JSONDecoder()
+            if let decoded = try? decoder.decode([Community].self, from: data) {
+                communities = decoded
+                return
+            }
+        }
+        
         communities = loadSampleCommunities()
         saveCommunities()
     }
-    
+
    
     private func saveCommunities() {
 

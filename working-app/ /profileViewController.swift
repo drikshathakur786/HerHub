@@ -112,16 +112,18 @@ class profileViewController: UIViewController {
     }
     
     private func performLogout() {
-      
-        AuthManager.shared.signOut()
-        
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let window = windowScene.windows.first {
-            let storyboard = UIStoryboard(name: "Auth", bundle: nil)
-            if let authVC = storyboard.instantiateInitialViewController() {
-                window.rootViewController = authVC
-                window.makeKeyAndVisible()
+        Task {
+            await AuthManager.shared.signOut()
+            
+            await MainActor.run {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    let storyboard = UIStoryboard(name: "Auth", bundle: nil)
+                    if let authVC = storyboard.instantiateInitialViewController() {
+                        window.rootViewController = authVC
+                        window.makeKeyAndVisible()
+                    }
+                }
             }
         }
     }
