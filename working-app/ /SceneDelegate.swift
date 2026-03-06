@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Supabase
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -19,10 +20,55 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let window = UIWindow(windowScene: windowScene)
         self.window = window
         
-        if AuthManager.shared.isLoggedIn {
-            // User is logged in - go to main app (Tab Bar)
+        // Check if we have a valid user loaded (not just session exists)
+        // currentUser must be loaded AND Supabase session must be valid
+        let hasUser = AuthManager.shared.currentUser != nil
+        let hasSession = SupabaseManager.shared.isAuthenticated
+        
+        if hasUser && hasSession {
+            // User is fully logged in - go to main app (Tab Bar)
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             window.rootViewController = storyboard.instantiateInitialViewController()
+        } else if hasSession {
+            // Session exists but user not loaded yet - wait and check
+            Task {
+                // Try to restore session
+                if let userID = SupabaseManager.shared.currentUserID {
+                    do {
+                        if let user = try await SupabaseService.shared.fetchUser(byID: userID) {
+                            AuthManager.shared.updateCurrentUser(user)
+                            await MainActor.run {
+                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                                window.rootViewController = storyboard.instantiateInitialViewController()
+                                window.makeKeyAndVisible()
+                            }
+                            return
+                        }
+                    } catch {
+                        print("[SceneDelegate] Failed to restore user: \(error)")
+                    }
+                }
+                // Failed to restore - show auth
+                await MainActor.run {
+                    let storyboard = UIStoryboard(name: "Auth", bundle: nil)
+                    window.rootViewController = storyboard.instantiateInitialViewController()
+                    window.makeKeyAndVisible()
+                }
+            }
+            // Show loading screen temporarily
+            let loadingVC = UIViewController()
+            loadingVC.view.backgroundColor = .white
+            let loadingLabel = UILabel()
+            loadingLabel.text = "Loading..."
+            loadingLabel.textColor = .systemPink
+            loadingLabel.font = .systemFont(ofSize: 18, weight: .medium)
+            loadingLabel.translatesAutoresizingMaskIntoConstraints = false
+            loadingVC.view.addSubview(loadingLabel)
+            NSLayoutConstraint.activate([
+                loadingLabel.centerXAnchor.constraint(equalTo: loadingVC.view.centerXAnchor),
+                loadingLabel.centerYAnchor.constraint(equalTo: loadingVC.view.centerYAnchor)
+            ])
+            window.rootViewController = loadingVC
         } else {
             // User not logged in - show sign in
             let storyboard = UIStoryboard(name: "Auth", bundle: nil)
@@ -32,6 +78,35 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
     }
     
+    // Handle OAuth callback URLs
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        
+        // Handle Supabase OAuth callback
+        if url.absoluteString.hasPrefix("herhub://") {
+            Task {
+                do {
+                    try await AuthManager.shared.handleOAuthCallback(url: url)
+                    // Navigate to main app on success
+                    await MainActor.run {
+                        self.navigateToMainApp()
+                    }
+                } catch {
+                    print("[SceneDelegate] OAuth callback error: \(error)")
+                }
+            }
+        }
+    }
+    
+    private func navigateToMainApp() {
+        guard let window = window else { return }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        if let tabBarVC = storyboard.instantiateInitialViewController() {
+            window.rootViewController = tabBarVC
+            window.makeKeyAndVisible()
+        }
+    }
+
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
