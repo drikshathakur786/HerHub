@@ -71,3 +71,4 @@ class ResourceCell: UITableViewCell {
             badgeLabel.layer.masksToBounds = true
         }
 }
+

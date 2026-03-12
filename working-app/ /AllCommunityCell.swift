@@ -53,25 +53,23 @@ class AllCommunityCell: UITableViewCell {
         memberLabel.text = "\(community.members.count) members"
        
         let config = UIImage.SymbolConfiguration(weight: .bold)
-        
+        iconImageView.image = UIImage(systemName: "heart.fill", withConfiguration: config)
         iconImageView.tintColor = .white
         iconImageView.contentMode = .scaleAspectFit
 
-        if community.themeColor == "pink" {
+        switch community.themeColor {
+        case "pink":
             iconBackgroundView.backgroundColor = .systemPink
-            iconImageView.image = UIImage(systemName: "heart", withConfiguration: config)
-            
-        } else if community.themeColor == "purple" {
+        case "purple":
             iconBackgroundView.backgroundColor = .systemPurple
-            iconImageView.image = UIImage(systemName: "heart.circle", withConfiguration: config)
-            
-        } else if community.themeColor == "green" {
+        case "green":
             iconBackgroundView.backgroundColor = .systemGreen
-            iconImageView.image = UIImage(systemName: "leaf", withConfiguration: config)
-            
-        } else {
+        case "yellow":
+            iconBackgroundView.backgroundColor = .systemYellow
+        case "cyan", "teal":
             iconBackgroundView.backgroundColor = .systemCyan
-            iconImageView.image = UIImage(systemName: "aqi.medium", withConfiguration: config)
+        default:
+            iconBackgroundView.backgroundColor = .systemPink
         }
        
         if isJoined {
@@ -91,4 +89,5 @@ class AllCommunityCell: UITableViewCell {
         
     }
 }
+
 

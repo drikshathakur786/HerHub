@@ -88,7 +88,7 @@ class ResourceViewController: UIViewController {
     
             navigationController?.navigationBar.prefersLargeTitles = true
             
-        searchBar.delegate = self        
+        searchBar.delegate = self
             searchBar.placeholder = "Search any resource..."
             
             
@@ -99,7 +99,7 @@ class ResourceViewController: UIViewController {
             if let textField = searchBar.value(forKey: "searchField") as? UITextField {
             
                 textField.backgroundColor = .white
-                textField.layer.cornerRadius = 22  
+                textField.layer.cornerRadius = 22
                 textField.clipsToBounds = true
                
                 textField.layer.shadowColor = UIColor.clear.cgColor
@@ -149,7 +149,7 @@ extension ResourceViewController: UISearchBarDelegate {
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.resignFirstResponder() 
+        searchBar.resignFirstResponder()
     }
 }
 
@@ -169,7 +169,7 @@ extension ResourceViewController: UISearchBarDelegate {
         }
         
         func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-            return 280 
+            return 280
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -239,3 +239,4 @@ extension ResourceViewController: UISearchBarDelegate {
             return 40
         }
     }
+

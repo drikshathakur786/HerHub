@@ -55,6 +55,7 @@ class CommunityViewController: UIViewController{
             name: NSNotification.Name("RefreshCommunityData"),
             object: nil
         )
+        loadFeaturedData()
     }
     
     
@@ -166,7 +167,6 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDat
         case 0:
             return CommunityManager.shared.getJoinedCommunities().count + 1
         case 1:
-            // Show empty-state cell when there are no featured posts yet
             return allPosts.isEmpty ? 1 : allPosts.count
         default:
             return 0
@@ -266,4 +266,5 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDat
         }
     }
 }
+
 

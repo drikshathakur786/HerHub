@@ -38,6 +38,7 @@ struct Community: Codable, Identifiable, Equatable {
 struct Comment: Codable, Identifiable, Equatable {
     let id: UUID
     var postID: UUID
+    var parentCommentID: UUID?
     var authorID: UUID
     var authorName: String
     var text: String
@@ -47,9 +48,10 @@ struct Comment: Codable, Identifiable, Equatable {
         return likedBy.count
     }
 
-    init(postID: UUID, authorID: UUID, authorName: String, text: String) {
+    init(postID: UUID, parentCommentID: UUID? = nil, authorID: UUID, authorName: String, text: String) {
         self.id = UUID()
         self.postID = postID
+        self.parentCommentID = parentCommentID
         self.authorID = authorID
         self.authorName = authorName
         self.text = text
@@ -122,3 +124,4 @@ struct Report: Codable, Identifiable, Equatable {
         lhs.id == rhs.id
     }
 }
+

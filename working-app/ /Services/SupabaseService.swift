@@ -128,6 +128,11 @@ final class SupabaseService {
         try await update(id: community.id, record: community, in: SupabaseManager.Tables.communities)
     }
     
+    /// Delete a community
+    func deleteCommunity(_ community: Community) async throws {
+        try await delete(id: community.id, from: SupabaseManager.Tables.communities)
+    }
+    
     /// Join a community
     func joinCommunity(communityID: UUID, userID: UUID) async throws {
         // This would typically use a junction table or array update
@@ -158,6 +163,11 @@ final class SupabaseService {
         try await insert(post, into: SupabaseManager.Tables.posts)
     }
     
+    /// Delete a post
+    func deletePost(postID: UUID) async throws {
+        try await delete(id: postID, from: SupabaseManager.Tables.posts)
+    }
+    
     /// Toggle like on a post
     func togglePostLike(postID: UUID, userID: UUID) async throws -> Bool {
         let rpcParams = [
@@ -185,6 +195,11 @@ final class SupabaseService {
     /// Create a comment
     func createComment(_ comment: Comment) async throws {
         try await insert(comment, into: SupabaseManager.Tables.comments)
+    }
+    
+    /// Delete a comment
+    func deleteComment(commentID: UUID) async throws {
+        try await delete(id: commentID, from: SupabaseManager.Tables.comments)
     }
     
     // MARK: - Cycle Data Operations
@@ -255,3 +270,4 @@ final class SupabaseService {
             .remove(paths: [path])
     }
 }
+

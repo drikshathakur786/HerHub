@@ -23,10 +23,10 @@ class CommunityManager {
     private let supabaseService = SupabaseService.shared
     
     private let fileURL: URL
-    
-    // Flag to determine if using Supabase or local storage
+    private let reportedPostsDefaultsKeyPrefix = "herhub_reportedPosts_"
+   
     private var useSupabase: Bool {
-        return SupabaseManager.shared.isAuthenticated
+        return AuthManager.shared.isLoggedIn
     }
     
     private init() {
@@ -59,7 +59,7 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                try? await supabaseService.createCommunity(newCommunity)
+                _ = try? await supabaseService.createCommunity(newCommunity)
                 print("[CommunityManager] Created community in Supabase: \(newCommunity.id)")
             }
         }
@@ -70,6 +70,7 @@ class CommunityManager {
     func getFeaturedPosts() -> [Post] {
       
         guard let userID = currentUserID else { return [] }
+        let reported = postIDsReported(by: userID)
                 
         let allCommunities = getAllCommunities()
         let relevantCommunities = allCommunities.filter { community in
@@ -77,6 +78,7 @@ class CommunityManager {
         }
                 
         let allPosts = relevantCommunities.flatMap { $0.posts }
+                .filter { !reported.contains($0.id) }
                 
         let activePosts = allPosts.filter { $0.likesCount > 0 }
                 
@@ -97,7 +99,7 @@ class CommunityManager {
             
             if useSupabase {
                 Task {
-                    try? await supabaseService.updateCommunity(updated)
+                    _ = try? await supabaseService.updateCommunity(updated)
                     print("[CommunityManager] Updated community in Supabase: \(updated.id)")
                 }
             }
@@ -121,8 +123,24 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                try? await supabaseService.createPost(post)
+                _ = try? await supabaseService.createPost(post)
                 print("[CommunityManager] Created post in Supabase: \(post.id)")
+            }
+        }
+        
+        saveCommunities()
+    }
+    
+    func deletePost(postID: UUID, in communityID: UUID) {
+        guard let cIndex = communities.firstIndex(where: { $0.id == communityID }) else { return }
+        guard let pIndex = communities[cIndex].posts.firstIndex(where: { $0.id == postID }) else { return }
+        
+        communities[cIndex].posts.remove(at: pIndex)
+        
+        if useSupabase {
+            Task {
+                _ = try? await supabaseService.deletePost(postID: postID)
+                print("[CommunityManager] Deleted post in Supabase: \(postID)")
             }
         }
         
@@ -166,6 +184,7 @@ class CommunityManager {
     
         let comment = Comment(
             postID: postID,
+            parentCommentID: nil,
             authorID: authorID,
             authorName: authorName,
             text: text
@@ -175,8 +194,49 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                try? await supabaseService.createComment(comment)
+                _ = try? await supabaseService.createComment(comment)
                 print("[CommunityManager] Created comment in Supabase: \(comment.id)")
+            }
+        }
+        
+        saveCommunities()
+    }
+    
+    func addReply(to parentCommentID: UUID, postID: UUID, in communityID: UUID, authorID: UUID, authorName: String, text: String) {
+        guard let cIndex = communities.firstIndex(where: { $0.id == communityID }) else { return }
+        guard let pIndex = communities[cIndex].posts.firstIndex(where: { $0.id == postID }) else { return }
+        
+        let reply = Comment(
+            postID: postID,
+            parentCommentID: parentCommentID,
+            authorID: authorID,
+            authorName: authorName,
+            text: text
+        )
+        
+        communities[cIndex].posts[pIndex].comments.append(reply)
+        
+        if useSupabase {
+            Task {
+                _ = try? await supabaseService.createComment(reply)
+                print("[CommunityManager] Created reply comment in Supabase: \(reply.id)")
+            }
+        }
+        
+        saveCommunities()
+    }
+    
+    func deleteComment(commentID: UUID, postID: UUID, communityID: UUID) {
+        guard let cIndex = communities.firstIndex(where: { $0.id == communityID }) else { return }
+        guard let pIndex = communities[cIndex].posts.firstIndex(where: { $0.id == postID }) else { return }
+        guard let cmIndex = communities[cIndex].posts[pIndex].comments.firstIndex(where: { $0.id == commentID }) else { return }
+        
+        communities[cIndex].posts[pIndex].comments.remove(at: cmIndex)
+        
+        if useSupabase {
+            Task {
+                _ = try? await supabaseService.deleteComment(commentID: commentID)
+                print("[CommunityManager] Deleted comment in Supabase: \(commentID)")
             }
         }
         
@@ -192,7 +252,7 @@ class CommunityManager {
             
             if useSupabase {
                 Task {
-                    try? await supabaseService.joinCommunity(communityID: communityID, userID: userID)
+                    _ = try? await supabaseService.joinCommunity(communityID: communityID, userID: userID)
                     print("[CommunityManager] Joined community in Supabase: \(communityID)")
                 }
             }
@@ -206,8 +266,28 @@ class CommunityManager {
         
         if let memberIndex = communities[index].members.firstIndex(of: userID) {
             communities[index].members.remove(at: memberIndex)
+            
+            if useSupabase {
+    
+            }
+            
             saveCommunities()
         }
+    }
+
+    func deleteCommunity(communityID: UUID) {
+        guard let index = communities.firstIndex(where: { $0.id == communityID }) else { return }
+        
+        let community = communities.remove(at: index)
+        
+        if useSupabase {
+            Task {
+                _ = try? await supabaseService.deleteCommunity(community)
+                print("[CommunityManager] Deleted community in Supabase: \(community.id)")
+            }
+        }
+        
+        saveCommunities()
     }
 
 
@@ -226,7 +306,7 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                try? await supabaseService.togglePostLike(postID: postID, userID: userID)
+                _ = try? await supabaseService.togglePostLike(postID: postID, userID: userID)
                 print("[CommunityManager] Toggled post like in Supabase: \(postID)")
             }
         }
@@ -270,7 +350,7 @@ class CommunityManager {
             reason: reason,
             notes: notes
         )
-        
+        recordReportedPost(postID: postID, by: reporterID)
         print("REPORT FILED:")
         print("   - Post ID: \(postID)")
         print("   - Reason: \(reason)")
@@ -278,23 +358,61 @@ class CommunityManager {
     }
     
     
+    func postIDsReported(by userID: UUID) -> Set<UUID> {
+        let key = reportedPostsDefaultsKeyPrefix + userID.uuidString
+        guard let strings = UserDefaults.standard.stringArray(forKey: key) else { return [] }
+        return Set(strings.compactMap { UUID(uuidString: $0) })
+    }
+    
+    func recordReportedPost(postID: UUID, by reporterID: UUID) {
+        let key = reportedPostsDefaultsKeyPrefix + reporterID.uuidString
+        var set = postIDsReported(by: reporterID)
+        set.insert(postID)
+        UserDefaults.standard.set(Array(set).map { $0.uuidString }, forKey: key)
+    }
+    
+    func getPostsForDisplay(in communityID: UUID, currentUserID: UUID?) -> [Post] {
+        guard let community = getCommunity(by: communityID) else { return [] }
+        guard let userID = currentUserID else { return community.posts }
+        let reported = postIDsReported(by: userID)
+        return community.posts.filter { !reported.contains($0.id) }
+    }
+    
+    
     private func loadCommunities() {
-        // Try to load from Supabase first if authenticated
         if useSupabase {
+            loadFromLocalStorage()
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+
             Task {
                 do {
-                    communities = try await supabaseService.fetchAllCommunities()
-                    print("[CommunityManager] Loaded \(communities.count) communities from Supabase")
-                    await MainActor.run {
-                        saveCommunities()
+                    let fetched = try await supabaseService.fetchAllCommunities()
+
+                    if fetched.isEmpty {
+                        print("[CommunityManager] Supabase returned 0 communities, falling back to local cache")
+                        await MainActor.run {
+                            self.loadFromLocalStorage()
+                            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                        }
+                    } else {
+                        self.communities = fetched
+                        print("[CommunityManager] Loaded \(fetched.count) communities from Supabase")
+                        await MainActor.run {
+                            self.saveCommunities()
+                            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                        }
                     }
                 } catch {
                     print("[CommunityManager] Error loading from Supabase: \(error)")
-                    loadFromLocalStorage()
+                    await MainActor.run {
+                        self.loadFromLocalStorage()
+                        NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                    }
                 }
             }
         } else {
             loadFromLocalStorage()
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
         }
     }
     
@@ -302,7 +420,12 @@ class CommunityManager {
         if let data = try? Data(contentsOf: fileURL) {
             let decoder = JSONDecoder()
             if let decoded = try? decoder.decode([Community].self, from: data) {
-                communities = decoded
+                if decoded.isEmpty {
+                    communities = loadSampleCommunities()
+                    saveCommunities()
+                } else {
+                    communities = decoded
+                }
                 return
             }
         }
@@ -318,7 +441,7 @@ class CommunityManager {
             encoder.outputFormatting = .prettyPrinted
             
         if let data = try? encoder.encode(communities) {
-                try? data.write(to: fileURL, options: .noFileProtection)
+                _ = try? data.write(to: fileURL, options: .noFileProtection)
         }
     }
   
@@ -359,4 +482,5 @@ class CommunityManager {
     }
     
 }
+
 

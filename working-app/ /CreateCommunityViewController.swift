@@ -16,6 +16,8 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
     weak var delegate: CommunityCreationDelegate?
     
     var onCommunityCreated: (() -> Void)?
+    var onCommunityUpdated: (() -> Void)?
+    var editingCommunity: Community?
 
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var descriptionTextView: UITextView!
@@ -27,6 +29,13 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
         super.viewDidLoad()
         setupUI()
         setupTapToDismiss()
+   
+        if let community = editingCommunity {
+            nameTextField.text = community.name
+            descriptionTextView.text = community.description.isEmpty ? "Describe your community..." : community.description
+            descriptionTextView.textColor = community.description.isEmpty ? .systemGray : .label
+            createButton.setTitle("Save Changes", for: .normal)
+        }
     }
     
     func setupUI() {
@@ -106,35 +115,61 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
             description = ""
         }
         
+        // Basic profanity filter for community name + description
+        let combined = name + " " + description
+        if ContentFilter.containsOffensiveLanguage(combined) {
+            let alert = UIAlertController(
+                title: "Please adjust your community",
+                message: "To keep HerHub safe and supportive for everyone, please remove offensive language from the name or description.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+            present(alert, animated: true)
+            return
+        }
+        
         guard let currentUser = AuthManager.shared.currentUser else {
             print("No user logged in - cannot create community")
             return
         }
         
-        CommunityManager.shared.addCommunity(
-            name: name,
-            description: description,
-            themeColor: "purple",
-            isFeatured: false,
-            createdBy: currentUser.id
-        )
-        
-        print("Community '\(name)' created by: \(currentUser.email ?? "unknown")")
-        
-        let completionCallback = self.onCommunityCreated
+        let didCreateCallback = self.onCommunityCreated
+        let didUpdateCallback = self.onCommunityUpdated
         let delegateRef = self.delegate
         
-        dismiss(animated: true) {
-            delegateRef?.didCreateCommunity()
-            completionCallback?()
+        if var communityToEdit = editingCommunity {
+
+            communityToEdit.name = name
+            communityToEdit.description = description
+            
+            CommunityManager.shared.updateCommunity(communityToEdit)
+            print("Community '\(name)' updated by: \(currentUser.email ?? "unknown")")
+            
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            
+            dismiss(animated: true) {
+                didUpdateCallback?()
+            }
+        } else {
+            CommunityManager.shared.addCommunity(
+                name: name,
+                description: description,
+                themeColor: "purple",
+                isFeatured: false,
+                createdBy: currentUser.id
+            )
+            
+            print("Community '\(name)' created by: \(currentUser.email ?? "unknown")")
+            
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            
+            dismiss(animated: true) {
+                delegateRef?.didCreateCommunity()
+                didCreateCallback?()
+            }
         }
-        
-        NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
-        print("Community '\(name)' created")
-        
-        dismiss(animated: true)
-        
     }
 
 }
+
 
