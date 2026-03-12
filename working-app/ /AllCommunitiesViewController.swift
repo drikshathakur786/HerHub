@@ -30,6 +30,18 @@ class AllCommunitiesViewController: UIViewController {
             
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 120
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleRefreshCommunityData),
+            name: NSNotification.Name("RefreshCommunityData"),
+            object: nil
+        )
+    }
+    
+    @objc private func handleRefreshCommunityData() {
+        loadData()
+        tableView.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,7 +51,7 @@ class AllCommunitiesViewController: UIViewController {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        if communities.isEmpty { return }
         let selectedCommunity = communities[indexPath.row]
         
         let isJoined = (myUserID != nil) ? selectedCommunity.members.contains(myUserID!) : false
@@ -73,11 +85,17 @@ class AllCommunitiesViewController: UIViewController {
 extension AllCommunitiesViewController: UITableViewDelegate, UITableViewDataSource {
         
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return communities.count
+        return communities.isEmpty ? 1 : communities.count
     }
 
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if communities.isEmpty {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyCommunitiesCell", for: indexPath)
+            let label = cell.contentView.viewWithTag(2001) as? UILabel
+            label?.text = "No communities yet\nJoin communities to get started"
+            return cell
+        }
    
         let cell = tableView.dequeueReusableCell(withIdentifier: "AllCommunityCell", for: indexPath) as! AllCommunityCell
             
@@ -97,15 +115,14 @@ extension AllCommunitiesViewController: UITableViewDelegate, UITableViewDataSour
         cell.onJoinTapped = { [weak self] in
             guard let self = self else { return }
             guard let currentID = self.myUserID else { return }
-                    
+            
             CommunityManager.shared.joinCommunity(communityID: community.id, userID: currentID)
-                    print("Joined \(community.name)!")
-                    
+            print("Joined \(community.name)!")
+            
             self.loadData()
-                    
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                    
-            NotificationCenter.default.post(name: NSNotification.Name("NewCommunityAdded"), object: nil)
+          
+            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
         }
             
         return cell
@@ -114,6 +131,7 @@ extension AllCommunitiesViewController: UITableViewDelegate, UITableViewDataSour
     
 
     
+
 
 
 

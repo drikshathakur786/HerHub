@@ -26,7 +26,12 @@ final class SupabaseManager {
     private init() {
         client = SupabaseClient(
             supabaseURL: supabaseURL,
-            supabaseKey: supabaseAnonKey
+            supabaseKey: supabaseAnonKey,
+            options: SupabaseClientOptions(
+                auth: SupabaseClientOptions.AuthOptions(
+                    emitLocalSessionAsInitialSession: true
+                )
+            )
         )
         
         print("[SupabaseManager] Initialized with URL: \(supabaseURL.absoluteString)")
@@ -71,3 +76,4 @@ extension SupabaseManager {
         static let postImages = "post-images"
     }
 }
+

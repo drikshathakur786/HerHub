@@ -25,6 +25,12 @@ class CommentCell: UITableViewCell {
     }
 
     func configure(comment: Comment) {
+        avatarImageView.isHidden = false
+        nameLabel.isHidden = false
+        timeLabel.isHidden = false
+        likeButton.isHidden = false
+        replyButton.isHidden = false
+        
         nameLabel.text = comment.authorName
         commentLabel.text = comment.text
          
@@ -38,5 +44,25 @@ class CommentCell: UITableViewCell {
         likeButton.tintColor = .systemGray
     }
     
+    func configureAsViewReplies(count: Int, isExpanded: Bool) {
+        avatarImageView.isHidden = true
+        nameLabel.isHidden = true
+        timeLabel.isHidden = true
+        likeButton.isHidden = true
+        replyButton.isHidden = true
+        
+        let title: String
+        if isExpanded {
+            title = count == 1 ? "Hide reply" : "Hide replies"
+        } else {
+            title = count == 1 ? "View 1 reply" : "View \(count) replies"
+        }
+        
+        commentLabel.text = title
+        commentLabel.textColor = tintColor
+        commentLabel.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+    }
+    
 }
+
 

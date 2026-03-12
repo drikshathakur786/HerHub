@@ -17,6 +17,8 @@ class ReportViewController: UIViewController {
     var postID: UUID?
     var communityID: UUID?
 
+    var onReportSubmitted: (() -> Void)?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -43,30 +45,43 @@ class ReportViewController: UIViewController {
     }
 
     @IBAction func submitTapped(_ sender: Any) {
-        
-        let reason = "Inappropriate Content"
+        let reason = selectedReason ?? "Inappropriate Content"
         
         if let pID = postID, let cID = communityID, let currentUser = AuthManager.shared.currentUser {
-                CommunityManager.shared.addReport(
-                    postID: pID,
-                    communityID: cID,
-                    reporterID: currentUser.id,
-                    reason: reason,
-                    notes: nil
+            // Safety: prevent reporting your own post even if UI allows opening report sheet.
+            if let community = CommunityManager.shared.getCommunity(by: cID),
+               let post = community.posts.first(where: { $0.id == pID }),
+               post.authorID == currentUser.id {
+                let alert = UIAlertController(
+                    title: "Can't report your own post",
+                    message: "You can delete your post instead.",
+                    preferredStyle: .alert
                 )
+                alert.addAction(UIAlertAction(title: "OK", style: .default))
+                present(alert, animated: true)
+                return
             }
-                
-            let alert = UIAlertController(
-                title: "Report Sent",
-                message: "Thank you for keeping our community safe. We will review this post shortly.",
-                preferredStyle: .alert
+            CommunityManager.shared.addReport(
+                postID: pID,
+                communityID: cID,
+                reporterID: currentUser.id,
+                reason: reason,
+                notes: detailsTextField.text?.isEmpty == false ? detailsTextField.text : nil
             )
-                
-                
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-                    self.dismiss(animated: true)
-            }))
-                
-            self.present(alert, animated: true)
+        }
+        
+        NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+        onReportSubmitted?()
+        
+        let alert = UIAlertController(
+            title: "Report Sent",
+            message: "Thank you for keeping our community safe. We will review this post shortly. It has been hidden from your feed.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            self.dismiss(animated: true)
+        }))
+        self.present(alert, animated: true)
     }
 }
+

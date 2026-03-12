@@ -18,6 +18,8 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         
     var community: Community?
     
+    private var displayedPosts: [Post] = []
+    
     var originalY: CGFloat?
     private var selectedImage: UIImage?
     
@@ -36,6 +38,11 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         title = "FirstFlow"
         navigationController?.navigationBar.prefersLargeTitles = true
         title = community?.name
+  
+        if let rightItem = navigationItem.rightBarButtonItem {
+            rightItem.title = nil
+            rightItem.image = UIImage(systemName: "ellipsis")
+        }
         
          
         tableView.delegate = self
@@ -47,28 +54,169 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         setupPhotoButton()
         
         setupKeyboardHandling()
+
+        configureRespectCoachmark()
         
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(refreshDisplayedPostsFromNotification),
+            name: NSNotification.Name("RefreshCommunityData"),
+            object: nil
+        )
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshDisplayedPosts()
+    }
+   
+    private func refreshDisplayedPosts() {
+        guard let cid = community?.id else { return }
+        if let updated = CommunityManager.shared.getCommunity(by: cid) {
+            community = updated
+        }
+        displayedPosts = CommunityManager.shared.getPostsForDisplay(
+            in: cid,
+            currentUserID: AuthManager.shared.currentUser?.id
+        )
+        applyFilter()
+        tableView.reloadData()
+    }
+    
+    @objc private func refreshDisplayedPostsFromNotification() {
+        refreshDisplayedPosts()
+    }
+
+    // MARK: - Be respectful coachmark (bottom input)
+
+    private var respectCoachmarkDismissedKey: String {
+        let userPart = AuthManager.shared.currentUser?.id.uuidString ?? "anonymous"
+        return "herhub_respectCoachmarkDismissed_\(userPart)"
+    }
+
+    private var isRespectCoachmarkDismissed: Bool {
+        get { UserDefaults.standard.bool(forKey: respectCoachmarkDismissedKey) }
+        set { UserDefaults.standard.set(newValue, forKey: respectCoachmarkDismissedKey) }
+    }
+
+    private func setRespectCoachmarkVisible(_ visible: Bool) {
+        guard let coachmarkView = bottomInputView.viewWithTag(4003) else { return }
+        coachmarkView.isHidden = !visible
+
+        // Collapse/expand the coachmark's fixed-height constraint.
+        if let heightConstraint = coachmarkView.constraints.first(where: { $0.firstAttribute == .height }) {
+            heightConstraint.constant = visible ? 36 : 0
+        }
+
+        bottomInputView.layoutIfNeeded()
+    }
+
+    private func configureRespectCoachmark() {
+        // Wire buttons from storyboard by tag.
+        let dismissButton = bottomInputView.viewWithTag(4001) as? UIButton
+        let infoButton = bottomInputView.viewWithTag(4004) as? UIButton
+
+        dismissButton?.removeTarget(nil, action: nil, for: .allEvents)
+        infoButton?.removeTarget(nil, action: nil, for: .allEvents)
+
+        dismissButton?.addTarget(self, action: #selector(didTapDismissRespectCoachmark), for: .touchUpInside)
+        infoButton?.addTarget(self, action: #selector(didTapRespectInfo), for: .touchUpInside)
+
+        // One-time: hide if already dismissed.
+        setRespectCoachmarkVisible(!isRespectCoachmarkDismissed)
+    }
+
+    @objc private func didTapDismissRespectCoachmark() {
+        isRespectCoachmarkDismissed = true
+        setRespectCoachmarkVisible(false)
+    }
+
+    @objc private func didTapRespectInfo() {
+        // Allow re-show any time via the info button.
+        setRespectCoachmarkVisible(true)
+    }
+
+    private var noticeCollapsedDefaultsKey: String {
+        let communityPart = community?.id.uuidString ?? "unknown_community"
+        let userPart = AuthManager.shared.currentUser?.id.uuidString ?? "anonymous"
+        return "herhub_noticeCollapsed_\(communityPart)_\(userPart)"
+    }
+
+    private var isNoticeCollapsed: Bool {
+        get { UserDefaults.standard.bool(forKey: noticeCollapsedDefaultsKey) }
+        set { UserDefaults.standard.set(newValue, forKey: noticeCollapsedDefaultsKey) }
+    }
+
+    @objc private func collapseNoticeTapped() {
+        isNoticeCollapsed = true
+        tableView.beginUpdates()
+        tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+        tableView.endUpdates()
+    }
+
+    @objc private func expandNoticeTapped() {
+        isNoticeCollapsed = false
+        tableView.beginUpdates()
+        tableView.reloadSections(IndexSet(integer: 0), with: .automatic)
+        tableView.endUpdates()
+    }
+    
+    @objc private func editCommunityTapped() {
+        guard let community = community else { return }
         
+        let storyboard = UIStoryboard(name: "community", bundle: nil)
+        if let editVC = storyboard.instantiateViewController(withIdentifier: "CreateCommunityVC") as? CreateCommunityViewController {
+            editVC.editingCommunity = community
+            editVC.onCommunityUpdated = { [weak self] in
+                guard let self = self else { return }
+                if let updated = CommunityManager.shared.getCommunity(by: community.id) {
+                    self.community = updated
+                    self.title = updated.name
+                    self.refreshDisplayedPosts()
+                }
+            }
+            
+            editVC.modalPresentationStyle = .pageSheet
+            if let sheet = editVC.sheetPresentationController {
+                sheet.detents = [.large()]
+                sheet.prefersGrabberVisible = true
+            }
+            
+            present(editVC, animated: true)
+        }
     }
     
     @IBAction func leaveCommunityTapped(_ sender: Any) {
         guard let currentCommunity = community,
               let currentUser = AuthManager.shared.currentUser else { return }
         
+        let isCreator = currentCommunity.createdBy == currentUser.id
+        
         let alert = UIAlertController(
-            title: "Leave Community?",
-            message: "You will no longer see posts from this community on your Community screen.",
+            title: currentCommunity.name,
+            message: nil,
             preferredStyle: .actionSheet
         )
         
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Leave", style: .destructive, handler: { _ in
-            CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
+        if isCreator {
+            alert.addAction(UIAlertAction(title: "Edit", style: .default, handler: { [weak self] _ in
+                self?.editCommunityTapped()
+            }))
             
+            alert.addAction(UIAlertAction(title: "Delete Community", style: .destructive, handler: { _ in
+                CommunityManager.shared.deleteCommunity(communityID: currentCommunity.id)
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                self.navigationController?.popViewController(animated: true)
+            }))
+        }
+        
+        alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
+            CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
             NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
-         
             self.navigationController?.popViewController(animated: true)
         }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         
         if let popover = alert.popoverPresentationController {
             popover.barButtonItem = navigationItem.rightBarButtonItem
@@ -114,6 +262,8 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
         
     @objc func keyboardWillShow(notification: NSNotification) {
+
+        guard postTextField.isFirstResponder else { return }
         if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             if self.view.frame.origin.y == 0 {
                 self.view.frame.origin.y -= keyboardFrame.height
@@ -122,9 +272,9 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
-            if self.view.frame.origin.y != 0 {
-                self.view.frame.origin.y = 0
-            }
+        if self.view.frame.origin.y != 0 {
+            self.view.frame.origin.y = 0
+        }
     }
     
     private func setupPhotoButton() {
@@ -185,8 +335,11 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             if section == 0 {
                 return 1
             } else {
-                guard let posts = community?.posts else { return 0 }
-                return isFiltering ? filteredPostIndices.count : posts.count
+                if isFiltering {
+                    return filteredPostIndices.isEmpty ? 1 : filteredPostIndices.count
+                } else {
+                    return displayedPosts.isEmpty ? 1 : displayedPosts.count
+                }
             }
         }
         
@@ -196,19 +349,53 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                     
                 if indexPath.section == 0 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "NoticeCell", for: indexPath)
+                    let expandedView = cell.contentView.viewWithTag(3003)
+                    let closeButton = cell.contentView.viewWithTag(3001) as? UIButton
+                    let collapsedButton = cell.contentView.viewWithTag(3002) as? UIButton
+
+                    expandedView?.isHidden = isNoticeCollapsed
+                    closeButton?.isHidden = isNoticeCollapsed
+                    collapsedButton?.isHidden = !isNoticeCollapsed
+
+                    // Ensure buttons are tappable and not obscured by other subviews.
+                    closeButton?.isUserInteractionEnabled = true
+                    collapsedButton?.isUserInteractionEnabled = true
+                    if let closeButton {
+                        closeButton.superview?.bringSubviewToFront(closeButton)
+                    }
+
+                    closeButton?.removeTarget(nil, action: nil, for: .allEvents)
+                    collapsedButton?.removeTarget(nil, action: nil, for: .allEvents)
+                    closeButton?.addTarget(self, action: #selector(collapseNoticeTapped), for: .touchUpInside)
+                    collapsedButton?.addTarget(self, action: #selector(expandNoticeTapped), for: .touchUpInside)
                     return cell
                 } else {
+                    let isEmpty: Bool
+                    if isFiltering {
+                        isEmpty = filteredPostIndices.isEmpty
+                    } else {
+                        isEmpty = displayedPosts.isEmpty
+                    }
+                    if isEmpty {
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyPostsCell", for: indexPath)
+                        let label = cell.contentView.viewWithTag(1001) as? UILabel
+                        if isFiltering {
+                            label?.text = "No matching posts"
+                        } else {
+                            label?.text = "No posts yet\nBe the first to post"
+                        }
+                        return cell
+                    }
                     let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as! PostCellTableViewCell
                     
-                    guard let posts = community?.posts else { return cell }
                     let postIndex: Int
                     if isFiltering {
                         postIndex = filteredPostIndices[indexPath.row]
                     } else {
                         postIndex = indexPath.row
                     }
-                    
-                    let post = posts[postIndex]
+                    guard postIndex >= 0, postIndex < displayedPosts.count else { return cell }
+                    let post = displayedPosts[postIndex]
                             
                     let currentUserID = AuthManager.shared.currentUser?.id
                     cell.configure(post: post, currentUserID: currentUserID)
@@ -216,8 +403,15 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                     cell.likeButton.tag = postIndex
                     cell.likeButton.addTarget(self, action: #selector(handleLike(_:)), for: .touchUpInside)
                         
+                    // Don't allow reporting your own post.
+                    let isOwnPost = (currentUserID != nil && post.authorID == currentUserID)
+                    cell.flagButton.isHidden = isOwnPost
+                    cell.flagButton.isEnabled = !isOwnPost
                     cell.flagButton.tag = postIndex
-                    cell.flagButton.addTarget(self, action: #selector(handleFlag(_:)), for: .touchUpInside)
+                    cell.flagButton.removeTarget(nil, action: nil, for: .allEvents)
+                    if !isOwnPost {
+                        cell.flagButton.addTarget(self, action: #selector(handleFlag(_:)), for: .touchUpInside)
+                    }
                        
                     cell.commentButton.tag = postIndex
                     cell.commentButton.addTarget(self, action: #selector(handleComment(_:)), for: .touchUpInside)
@@ -225,25 +419,58 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                     return cell
                 }
         }
+        
+        func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+         
+            guard indexPath.section == 1 else { return nil }
+            if displayedPosts.isEmpty || (isFiltering && filteredPostIndices.isEmpty) { return nil }
+            guard let currentUserID = AuthManager.shared.currentUser?.id else { return nil }
+            
+            let postIndex: Int = isFiltering ? filteredPostIndices[indexPath.row] : indexPath.row
+            guard postIndex >= 0, postIndex < displayedPosts.count else { return nil }
+            
+            let post = displayedPosts[postIndex]
+            guard post.authorID == currentUserID else { return nil }
+            
+            let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak self] _, _, completion in
+                guard let self = self else { return }
+                CommunityManager.shared.deletePost(postID: post.id, in: post.communityID)
+                
+                if let updated = CommunityManager.shared.getCommunity(by: post.communityID) {
+                    self.community = updated
+                }
+                self.refreshDisplayedPosts()
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                completion(true)
+            }
+            delete.backgroundColor = .systemRed
+            
+            return UISwipeActionsConfiguration(actions: [delete])
+        }
 
         @objc func handleFlag(_ sender: UIButton) {
-            
             let rowIndex = sender.tag
-            guard let post = community?.posts[rowIndex] else { return }
+            guard rowIndex >= 0, rowIndex < displayedPosts.count else { return }
+            let post = displayedPosts[rowIndex]
+            if let currentUserID = AuthManager.shared.currentUser?.id, post.authorID == currentUserID {
+                return
+            }
             let storyboard = UIStoryboard(name: "community", bundle: nil)
             
             if let reportVC = storyboard.instantiateViewController(withIdentifier: "ReportPostVC") as? ReportViewController {
                 reportVC.postID = post.id
                 reportVC.communityID = post.communityID
+                reportVC.onReportSubmitted = { [weak self] in
+                    self?.refreshDisplayedPosts()
+                }
                 self.present(reportVC, animated: true)
             }
-            
         }
         
         @objc func handleLike(_ sender: UIButton) {
-            
             let rowIndex = sender.tag
-            guard let post = community?.posts[rowIndex] else { return }
+            guard rowIndex >= 0, rowIndex < displayedPosts.count else { return }
+            let post = displayedPosts[rowIndex]
             guard let currentUser = AuthManager.shared.currentUser else {
                 print("No user logged in - cannot like post")
                 return
@@ -252,15 +479,14 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                 
             if let updatedCommunity = CommunityManager.shared.getCommunity(by: post.communityID) {
                 self.community = updatedCommunity
-                let indexPath = IndexPath(row: rowIndex, section: 1)
-                tableView.reloadRows(at: [indexPath], with: .none)
+                self.refreshDisplayedPosts()
             }
         }
         
         @objc func handleComment(_ sender: UIButton) {
-            
             let rowIndex = sender.tag
-            guard let post = community?.posts[rowIndex] else { return }
+            guard rowIndex >= 0, rowIndex < displayedPosts.count else { return }
+            let post = displayedPosts[rowIndex]
             let storyboard = UIStoryboard(name: "community", bundle: nil)
             if let commentsVC = storyboard.instantiateViewController(withIdentifier: "CommentsVC") as? CommentsViewController {
                 
@@ -282,6 +508,17 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                 
             guard let currentUser = AuthManager.shared.currentUser else {
                 print("No user logged in - cannot create post")
+                return
+            }
+            
+            if ContentFilter.containsOffensiveLanguage(text) {
+                let alert = UIAlertController(
+                    title: "Please adjust your post",
+                    message: "To keep HerHub safe and supportive for everyone, please remove offensive language before posting.",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true)
                 return
             }
                 
@@ -316,10 +553,9 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             if let updatedCommunity = CommunityManager.shared.getCommunity(by: currentCommunity.id) {
                 
                 self.community = updatedCommunity
-                tableView.reloadData()
+                self.refreshDisplayedPosts()
                 
-                let lastRow = (isFiltering ? filteredPostIndices.count : updatedCommunity.posts.count) - 1
-                
+                let lastRow = displayedPosts.count - 1
                 if lastRow >= 0 {
                     let indexPath = IndexPath(row: lastRow, section: 1)
                     tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
@@ -341,12 +577,7 @@ extension CommunityDetailViewController {
     }
     
     private func applyFilter() {
-        guard let posts = community?.posts else {
-            filteredPostIndices = []
-            tableView.reloadData()
-            return
-        }
-        
+        let posts = displayedPosts
         let query = currentSearchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         if query.isEmpty {
             filteredPostIndices = []
@@ -359,4 +590,5 @@ extension CommunityDetailViewController {
         tableView.reloadData()
     }
 }
+
 

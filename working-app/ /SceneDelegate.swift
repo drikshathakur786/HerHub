@@ -29,6 +29,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             // User is fully logged in - go to main app (Tab Bar)
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             window.rootViewController = storyboard.instantiateInitialViewController()
+            _ = CommunityManager.shared
         } else if hasSession {
             // Session exists but user not loaded yet - wait and check
             Task {
@@ -40,6 +41,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                             await MainActor.run {
                                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                                 window.rootViewController = storyboard.instantiateInitialViewController()
+                                _ = CommunityManager.shared
                                 window.makeKeyAndVisible()
                             }
                             return
@@ -103,6 +105,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         if let tabBarVC = storyboard.instantiateInitialViewController() {
             window.rootViewController = tabBarVC
+            _ = CommunityManager.shared
             window.makeKeyAndVisible()
         }
     }
@@ -138,4 +141,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 
 }
+
 
