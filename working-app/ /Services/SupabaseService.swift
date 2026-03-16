@@ -178,6 +178,11 @@ final class SupabaseService {
         return response["liked"] ?? false
     }
     
+    /// Create a report for a post
+    func createReport(_ report: Report) async throws {
+        try await insert(report, into: SupabaseManager.Tables.reports)
+    }
+    
     // MARK: - Comment Operations
     
     /// Fetch comments for a post

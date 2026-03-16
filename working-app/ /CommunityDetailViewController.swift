@@ -108,7 +108,14 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
             heightConstraint.constant = visible ? 36 : 0
         }
 
-        bottomInputView.layoutIfNeeded()
+        // Collapse/expand the bottom input view height so the space is removed when coachmark is dismissed.
+        if let inputHeightConstraint = bottomInputView.constraints.first(where: { $0.firstAttribute == .height }) {
+            inputHeightConstraint.constant = visible ? 110 : 64
+        }
+
+        UIView.animate(withDuration: 0.25) {
+            self.bottomInputView.layoutIfNeeded()
+        }
     }
 
     private func configureRespectCoachmark() {

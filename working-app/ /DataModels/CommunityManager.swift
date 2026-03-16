@@ -343,7 +343,7 @@ class CommunityManager {
     
  
     func addReport(postID: UUID, communityID: UUID, reporterID: UUID, reason: String, notes: String?) {
-        _ = Report(
+        let report = Report(
             postID: postID,
             communityID: communityID,
             reporterID: reporterID,
@@ -351,6 +351,14 @@ class CommunityManager {
             notes: notes
         )
         recordReportedPost(postID: postID, by: reporterID)
+        
+        if useSupabase {
+            Task {
+                _ = try? await supabaseService.createReport(report)
+                print("[CommunityManager] Created report in Supabase: \(report.id)")
+            }
+        }
+        
         print("REPORT FILED:")
         print("   - Post ID: \(postID)")
         print("   - Reason: \(reason)")
