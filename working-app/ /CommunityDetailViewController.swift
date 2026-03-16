@@ -194,42 +194,49 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
     
     @IBAction func leaveCommunityTapped(_ sender: Any) {
-        guard let currentCommunity = community,
-              let currentUser = AuthManager.shared.currentUser else { return }
+        if AuthManager.shared.currentUser?.isGuest == true {
+            self.showGuestLoginPrompt()
+            return
+        }
+
+        Task {
+            guard let currentCommunity = self.community,
+                  let currentUser = AuthManager.shared.currentUser else { return }
         
-        let isCreator = currentCommunity.createdBy == currentUser.id
-        
-        let alert = UIAlertController(
-            title: currentCommunity.name,
-            message: nil,
-            preferredStyle: .actionSheet
-        )
-        
-        if isCreator {
-            alert.addAction(UIAlertAction(title: "Edit", style: .default, handler: { [weak self] _ in
-                self?.editCommunityTapped()
-            }))
+            let isCreator = currentCommunity.createdBy == currentUser.id
             
-            alert.addAction(UIAlertAction(title: "Delete Community", style: .destructive, handler: { _ in
-                CommunityManager.shared.deleteCommunity(communityID: currentCommunity.id)
+            let alert = UIAlertController(
+                title: currentCommunity.name,
+                message: nil,
+                preferredStyle: .actionSheet
+            )
+            
+            if isCreator {
+                alert.addAction(UIAlertAction(title: "Edit", style: .default, handler: { [weak self] _ in
+                    self?.editCommunityTapped()
+                }))
+                
+                alert.addAction(UIAlertAction(title: "Delete Community", style: .destructive, handler: { _ in
+                    CommunityManager.shared.deleteCommunity(communityID: currentCommunity.id)
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                    self.navigationController?.popViewController(animated: true)
+                }))
+            }
+            
+            alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
+                CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
                 NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
                 self.navigationController?.popViewController(animated: true)
             }))
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+            
+            if let popover = alert.popoverPresentationController {
+                popover.barButtonItem = navigationItem.rightBarButtonItem
+            }
+            
+            present(alert, animated: true)
         }
-        
-        alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
-            CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
-            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
-            self.navigationController?.popViewController(animated: true)
-        }))
-        
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        if let popover = alert.popoverPresentationController {
-            popover.barButtonItem = navigationItem.rightBarButtonItem
-        }
-        
-        present(alert, animated: true)
     }
     
     private func setupSearchBar() {
@@ -509,12 +516,16 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
     
     
         @IBAction func sendPostTapped(_ sender: Any) {
-                
-            guard let text = postTextField.text, !text.isEmpty else { return }
-            guard let currentCommunity = community else { return }
-                
+            if AuthManager.shared.currentUser?.isGuest == true {
+                self.showGuestLoginPrompt()
+                return
+            }
+
+            guard let text = postTextField.text, !text.isEmpty,
+                  let communityID = self.community?.id else { return }
+            
             guard let currentUser = AuthManager.shared.currentUser else {
-                print("No user logged in - cannot create post")
+                print("Error: Could not get current user to create post")
                 return
             }
             
@@ -538,7 +549,7 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                 
               
             CommunityManager.shared.addPost(
-                to: currentCommunity.id,
+                to: communityID,
                 authorID: currentUser.id,
                 authorName: authorName,
                 title: "New Post",
@@ -557,7 +568,7 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             photoButton?.tintColor = .systemBlue
             postTextField.resignFirstResponder()
             
-            if let updatedCommunity = CommunityManager.shared.getCommunity(by: currentCommunity.id) {
+            if let updatedCommunity = CommunityManager.shared.getCommunity(by: communityID) {
                 
                 self.community = updatedCommunity
                 self.refreshDisplayedPosts()

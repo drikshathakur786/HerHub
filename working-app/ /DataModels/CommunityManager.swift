@@ -8,7 +8,6 @@
 import Foundation
 
 class CommunityManager {
-    
     static let shared = CommunityManager()
    
     var currentUserID: UUID? {
@@ -20,8 +19,10 @@ class CommunityManager {
     }
 
     private var communities: [Community] = []
-    private let supabaseService = SupabaseService.shared
     
+    private var supabaseService: SupabaseService {
+        return SupabaseService.shared
+    }
     private let fileURL: URL
     private let reportedPostsDefaultsKeyPrefix = "herhub_reportedPosts_"
    
@@ -390,7 +391,9 @@ class CommunityManager {
     private func loadCommunities() {
         if useSupabase {
             loadFromLocalStorage()
-            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            }
 
             Task {
                 do {
@@ -420,7 +423,9 @@ class CommunityManager {
             }
         } else {
             loadFromLocalStorage()
-            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            }
         }
     }
     

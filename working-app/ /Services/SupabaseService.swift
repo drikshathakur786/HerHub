@@ -106,6 +106,11 @@ final class SupabaseService {
         try await delete(id: id, from: SupabaseManager.Tables.users)
     }
     
+    /// Delete the currently authenticated user's account by calling the Supabase RPC
+    func deleteAccount() async throws {
+        _ = try await client.rpc("delete_user").execute()
+    }
+    
     // MARK: - Community Operations
     
     /// Fetch all communities

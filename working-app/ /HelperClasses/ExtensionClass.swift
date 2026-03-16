@@ -110,3 +110,31 @@ extension UIImage{
         return UIImage.init(named: "ic_defaultPic") ?? UIImage()
     }
 }
+
+extension UIViewController {
+    func showGuestLoginPrompt(completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(
+            title: "Account Required",
+            message: "You need an account to use this feature. Would you like to create one now?",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Create Account", style: .default, handler: { _ in
+            // Push to auth screen
+            Task {
+                await AuthManager.shared.signOut()
+                await MainActor.run {
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        let storyboard = UIStoryboard(name: "Auth", bundle: nil)
+                        if let authVC = storyboard.instantiateInitialViewController() {
+                            window.rootViewController = authVC
+                            window.makeKeyAndVisible()
+                        }
+                    }
+                }
+            }
+        }))
+        self.present(alert, animated: true)
+    }
+}

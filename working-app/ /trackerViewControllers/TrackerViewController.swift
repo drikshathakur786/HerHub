@@ -536,6 +536,38 @@ class TrackerViewController: UIViewController {
         }
     }
 
+    // MARK: - Incomplete Baseline Alert
+    
+    private func showIncompleteBaselineAlert(missingFields: String, dismissKey: String) {
+        let alert = UIAlertController(
+            title: "Complete Your Profile 📋",
+            message: "Some baseline questions were skipped (\(missingFields)). Please answer them so we can show your data more accurately.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Complete Now", style: .default) { [weak self] _ in
+            self?.presentBaselineOnboarding()
+        })
+        
+        alert.addAction(UIAlertAction(title: "Later", style: .cancel) { _ in
+            // Mark as dismissed so we only show once per session
+            UserDefaults.standard.set(true, forKey: dismissKey)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func presentBaselineOnboarding() {
+        let storyboard = UIStoryboard(name: "BaselineOnboarding", bundle: nil)
+        if let onboardingVC = storyboard.instantiateInitialViewController() {
+            onboardingVC.modalPresentationStyle = .fullScreen
+            present(onboardingVC, animated: true) { [weak self] in
+                // After completing the onboarding, reload data
+                self?.loadData()
+            }
+        }
+    }
+
     } 
     
     // MARK: - Load Cycle Data
@@ -558,6 +590,19 @@ class TrackerViewController: UIViewController {
                     guard let baseline = baseline else {
                         print(" [Tracker] No baseline found")
                         return
+                    }
+                    
+                    // Check if baseline profile is incomplete (user skipped questions)
+                    if baseline.isProfileIncomplete {
+                        let dismissedKey = "baselineIncompleteAlertDismissed_\(userID.uuidString)"
+                        if !UserDefaults.standard.bool(forKey: dismissedKey) {
+                            await MainActor.run {
+                                self.showIncompleteBaselineAlert(
+                                    missingFields: baseline.missingFieldsDescription,
+                                    dismissKey: dismissedKey
+                                )
+                            }
+                        }
                     }
                     
                     // 2. Get Predicted Data

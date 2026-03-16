@@ -104,6 +104,10 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
     }
 
     @IBAction func createTapped(_ sender: Any) {
+        if AuthManager.shared.currentUser?.isGuest == true {
+            self.showGuestLoginPrompt()
+            return
+        }
         
         guard let name = nameTextField.text, !name.isEmpty else {
             print("Name is empty!")
