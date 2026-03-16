@@ -208,6 +208,27 @@ enum EnergyLevel: String, Codable {
 }
 
 extension CycleBaselineProfile {
+    /// Returns true if the user skipped important baseline questions
+    /// Only triggers when data is genuinely missing (nil optionals),
+    /// NOT when defaults were applied by the onboarding flow
+    var isProfileIncomplete: Bool {
+        // Height or weight truly not provided (nil means step 4 was never completed/saved)
+        if heightCm == nil || weightKg == nil { return true }
+        // Cycle history completely empty (shouldn't happen after normal onboarding)
+        if cycleHistory.isEmpty { return true }
+        return false
+    }
+    
+    /// Returns a human-readable description of what's missing
+    var missingFieldsDescription: String {
+        var missing: [String] = []
+        if heightCm == nil || weightKg == nil { missing.append("height & weight") }
+        if cycleHistory.isEmpty {
+            missing.append("past cycle history")
+        }
+        return missing.joined(separator: ", ")
+    }
+    
     static func sample(userID: UUID = UUID()) -> CycleBaselineProfile {
         return CycleBaselineProfile(
             user_id: userID,

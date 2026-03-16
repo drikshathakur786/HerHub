@@ -20,6 +20,10 @@ struct User: Codable, Equatable {
     var createdCommunityIDs: [UUID]?  
     var healthConditions: [String]?
 
+    // MARK: - Guest State
+    var isGuest: Bool {
+        return email == "guest@herhub.app"
+    }
 
     // MARK: - Linked Cycle Data
     var baselineProfile: CycleBaselineProfile?      

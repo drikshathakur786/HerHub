@@ -51,36 +51,25 @@ class SignInViewController: UIViewController {
     private func addLogo() {
         let logoSize: CGFloat = 80
         
-        // white circle background
-        let circleView = UIView()
-        circleView.translatesAutoresizingMaskIntoConstraints = false
-        circleView.backgroundColor = .white
-        circleView.layer.cornerRadius = logoSize / 2
-        circleView.layer.shadowColor = UIColor.black.cgColor
-        circleView.layer.shadowOpacity = 0.1
-        circleView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        circleView.layer.shadowRadius = 8
-        
-        // H icon
+        // Logo image view with rounded corners
         let logoImageView = UIImageView()
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.contentMode = .scaleAspectFit
-        logoImageView.image = UIImage(systemName: "h.circle.fill")
-        logoImageView.tintColor = UIColor(red: 0.846, green: 0.5, blue: 0.766, alpha: 1.0)
+        logoImageView.contentMode = .scaleAspectFill
+        logoImageView.image = UIImage(named: "HerHubLogo")
+        logoImageView.layer.cornerRadius = logoSize * 0.22 // iOS-style rounded rect
+        logoImageView.clipsToBounds = true
+        logoImageView.layer.shadowColor = UIColor.black.cgColor
+        logoImageView.layer.shadowOpacity = 0.1
+        logoImageView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        logoImageView.layer.shadowRadius = 8
         
-        circleView.addSubview(logoImageView)
-        view.addSubview(circleView)
+        view.addSubview(logoImageView)
         
         NSLayoutConstraint.activate([
-            circleView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            circleView.widthAnchor.constraint(equalToConstant: logoSize),
-            circleView.heightAnchor.constraint(equalToConstant: logoSize),
-            circleView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 220),
-            
-            logoImageView.centerXAnchor.constraint(equalTo: circleView.centerXAnchor),
-            logoImageView.centerYAnchor.constraint(equalTo: circleView.centerYAnchor),
-            logoImageView.widthAnchor.constraint(equalToConstant: logoSize * 0.85),
-            logoImageView.heightAnchor.constraint(equalToConstant: logoSize * 0.85)
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.widthAnchor.constraint(equalToConstant: logoSize),
+            logoImageView.heightAnchor.constraint(equalToConstant: logoSize),
+            logoImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 220)
         ])
     }
     
@@ -140,6 +129,12 @@ class SignInViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    @IBAction func guestButtonTapped(_ sender: Any) {
+        // Log in as a purely local guest
+        AuthManager.shared.signInAsGuest()
+        self.navigateToMainApp()
     }
     
     private func showError(_ message: String) {

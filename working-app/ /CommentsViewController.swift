@@ -75,10 +75,12 @@ class CommentsViewController: UIViewController {
 
     
     @IBAction func sendTapped(_ sender: Any) {
-            
-        print("Send button tapped!")
-           
-        guard let text = commentTextField.text, !text.isEmpty else {
+        if AuthManager.shared.currentUser?.isGuest == true {
+            self.showGuestLoginPrompt()
+            return
+        }
+
+        guard let text = commentTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !text.isEmpty else {
             print("  FAIL: Text field is empty.")
             return
         }

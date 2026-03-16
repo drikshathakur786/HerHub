@@ -114,6 +114,12 @@ extension AllCommunitiesViewController: UITableViewDelegate, UITableViewDataSour
         
         cell.onJoinTapped = { [weak self] in
             guard let self = self else { return }
+            
+            if AuthManager.shared.currentUser?.isGuest == true {
+                self.showGuestLoginPrompt()
+                return
+            }
+            
             guard let currentID = self.myUserID else { return }
             
             CommunityManager.shared.joinCommunity(communityID: community.id, userID: currentID)

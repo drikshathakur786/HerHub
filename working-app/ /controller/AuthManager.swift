@@ -122,6 +122,30 @@ final class AuthManager {
         }
     }
     
+    // sign in as a local Guest
+    func signInAsGuest() {
+        // Create an empty "Guest" user with a specific email footprint
+        let guestUser = User(
+            id: UUID(uuidString: "00000000-0000-0000-0000-000000000000") ?? UUID(),
+            email: "guest@herhub.app",
+            phoneNumber: nil,
+            password: nil,
+            userName: "Guest",
+            userPicture: nil,
+            dateOfBirth: nil,
+            joinedCommunityIDs: nil,
+            createdCommunityIDs: nil,
+            healthConditions: nil,
+            baselineProfile: nil,
+            recentCheckIns: nil,
+            latestPrediction: nil
+        )
+        
+        currentUser = guestUser
+        userDefaults.set(guestUser.id.uuidString, forKey: currentUserKey)
+        print("[AuthManager] Signed in as local Guest")
+    }
+    
     // MARK: - Sign Up with Supabase
     
     // create new account using Supabase Auth
@@ -238,6 +262,24 @@ final class AuthManager {
         currentUser = nil
         userDefaults.removeObject(forKey: currentUserKey)
         print("user signed out")
+    }
+    
+    // delete user account
+    func deleteAccount() async throws {
+        if currentUser?.isGuest == true {
+            // Simply sign out if it's a guest
+            await signOut()
+            return
+        }
+        
+        do {
+            try await SupabaseService.shared.deleteAccount()
+            print("[AuthManager] Successfully deleted account from backend")
+            await signOut()
+        } catch {
+            print("[AuthManager] Failed to delete account: \(error)")
+            throw error
+        }
     }
     
     // MARK: - Password Reset

@@ -8,7 +8,6 @@
 import Foundation
 
 class CommunityManager {
-    
     static let shared = CommunityManager()
    
     var currentUserID: UUID? {
@@ -20,8 +19,10 @@ class CommunityManager {
     }
 
     private var communities: [Community] = []
-    private let supabaseService = SupabaseService.shared
     
+    private var supabaseService: SupabaseService {
+        return SupabaseService.shared
+    }
     private let fileURL: URL
     private let reportedPostsDefaultsKeyPrefix = "herhub_reportedPosts_"
    
@@ -343,7 +344,7 @@ class CommunityManager {
     
  
     func addReport(postID: UUID, communityID: UUID, reporterID: UUID, reason: String, notes: String?) {
-        _ = Report(
+        let report = Report(
             postID: postID,
             communityID: communityID,
             reporterID: reporterID,
@@ -351,6 +352,14 @@ class CommunityManager {
             notes: notes
         )
         recordReportedPost(postID: postID, by: reporterID)
+        
+        if useSupabase {
+            Task {
+                _ = try? await supabaseService.createReport(report)
+                print("[CommunityManager] Created report in Supabase: \(report.id)")
+            }
+        }
+        
         print("REPORT FILED:")
         print("   - Post ID: \(postID)")
         print("   - Reason: \(reason)")
@@ -382,7 +391,9 @@ class CommunityManager {
     private func loadCommunities() {
         if useSupabase {
             loadFromLocalStorage()
-            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            }
 
             Task {
                 do {
@@ -412,7 +423,9 @@ class CommunityManager {
             }
         } else {
             loadFromLocalStorage()
-            NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+            }
         }
     }
     

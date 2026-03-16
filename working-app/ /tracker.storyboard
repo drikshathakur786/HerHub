@@ -869,15 +869,15 @@ time to start new projects and focus on self-care activities.</string>
                                             <constraint firstItem="AuZ-Uu-z12" firstAttribute="leading" secondItem="xyO-Nd-ZtT" secondAttribute="leading" constant="20" id="qct-9b-5aq"/>
                                             <constraint firstAttribute="trailing" secondItem="KJo-VS-EGj" secondAttribute="trailing" constant="20" id="sQ0-Z0-mVp"/>
                                             <constraint firstAttribute="trailing" secondItem="1N2-Ju-Arr" secondAttribute="trailing" constant="20" id="zjt-mM-s3s"/>
+                                            <constraint firstAttribute="bottom" secondItem="KJo-VS-EGj" secondAttribute="bottom" constant="30" id="trc-bt-fix"/>
                                         </constraints>
                                     </view>
                                 </subviews>
                                 <constraints>
                                     <constraint firstItem="xyO-Nd-ZtT" firstAttribute="top" secondItem="R9q-ZG-V1Z" secondAttribute="top" id="Cv1-ph-UMQ"/>
-                                    <constraint firstItem="xyO-Nd-ZtT" firstAttribute="bottom" secondItem="fzo-Bx-Qe7" secondAttribute="bottom" id="HdQ-0j-R5b"/>
                                     <constraint firstItem="xyO-Nd-ZtT" firstAttribute="leading" secondItem="R9q-ZG-V1Z" secondAttribute="leading" id="SVA-ah-mhZ"/>
                                     <constraint firstItem="xyO-Nd-ZtT" firstAttribute="trailing" secondItem="R9q-ZG-V1Z" secondAttribute="trailing" constant="153" id="Ubp-4H-ZJg"/>
-                                    <constraint firstItem="xyO-Nd-ZtT" firstAttribute="width" secondItem="fzo-Bx-Qe7" secondAttribute="width" multiplier="0.610687" constant="153" id="Wod-8W-ZGE"/>
+                                    <constraint firstItem="xyO-Nd-ZtT" firstAttribute="width" secondItem="fzo-Bx-Qe7" secondAttribute="width" id="Wod-8W-ZGE"/>
                                     <constraint firstItem="xyO-Nd-ZtT" firstAttribute="bottom" secondItem="R9q-ZG-V1Z" secondAttribute="bottom" id="m9I-lk-d4k"/>
                                 </constraints>
                                 <viewLayoutGuide key="contentLayoutGuide" id="R9q-ZG-V1Z"/>

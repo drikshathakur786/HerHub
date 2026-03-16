@@ -45,6 +45,11 @@ class ReportViewController: UIViewController {
     }
 
     @IBAction func submitTapped(_ sender: Any) {
+        if AuthManager.shared.currentUser?.isGuest == true {
+            self.showGuestLoginPrompt()
+            return
+        }
+
         let reason = selectedReason ?? "Inappropriate Content"
         
         if let pID = postID, let cID = communityID, let currentUser = AuthManager.shared.currentUser {

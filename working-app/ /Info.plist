@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>HerHub needs access to your photo library so you can attach photos to your community posts.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>HerHub needs permission to save images you choose to upload with posts.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

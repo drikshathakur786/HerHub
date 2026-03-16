@@ -51,12 +51,22 @@ class FeaturedEmptyStateCell: UICollectionViewCell {
         bodyLabel.text = "Join a community and like posts you find helpful. We’ll surface the best ones here for you."
         
         browseButton.translatesAutoresizingMaskIntoConstraints = false
-        browseButton.setTitle("Browse communities", for: .normal)
-        browseButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
-        browseButton.tintColor = UIColor(red: 0.878, green: 0.463, blue: 0.671, alpha: 1.0)
         browseButton.backgroundColor = .clear
         browseButton.layer.cornerRadius = 0
-        browseButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        if #available(iOS 15.0, *) {
+            var config = UIButton.Configuration.plain()
+            config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+            var formatTitle = AttributedString("Browse communities")
+            formatTitle.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+            config.attributedTitle = formatTitle
+            config.baseForegroundColor = UIColor(red: 0.878, green: 0.463, blue: 0.671, alpha: 1.0)
+            browseButton.configuration = config
+        } else {
+            browseButton.setTitle("Browse communities", for: .normal)
+            browseButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+            browseButton.tintColor = UIColor(red: 0.878, green: 0.463, blue: 0.671, alpha: 1.0)
+            browseButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        }
         browseButton.addTarget(self, action: #selector(browseTapped), for: .touchUpInside)
         
         let textStack = UIStackView(arrangedSubviews: [titleLabel, bodyLabel, browseButton])

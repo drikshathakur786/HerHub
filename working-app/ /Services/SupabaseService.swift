@@ -106,6 +106,11 @@ final class SupabaseService {
         try await delete(id: id, from: SupabaseManager.Tables.users)
     }
     
+    /// Delete the currently authenticated user's account by calling the Supabase RPC
+    func deleteAccount() async throws {
+        _ = try await client.rpc("delete_user").execute()
+    }
+    
     // MARK: - Community Operations
     
     /// Fetch all communities
@@ -176,6 +181,11 @@ final class SupabaseService {
         ]
         let response: [String: Bool] = try await client.rpc("toggle_post_like", params: rpcParams).execute().value
         return response["liked"] ?? false
+    }
+    
+    /// Create a report for a post
+    func createReport(_ report: Report) async throws {
+        try await insert(report, into: SupabaseManager.Tables.reports)
     }
     
     // MARK: - Comment Operations

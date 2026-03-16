@@ -293,6 +293,43 @@
                                                             <constraint firstItem="EaS-EL-aVJ" firstAttribute="centerY" secondItem="2GQ-Zm-q3n" secondAttribute="centerY" id="ygk-dv-nuc"/>
                                                         </constraints>
                                                     </view>
+                                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DeleteAccView">
+                                                        <rect key="frame" x="0.0" y="288" width="353" height="60"/>
+                                                        <subviews>
+                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="trash.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="DelImg">
+                                                                <rect key="frame" x="15" y="15" width="30" height="30"/>
+                                                                <color key="tintColor" systemColor="systemRedColor"/>
+                                                                <constraints>
+                                                                    <constraint firstAttribute="height" constant="30" id="del-img-h"/>
+                                                                    <constraint firstAttribute="width" constant="30" id="del-img-w"/>
+                                                                </constraints>
+                                                            </imageView>
+                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Delete Account" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DelLbl">
+                                                                <rect key="frame" x="67" y="20" width="117.66666666666666" height="20.333333333333332"/>
+                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                                <color key="textColor" systemColor="systemRedColor"/>
+                                                                <nil key="highlightedColor"/>
+                                                            </label>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DelBtn">
+                                                                <rect key="frame" x="282" y="13" width="51" height="34.333333333333336"/>
+                                                                <color key="tintColor" systemColor="underPageBackgroundColor"/>
+                                                                <buttonConfiguration key="configuration" style="plain" image="arrowshape.turn.up.forward" catalog="system"/>
+                                                                <connections>
+                                                                    <action selector="deleteAccountTapped:" destination="Y6W-OH-hqX" eventType="touchUpInside" id="DelAct"/>
+                                                                </connections>
+                                                            </button>
+                                                        </subviews>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstItem="DelLbl" firstAttribute="centerY" secondItem="DeleteAccView" secondAttribute="centerY" id="del-lbl-cy"/>
+                                                            <constraint firstItem="DelImg" firstAttribute="leading" secondItem="DeleteAccView" secondAttribute="leading" constant="15" id="del-img-ld"/>
+                                                            <constraint firstAttribute="trailing" secondItem="DelBtn" secondAttribute="trailing" constant="20" id="del-btn-tr"/>
+                                                            <constraint firstItem="DelLbl" firstAttribute="leading" secondItem="DelImg" secondAttribute="trailing" constant="22" id="del-lbl-ld"/>
+                                                            <constraint firstAttribute="height" constant="60" id="del-row-height"/>
+                                                            <constraint firstItem="DelBtn" firstAttribute="centerY" secondItem="DeleteAccView" secondAttribute="centerY" id="del-btn-cy"/>
+                                                            <constraint firstItem="DelImg" firstAttribute="centerY" secondItem="DeleteAccView" secondAttribute="centerY" id="del-img-cy"/>
+                                                        </constraints>
+                                                    </view>
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="opaqueSeparatorColor"/>
                                             </stackView>
@@ -341,6 +378,7 @@
                         <outlet property="About" destination="f6b-I7-t54" id="about-outlet-connection"/>
                         <outlet property="EditProfile" destination="Dbg-tm-12y" id="jMo-zW-KAt"/>
                         <outlet property="LogOut" destination="2GQ-Zm-q3n" id="FZx-gj-MgO"/>
+                        <outlet property="DeleteAccountView" destination="DeleteAccView" id="DelAccView-Out"/>
                         <outlet property="cycleCard" destination="RdJ-fH-ON9" id="JfS-Gr-E3p"/>
                         <outlet property="cycleValueLabel" destination="iib-4M-toq" id="Ivn-Ip-QLQ"/>
                         <outlet property="nameLabel" destination="sYk-aR-82t" id="ZXJ-2M-w58"/>
@@ -732,6 +770,7 @@
         <image name="Nihar" width="382.66665649414062" height="382.66665649414062"/>
         <image name="arrowshape.turn.up.forward" catalog="system" width="128" height="104"/>
         <image name="arrowshape.turn.up.right" catalog="system" width="128" height="104"/>
+        <image name="trash.fill" catalog="system" width="121" height="128"/>
         <image name="bell.fill" catalog="system" width="123" height="128"/>
         <image name="calendar" catalog="system" width="128" height="107"/>
         <image name="drop" catalog="system" width="96" height="128"/>

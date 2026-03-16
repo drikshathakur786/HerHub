@@ -114,6 +114,11 @@ class DailyCheckInViewController: UIViewController {
     }
     
     @IBAction func logCheckInTapped(_ sender: UIButton) {
+        if AuthManager.shared.currentUser?.isGuest == true {
+            self.showGuestLoginPrompt()
+            return
+        }
+
         guard let currentUser = AuthManager.shared.currentUser else { return }
         
         let sleep = Double(sleepSlider?.value ?? 7.0)

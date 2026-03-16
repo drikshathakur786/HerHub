@@ -24,6 +24,7 @@ class profileViewController: UIViewController {
     @IBOutlet weak var EditProfile: UIView!
     @IBOutlet weak var About: UIView!
     @IBOutlet weak var LogOut: UIView!
+    @IBOutlet weak var DeleteAccountView: UIView!
 
     // gradient layers for background
     private let profileGradient = CAGradientLayer()
@@ -96,21 +97,43 @@ class profileViewController: UIViewController {
         }
     }
     
+    @objc func aboutTapped() {
+      //  print("About Tapped!")
+    }
+
+    @objc func deleteAccountContainerTapped() {
+        deleteAccountTapped(self)
+    }
+
     @objc func logoutTapped() {
-        let alert = UIAlertController(
-            title: "Log Out",
-            message: "Are you sure you want to log out?",
-            preferredStyle: .alert
-        )
+        let isGuest = AuthManager.shared.currentUser?.isGuest == true
         
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        alert.addAction(UIAlertAction(title: "Log Out", style: .destructive) { _ in
-            self.performLogout()
-        })
+        if isGuest {
+            // Guest user — go straight to Auth screen
+            performLogout()
+            return
+        }
         
-        present(alert, animated: true)
+        let alert = UIAlertController(title: "Log Out", message: "Are you sure you want to log out?", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { [weak self] _ in
+            self?.performLogout()
+        }))
+        present(alert, animated: true, completion: nil)
     }
     
+    @IBAction func deleteAccountTapped(_ sender: Any) {
+        let alert = UIAlertController(title: "Delete Account", message: "Are you sure you want to permanently delete your account? This action cannot be undone and all your data will be cleared.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [weak self] _ in
+            Task {
+                await self?.performDeleteAccount()
+            }
+        }))
+        present(alert, animated: true, completion: nil)
+    }
+
+    // MARK: - Actions
     private func performLogout() {
         Task {
             await AuthManager.shared.signOut()
@@ -124,6 +147,28 @@ class profileViewController: UIViewController {
                         window.makeKeyAndVisible()
                     }
                 }
+            }
+        }
+    }
+    
+    private func performDeleteAccount() async {
+        do {
+            try await AuthManager.shared.deleteAccount()
+            await MainActor.run {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let window = windowScene.windows.first {
+                    let storyboard = UIStoryboard(name: "Auth", bundle: nil)
+                    if let authVC = storyboard.instantiateInitialViewController() {
+                        window.rootViewController = authVC
+                        window.makeKeyAndVisible()
+                    }
+                }
+            }
+        } catch {
+            await MainActor.run {
+                let alert = UIAlertController(title: "Error", message: "Failed to delete account: \(error.localizedDescription)", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alert, animated: true)
             }
         }
     }
@@ -226,6 +271,13 @@ extension profileViewController {
             card.layer.borderColor = UIColor(red: 0.95, green: 0.88, blue: 0.96, alpha: 0.5).cgColor
         }
     }
+    
+    private func setupTapGesture(for view: UIView?, action: Selector) {
+        guard let view = view else { return }
+        let tapGesture = UITapGestureRecognizer(target: self, action: action)
+        view.isUserInteractionEnabled = true
+        view.addGestureRecognizer(tapGesture)
+    }
 
     // setup settings section - separate cards design
     private func setupSettings() {
@@ -268,7 +320,7 @@ extension profileViewController {
 
         // Logout row - standalone card matching other cards
         LogOut.layer.cornerRadius = 20
-        LogOut.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]  // All corners
+        LogOut.layer.maskedCorners = [] // Reset masked corners for conditional logic
         LogOut.backgroundColor = .white  // Match other cards
         LogOut.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
         LogOut.layer.shadowOpacity = 0.12
@@ -276,10 +328,40 @@ extension profileViewController {
         LogOut.layer.shadowRadius = 10
         LogOut.layer.masksToBounds = false
         
-        // add tap gesture for logout
-        let logoutTap = UITapGestureRecognizer(target: self, action: #selector(logoutTapped))
-        LogOut.isUserInteractionEnabled = true
-        LogOut.addGestureRecognizer(logoutTap)
+        if DeleteAccountView != nil {
+            let isGuest = AuthManager.shared.currentUser?.isGuest == true
+            DeleteAccountView.isHidden = isGuest
+            
+            // Change "Log Out" label to "Sign In / Sign Up" for guest users
+            if isGuest {
+                if let logOutLabel = LogOut.subviews.compactMap({ $0 as? UILabel }).first {
+                    logOutLabel.text = "Sign In / Sign Up"
+                }
+                // Change icon from figure.run to person.crop.circle.badge.plus
+                if let iconView = LogOut.subviews.compactMap({ $0 as? UIImageView }).first {
+                    iconView.image = UIImage(systemName: "person.crop.circle.badge.plus")
+                }
+            }
+            
+            if isGuest {
+                LogOut.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            } else {
+                DeleteAccountView.layer.cornerRadius = 20
+                DeleteAccountView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                DeleteAccountView.backgroundColor = .white
+                DeleteAccountView.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
+                DeleteAccountView.layer.shadowOpacity = 0.12
+                DeleteAccountView.layer.shadowOffset = CGSize(width: 0, height: 4)
+                DeleteAccountView.layer.shadowRadius = 10
+                DeleteAccountView.layer.masksToBounds = false
+            }
+        } else {
+            LogOut.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        }
+        
+        setupTapGesture(for: About, action: #selector(aboutTapped))
+        setupTapGesture(for: LogOut, action: #selector(logoutTapped))
+        setupTapGesture(for: DeleteAccountView, action: #selector(deleteAccountContainerTapped))
     }
 }
 

@@ -68,6 +68,15 @@
                                     <segue destination="SignUpVC" kind="push" id="tX9-am-14W"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GuestBtn">
+                                <rect key="frame" x="127" y="623.66666666666663" width="139" height="30"/>
+                                <state key="normal" title="Continue as Guest">
+                                    <color key="titleColor" systemColor="secondaryLabelColor"/>
+                                </state>
+                                <connections>
+                                    <action selector="guestButtonTapped:" destination="SignInVC" eventType="touchUpInside" id="GuestAction"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SignIn-SafeArea"/>
                         <color key="backgroundColor" name="Bg_Color"/>
@@ -85,6 +94,8 @@
                             <constraint firstItem="CreateAccountBtn" firstAttribute="top" secondItem="SignInButton" secondAttribute="bottom" constant="16" id="c19"/>
                             <constraint firstItem="TitleLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="16" id="c2"/>
                             <constraint firstItem="CreateAccountBtn" firstAttribute="centerX" secondItem="SignIn-SafeArea" secondAttribute="centerX" id="c20"/>
+                            <constraint firstItem="GuestBtn" firstAttribute="top" secondItem="CreateAccountBtn" secondAttribute="bottom" constant="16" id="g-c1"/>
+                            <constraint firstItem="GuestBtn" firstAttribute="centerX" secondItem="SignIn-SafeArea" secondAttribute="centerX" id="g-c2"/>
                             <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="TitleLabel" secondAttribute="trailing" constant="16" id="c3"/>
                             <constraint firstItem="SubtitleLabel" firstAttribute="top" secondItem="TitleLabel" secondAttribute="bottom" constant="16" id="c4"/>
                             <constraint firstItem="SubtitleLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="16" id="c5"/>
