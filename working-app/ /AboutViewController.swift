@@ -37,127 +37,163 @@ class AboutViewController: UIViewController {
     @IBOutlet weak var releaseDateLabel: UILabel!
     @IBOutlet weak var footerLabel: UILabel!
     
-    
-    
-    private var gradientLayer: CAGradientLayer?
+    private var headerGradientLayer: CAGradientLayer?
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
-        setupGradient()
+        setupNavigationBar()
+        setupScrollView()
+        setupHeaderCard()
+        setupSectionCards()
+        setupTeamSection()
+        setupAppInfo()
         populateContent()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        gradientLayer?.frame = gradientHeaderView.bounds
+        headerGradientLayer?.frame = gradientHeaderView.bounds
+        logoContainerView.layer.cornerRadius = logoContainerView.frame.width / 2
         makeTeamImagesCircular()
     }
-
-    private func setupUI() {
-
-        self.title = "About HerHub"
-
-        // Logo with enhanced styling
-        logoContainerView.layer.cornerRadius = logoContainerView.frame.width / 2
-        logoContainerView.clipsToBounds = true
+    
+    // MARK: - Navigation
+    private func setupNavigationBar() {
+        self.title = "About"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.tintColor = UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 1.0)
+    }
+    
+    // MARK: - Scroll View
+    private func setupScrollView() {
+        view.backgroundColor = .systemGroupedBackground
+        scrollView.backgroundColor = .clear
+    }
+    
+    // MARK: - Header
+    private func setupHeaderCard() {
+        // Gradient matching profile card
+        let gradient = CAGradientLayer()
+        gradient.colors = [
+            UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 1.0).cgColor,
+            UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 1.0).cgColor,
+            UIColor(red: 0.98, green: 0.55, blue: 0.62, alpha: 1.0).cgColor
+        ]
+        gradient.locations = [0.0, 0.5, 1.0]
+        gradient.startPoint = CGPoint(x: 0, y: 0)
+        gradient.endPoint = CGPoint(x: 1, y: 1)
+        gradient.cornerRadius = 16
+        gradientHeaderView.layer.insertSublayer(gradient, at: 0)
+        headerGradientLayer = gradient
+        
+        gradientHeaderView.layer.cornerRadius = 16
+        gradientHeaderView.clipsToBounds = true
+        
+        // Logo
         logoContainerView.backgroundColor = .white
-        logoContainerView.layer.shadowColor = UIColor.white.withAlphaComponent(0.5).cgColor
-        logoContainerView.layer.shadowOpacity = 1.0
-        logoContainerView.layer.shadowOffset = CGSize(width: 0, height: 0)
-        logoContainerView.layer.shadowRadius = 12
-        logoContainerView.layer.masksToBounds = false
-
+        logoContainerView.clipsToBounds = true
+        
+        // Typography
+        titleLabel.font = UIFont.systemFont(ofSize: 26, weight: .bold)
+        titleLabel.textColor = .white
+        
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        subtitleLabel.textColor = UIColor.white.withAlphaComponent(0.85)
+        
         missionTextView.isEditable = false
         missionTextView.isScrollEnabled = false
         missionTextView.backgroundColor = .clear
-        missionTextView.textColor = .white
+        missionTextView.textColor = UIColor.white.withAlphaComponent(0.8)
         missionTextView.textAlignment = .center
-        missionTextView.font = UIFont.systemFont(ofSize: 15, weight: .regular)
-
-        // What We Do section - premium card design
-        whatWeDoView.layer.cornerRadius = 20
-        whatWeDoView.backgroundColor = .white
-        whatWeDoView.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
-        whatWeDoView.layer.shadowOpacity = 0.15
-        whatWeDoView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        whatWeDoView.layer.shadowRadius = 12
-        whatWeDoView.layer.masksToBounds = false
-
-        // Team section - premium card design
-        teamSectionView.layer.cornerRadius = 20
-        teamSectionView.backgroundColor = .white
-        teamSectionView.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
-        teamSectionView.layer.shadowOpacity = 0.15
-        teamSectionView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        teamSectionView.layer.shadowRadius = 12
-        teamSectionView.layer.masksToBounds = false
-
-        // App Info section - premium card design with pink tint
-        appInfoView.layer.cornerRadius = 20
-        appInfoView.backgroundColor = UIColor(red: 1.0, green: 0.925, blue: 0.973, alpha: 1.0)
-        appInfoView.layer.shadowColor = UIColor(red: 1.0, green: 0.41, blue: 0.71, alpha: 0.25).cgColor
-        appInfoView.layer.shadowOpacity = 0.15
-        appInfoView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        appInfoView.layer.shadowRadius = 12
-        appInfoView.layer.masksToBounds = false
+        missionTextView.font = UIFont.systemFont(ofSize: 13, weight: .regular)
     }
-
-    private func setupGradient() {
-        // Enhanced 3-color vibrant gradient
-        let gradient = CAGradientLayer()
-        gradient.colors = [
-            UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 1).cgColor,  // Purple
-            UIColor(red: 1.0, green: 0.41, blue: 0.71, alpha: 1).cgColor,   // Pink
-            UIColor(red: 1.0, green: 0.50, blue: 0.50, alpha: 1).cgColor    // Coral
-        ]
-        gradient.locations = [0.0, 0.5, 1.0]
-        gradient.startPoint = CGPoint(x: 0.5, y: 0)
-        gradient.endPoint = CGPoint(x: 0.5, y: 1)
-        gradient.cornerRadius = 20
-        gradientHeaderView.layer.insertSublayer(gradient, at: 0)
-        gradientLayer = gradient
+    
+    // MARK: - Section Cards
+    private func setupSectionCards() {
+        // What We Do - native grouped style
+        styleCard(whatWeDoView)
         
-        // Add corner radius and shadow to the header
-        gradientHeaderView.layer.cornerRadius = 20
-        gradientHeaderView.layer.masksToBounds = true
-        gradientHeaderView.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.3).cgColor
-        gradientHeaderView.layer.shadowOpacity = 0.2
-        gradientHeaderView.layer.shadowOffset = CGSize(width: 0, height: 6)
-        gradientHeaderView.layer.shadowRadius = 16
+        whatWeDoLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        whatWeDoLabel.textColor = .label
+        
+        let featureLabels = [trackerLabel, communityLabel, resourcesLabel]
+        for label in featureLabels {
+            label?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+            label?.textColor = .secondaryLabel
+        }
+    }
+    
+    // MARK: - Team
+    private func setupTeamSection() {
+        styleCard(teamSectionView)
+        
+        teamTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        teamTitleLabel.textColor = .label
+        
+        let nameLabels = [teamMember1NameLabel, teamMember2NameLabel,
+                          teamMember3NameLabel, teamMember4NameLabel]
+        for label in nameLabels {
+            label?.font = UIFont.systemFont(ofSize: 13, weight: .medium)
+            label?.textColor = .secondaryLabel
+        }
+    }
+    
+    // MARK: - App Info
+    private func setupAppInfo() {
+        styleCard(appInfoView)
+        appInfoView.backgroundColor = .secondarySystemGroupedBackground
+        
+        appInfoTitleLabel.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        appInfoTitleLabel.textColor = .label
+        
+        versionLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        versionLabel.textColor = .tertiaryLabel
+        
+        releaseDateLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        releaseDateLabel.textColor = .tertiaryLabel
+        
+        footerLabel.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        footerLabel.textColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 1.0)
+    }
+    
+    // MARK: - Shared Card Style
+    private func styleCard(_ card: UIView) {
+        card.layer.cornerRadius = 16
+        card.backgroundColor = .secondarySystemGroupedBackground
+        card.layer.shadowColor = UIColor.black.cgColor
+        card.layer.shadowOpacity = 0.04
+        card.layer.shadowOffset = CGSize(width: 0, height: 2)
+        card.layer.shadowRadius = 8
+        card.layer.masksToBounds = false
     }
 
+    // MARK: - Team Images
     private func makeTeamImagesCircular() {
-        let imageViews = [
-            teamMember1ImageView,
-            teamMember2ImageView,
-            teamMember3ImageView,
-            teamMember4ImageView
-        ]
+        let imageViews = [teamMember1ImageView, teamMember2ImageView,
+                          teamMember3ImageView, teamMember4ImageView]
 
         for imageView in imageViews {
             guard let imgView = imageView else { continue }
             imgView.layer.cornerRadius = imgView.frame.width / 2
             imgView.clipsToBounds = true
             imgView.contentMode = .scaleAspectFill
+            imgView.layer.borderWidth = 2.0
+            imgView.layer.borderColor = UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 0.35).cgColor
         }
     }
 
+    // MARK: - Content
     private func populateContent() {
-
         titleLabel.text = "HerHub"
         subtitleLabel.text = "Because periods shouldn't be a puzzle"
-
-        missionTextView.text =
-        "Our mission is to help you understand your body without fear or confusion. HerHub empowers you to track, learn, and feel confident every day."
+        missionTextView.text = "Helping you understand your body without fear or confusion. Track, learn, and feel confident every day."
 
         whatWeDoLabel.text = "What We Do"
-        trackerLabel.text = "• The Tracker: Log your cycle, moods, and symptoms."
-        communityLabel.text = "• The Community: A safe space with no judgment."
-        resourcesLabel.text = "• The Resources: Trusted answers you’ll love reading."
+        trackerLabel.text = "Track your cycle, moods, and symptoms — always know what to expect next."
+        communityLabel.text = "Connect in a safe, judgment-free space with people who understand."
+        resourcesLabel.text = "Read trusted, personalized health articles curated just for you."
 
         teamTitleLabel.text = "Meet Our Team"
-
         teamMember1NameLabel.text = "Driksha Thakur"
         teamMember2NameLabel.text = "Mahika Behal"
         teamMember3NameLabel.text = "Nihar Sandhu"
@@ -168,12 +204,9 @@ class AboutViewController: UIViewController {
         teamMember3ImageView.image = UIImage(named: "Nihar")?.withRenderingMode(.alwaysOriginal)
         teamMember4ImageView.image = UIImage(named: "Dhruv")?.withRenderingMode(.alwaysOriginal)
 
-
         appInfoTitleLabel.text = "App Information"
-        versionLabel.text = "Version 11.0"
+        versionLabel.text = "Version 1.1.0"
         releaseDateLabel.text = "Released December 2025"
-        footerLabel.text = "Made with 💜 for women everywhere"
+        footerLabel.text = "Made with love for women everywhere"
     }
 }
-
-

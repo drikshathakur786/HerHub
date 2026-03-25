@@ -300,61 +300,58 @@ class TrackerViewController: UIViewController {
     private func setupMidSectionComponents() {
         // 1. Check if connected via Outlet (Preferred)
         if let existingMidStack = self.midStackView {
-            // If the stackview exists in storyboard, we assume the user has added standard labels inside it or we might need to find them.
-            // For now, if it exists, we just need to populate the card references code to point to its subviews? 
-            // This is tricky. Storyboard layout implies the Cards are also in Storyboard. 
-            // Since we can't see the storyboard, we have to assume if they connected 'midStackView', 
-            // they probably also need outlets for 'cycleDayCardLabel', etc.
-            // But we don't have outlets for those labels yet defined in the top.
-            
-            // To be safe: If midStackView is connected, we assume it's set up correctly in UI and we just need to extract references if possible.
-            // OR (more likely): The user just connected the stackview but it's empty.
             if existingMidStack.arrangedSubviews.isEmpty {
-                 // Populate it programmatically inside the STACKVIEW
                  setupCardsInsideStack(existingMidStack)
-            } else {
-                 // Assume it's fully built in storyboard. We need to find the labels to simple pointers or add outlets.
-                 // Ideally user adds @IBOutlets for cycleDayCardLabel as well.
-                 // For now, let's just warn or fallback to re-adding.
             }
             return
         }
         
-        // 2. Programmatic Layout (Fallback)
-        guard let container = checkInContainerView, let forecast = forecastContainerView, let superview = container.superview else { return }
+        // 2. Programmatic Layout
+        guard let container = checkInContainerView, let superview = container.superview else { return }
         
         let stack = UIStackView()
         stack.axis = .horizontal
         stack.distribution = .fillEqually
         stack.spacing = 15
         stack.translatesAutoresizingMaskIntoConstraints = false
-        superview.addSubview(stack)
-        self.midStackView = stack // Set the property so we can use it elsewhere
+        self.midStackView = stack
         
         setupCardsInsideStack(stack)
         
-        // 3. Constraint Management (Improved / Safer)
-        // Find adjacent constraint between container and forecast
-        // We look for constraints where (item1 = container AND item2 = forecast) OR vice versa
-        let constraintsToDeactivate = superview.constraints.filter { constraint in
-            return (constraint.firstItem as? UIView == container && constraint.secondItem as? UIView == forecast) ||
-                   (constraint.firstItem as? UIView == forecast && constraint.secondItem as? UIView == container)
-        }
-        
-        NSLayoutConstraint.deactivate(constraintsToDeactivate)
-        
-        if constraintsToDeactivate.isEmpty {
-            print("Technician Note: Could not find vertical constraint between CheckIn and Forecast containers to inject MidSection. Please adjust Storyboard.")
-        }
-        
-        NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(equalTo: container.bottomAnchor, constant: 20),
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            stack.heightAnchor.constraint(equalToConstant: 100),
+        // 3. Insert into parent stack view properly
+        if let parentStack = superview as? UIStackView {
+            // Parent is a UIStackView — insert as arranged subview right after the container
+            if let containerIndex = parentStack.arrangedSubviews.firstIndex(of: container) {
+                parentStack.insertArrangedSubview(stack, at: containerIndex + 1)
+            } else {
+                parentStack.addArrangedSubview(stack)
+            }
+            // Stack view handles spacing automatically, just set the height
+            stack.heightAnchor.constraint(equalToConstant: 100).isActive = true
+        } else {
+            // Fallback: not in a stack view, use manual constraints
+            superview.addSubview(stack)
             
-            forecast.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 20)
-        ])
+            let forecast = forecastContainerView
+            
+            // Remove existing constraint between container and forecast
+            let constraintsToDeactivate = superview.constraints.filter { constraint in
+                return (constraint.firstItem as? UIView == container && constraint.secondItem as? UIView == forecast) ||
+                       (constraint.firstItem as? UIView == forecast && constraint.secondItem as? UIView == container)
+            }
+            NSLayoutConstraint.deactivate(constraintsToDeactivate)
+            
+            NSLayoutConstraint.activate([
+                stack.topAnchor.constraint(equalTo: container.bottomAnchor, constant: 20),
+                stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+                stack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+                stack.heightAnchor.constraint(equalToConstant: 100)
+            ])
+            
+            if let forecast = forecast {
+                forecast.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 20).isActive = true
+            }
+        }
     }
 
     private func setupCardsInsideStack(_ stack: UIStackView) {
@@ -538,10 +535,10 @@ class TrackerViewController: UIViewController {
 
     // MARK: - Incomplete Baseline Alert
     
-    private func showIncompleteBaselineAlert(missingFields: String, dismissKey: String) {
+    private func showIncompleteBaselineAlert(dismissKey: String) {
         let alert = UIAlertController(
             title: "Complete Your Profile 📋",
-            message: "Some baseline questions were skipped (\(missingFields)). Please answer them so we can show your data more accurately.",
+            message: "Please fill in your height, weight, and past cycle history so we can generate more accurate predictions for you.",
             preferredStyle: .alert
         )
         
@@ -593,12 +590,17 @@ class TrackerViewController: UIViewController {
                     }
                     
                     // Check if baseline profile is incomplete (user skipped questions)
-                    if baseline.isProfileIncomplete {
+                    // Only show popup if the key was explicitly set to false during onboarding
+                    // (meaning user went through step 4 but left fields empty)
+                    // If key doesn't exist at all, user completed onboarding before this feature — don't show
+                    let completedKey = "baselineFullyCompleted_\(userID.uuidString)"
+                    let completedValue = UserDefaults.standard.object(forKey: completedKey) as? Bool
+                    
+                    if completedValue == false {
                         let dismissedKey = "baselineIncompleteAlertDismissed_\(userID.uuidString)"
                         if !UserDefaults.standard.bool(forKey: dismissedKey) {
                             await MainActor.run {
                                 self.showIncompleteBaselineAlert(
-                                    missingFields: baseline.missingFieldsDescription,
                                     dismissKey: dismissedKey
                                 )
                             }

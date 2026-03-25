@@ -318,16 +318,17 @@ extension profileViewController {
         About.layer.shadowRadius = 10
         About.layer.masksToBounds = false
 
-        // Logout row - standalone card matching other cards
-        LogOut.layer.cornerRadius = 20
-        LogOut.layer.maskedCorners = [] // Reset masked corners for conditional logic
-        LogOut.backgroundColor = .white  // Match other cards
-        LogOut.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
-        LogOut.layer.shadowOpacity = 0.12
+        // Logout button - pink filled button style
+        LogOut.layer.cornerRadius = 14
+        LogOut.clipsToBounds = true
+        LogOut.backgroundColor = UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 1.0)
+        LogOut.layer.shadowColor = UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 0.4).cgColor
+        LogOut.layer.shadowOpacity = 0.3
         LogOut.layer.shadowOffset = CGSize(width: 0, height: 4)
-        LogOut.layer.shadowRadius = 10
+        LogOut.layer.shadowRadius = 8
         LogOut.layer.masksToBounds = false
         
+        // Delete Account button - bordered red style
         if DeleteAccountView != nil {
             let isGuest = AuthManager.shared.currentUser?.isGuest == true
             DeleteAccountView.isHidden = isGuest
@@ -337,26 +338,17 @@ extension profileViewController {
                 if let logOutLabel = LogOut.subviews.compactMap({ $0 as? UILabel }).first {
                     logOutLabel.text = "Sign In / Sign Up"
                 }
-                // Change icon from figure.run to person.crop.circle.badge.plus
-                if let iconView = LogOut.subviews.compactMap({ $0 as? UIImageView }).first {
-                    iconView.image = UIImage(systemName: "person.crop.circle.badge.plus")
-                }
             }
             
-            if isGuest {
-                LogOut.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
-            } else {
-                DeleteAccountView.layer.cornerRadius = 20
-                DeleteAccountView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            if !isGuest {
+                DeleteAccountView.layer.cornerRadius = 14
+                DeleteAccountView.clipsToBounds = true
                 DeleteAccountView.backgroundColor = .white
-                DeleteAccountView.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
-                DeleteAccountView.layer.shadowOpacity = 0.12
-                DeleteAccountView.layer.shadowOffset = CGSize(width: 0, height: 4)
-                DeleteAccountView.layer.shadowRadius = 10
+                DeleteAccountView.layer.borderWidth = 1.5
+                DeleteAccountView.layer.borderColor = UIColor.systemRed.withAlphaComponent(0.4).cgColor
+                DeleteAccountView.layer.shadowColor = UIColor.clear.cgColor
                 DeleteAccountView.layer.masksToBounds = false
             }
-        } else {
-            LogOut.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         }
         
         setupTapGesture(for: About, action: #selector(aboutTapped))
