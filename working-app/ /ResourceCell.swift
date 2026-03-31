@@ -15,8 +15,6 @@ class ResourceCell: UITableViewCell {
     @IBOutlet weak var descLabel: UILabel!
     
     
-    
-    
     override func awakeFromNib() {
         super.awakeFromNib()
  

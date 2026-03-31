@@ -118,8 +118,7 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
         if descriptionTextView.textColor == .systemGray {
             description = ""
         }
-        
-        // Basic profanity filter for community name + description
+       
         let combined = name + " " + description
         if ContentFilter.containsOffensiveLanguage(combined) {
             let alert = UIAlertController(
