@@ -14,6 +14,7 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     @IBOutlet weak var postTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var photoButton: UIButton!
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
         
         
     var community: Community?
@@ -63,6 +64,14 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
             name: NSNotification.Name("RefreshCommunityData"),
             object: nil
         )
+        
+        sendButton.isHidden = true
+        postTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
+    }
+    
+    @objc private func textDidChange() {
+        let text = postTextField.text ?? ""
+        sendButton.isHidden = text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -215,13 +224,13 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
                     NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
                     self.navigationController?.popViewController(animated: true)
                 }))
+            } else {
+                alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
+                    CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                    self.navigationController?.popViewController(animated: true)
+                }))
             }
-            
-            alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
-                CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
-                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
-                self.navigationController?.popViewController(animated: true)
-            }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
@@ -270,18 +279,23 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
         
     @objc func keyboardWillShow(notification: NSNotification) {
-
-        guard postTextField.isFirstResponder else { return }
-        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
-                self.view.frame.origin.y -= keyboardFrame.height
-            }
+        guard let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        let safeAreaBottom = view.safeAreaInsets.bottom
+        bottomConstraint.constant = keyboardFrame.height - safeAreaBottom
+        
+        UIView.animate(withDuration: duration) {
+            self.view.layoutIfNeeded()
         }
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        bottomConstraint.constant = 0
+        UIView.animate(withDuration: duration) {
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -557,6 +571,7 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             }
                 
             postTextField.text = ""
+            sendButton.isHidden = true
             selectedImage = nil
             photoButton?.setImage(UIImage(systemName: "photo"), for: .normal)
             photoButton?.tintColor = .systemBlue

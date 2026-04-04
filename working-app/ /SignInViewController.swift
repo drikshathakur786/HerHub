@@ -20,8 +20,6 @@ class SignInViewController: UIViewController {
         super.viewDidLoad()
         print("sign in screen loaded") // debug
         setupUI() // setup UI elements
-        emailTextField.text = "user1@gmail.com"
-        passwordTextField.text = "user1"
     }
     
     // setup UI elements

@@ -56,7 +56,7 @@
                                                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace" />
                                                         <nil key="highlightedColor" />
                                                     </label>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="QFW-cG-KaL">
+                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="QFW-cG-KaL" hidden="YES">
                                                         <rect key="frame" x="10" y="69.333333333333314" width="333" height="109.33333333333331" />
                                                         <subviews>
                                                             <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="YGw-5z-h1e">
@@ -65,7 +65,7 @@
                                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="utk-Ws-r2v">
                                                                         <rect key="frame" x="0.0" y="0.0" width="166.66666666666666" height="54.666666666666664" />
                                                                         <subviews>
-                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="smiley.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="wmL-Fd-VFi">
+                                                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="face.smiling.inverse" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="wmL-Fd-VFi">
                                                                                 <rect key="frame" x="6" y="6.6666666666666661" width="24" height="22.666666666666671" />
                                                                                 <constraints>
                                                                                     <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="20" id="YTQ-6t-fs6" />
@@ -74,7 +74,7 @@
                                                                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="pxx-Cm-a1U" />
                                                                                 </constraints>
                                                                             </imageView>
-                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tCH-W5-LFq">
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tCH-W5-LFq">
                                                                                 <rect key="frame" x="62" y="5.9999999999999982" width="39.666666666666657" height="20.333333333333329" />
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="16" />
                                                                                 <nil key="textColor" />
@@ -109,7 +109,7 @@
                                                                                     <constraint firstAttribute="height" constant="24" id="Uly-53-3Kv" />
                                                                                 </constraints>
                                                                             </imageView>
-                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYP-ys-tVu">
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dYP-ys-tVu">
                                                                                 <rect key="frame" x="62.000000000000028" y="5.9999999999999982" width="41.333333333333343" height="20.333333333333329" />
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="17" />
                                                                                 <nil key="textColor" />
@@ -151,7 +151,7 @@
                                                                                     <constraint firstAttribute="height" constant="24" id="mUx-ym-8ch" />
                                                                                 </constraints>
                                                                             </imageView>
-                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wa3-EI-pyi">
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wa3-EI-pyi">
                                                                                 <rect key="frame" x="62" y="5.9999999999999982" width="41.333333333333343" height="20.333333333333329" />
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="17" />
                                                                                 <nil key="textColor" />
@@ -186,7 +186,7 @@
                                                                                     <constraint firstAttribute="width" constant="24" id="Wi6-cx-VOc" />
                                                                                 </constraints>
                                                                             </imageView>
-                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pcb-pL-Yxn">
+                                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Pcb-pL-Yxn">
                                                                                 <rect key="frame" x="62.000000000000028" y="5.9999999999999982" width="41.333333333333343" height="20.333333333333329" />
                                                                                 <fontDescription key="fontDescription" type="system" pointSize="17" />
                                                                                 <nil key="textColor" />
@@ -1225,7 +1225,7 @@ time to start new projects and focus on self-care activities.</string>
                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="52o-Dw-FBF">
                                                 <rect key="frame" x="20" y="296" width="353" height="165.66666666666663" />
                                                 <subviews>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Expected Symtoms" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SR2-dI-6MC">
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Expected Symptoms" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SR2-dI-6MC">
                                                         <rect key="frame" x="15" y="20" width="167" height="21.666666666666671" />
                                                         <fontDescription key="fontDescription" type="boldSystem" pointSize="18" />
                                                         <nil key="textColor" />
@@ -1351,7 +1351,7 @@ time to start new projects and focus on self-care activities.</string>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MvX-fI-ZhT">
                                                                 <rect key="frame" x="0.0" y="0.0" width="293" height="32" />
                                                                 <subviews>
-                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dot.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="eth-eL-DXd">
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="smallcircle.filled.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="eth-eL-DXd">
                                                                         <rect key="frame" x="8" y="4.6666666666666661" width="20" height="18.666666666666671" />
                                                                         <color key="tintColor" red="0.87849402880000005" green="0.2863166801" blue="0.89953912020000004" alpha="0.61677486800000003" colorSpace="custom" customColorSpace="displayP3" />
                                                                         <constraints>
@@ -1378,7 +1378,7 @@ time to start new projects and focus on self-care activities.</string>
                                                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="FAj-4X-WEj">
                                                                 <rect key="frame" x="0.0" y="32" width="293" height="32" />
                                                                 <subviews>
-                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dot.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="yRO-hF-OaX">
+                                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="smallcircle.filled.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="yRO-hF-OaX">
                                                                         <rect key="frame" x="8" y="4.6666666666666661" width="20" height="18.666666666666671" />
                                                                         <color key="tintColor" red="0.87849402880000005" green="0.2863166801" blue="0.89953912020000004" alpha="0.61677486800000003" colorSpace="custom" customColorSpace="displayP3" />
                                                                         <constraints>
@@ -1386,7 +1386,7 @@ time to start new projects and focus on self-care activities.</string>
                                                                             <constraint firstAttribute="height" constant="20" id="kD5-Xw-PDG" />
                                                                         </constraints>
                                                                     </imageView>
-                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="light exercises recmoonded" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9a-BJ-CoF">
+                                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Light exercises recommended" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X9a-BJ-CoF">
                                                                         <rect key="frame" x="33" y="3.9999999999999991" width="166.66666666666666" height="15.666666666666664" />
                                                                         <fontDescription key="fontDescription" type="system" pointSize="13" />
                                                                         <nil key="textColor" />
@@ -1653,11 +1653,11 @@ time to start new projects and focus on self-care activities.</string>
         <image name="bolt" catalog="system" width="100" height="128" />
         <image name="calendar" catalog="system" width="128" height="107" />
         <image name="chart.bar.xaxis" catalog="system" width="128" height="97" />
-        <image name="dot.circle" catalog="system" width="128" height="123" />
+        <image name="smallcircle.filled.circle" catalog="system" width="128" height="123" />
         <image name="heart.text.clipboard" catalog="system" width="103" height="128" />
         <image name="lightbulb.max.fill" catalog="system" width="121" height="128" />
         <image name="lightbulb.min.fill" catalog="system" width="115" height="128" />
-        <image name="smiley.fill" catalog="system" width="128" height="123" />
+        <image name="face.smiling.inverse" catalog="system" width="128" height="123" />
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace" />
         </systemColor>

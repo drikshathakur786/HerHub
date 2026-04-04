@@ -71,7 +71,7 @@
                                     <color key="titleColor" red="0.92" green="0.38" blue="0.68" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 </state>
                                 <connections>
-                                    <segue destination="SignUpVC" kind="push" id="tX9-am-14W"/>
+                                    <segue destination="SignUpVC" kind="show" id="tX9-am-14W"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GuestBtn">

@@ -33,7 +33,7 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
         if let community = editingCommunity {
             nameTextField.text = community.name
             descriptionTextView.text = community.description.isEmpty ? "Describe your community..." : community.description
-            descriptionTextView.textColor = community.description.isEmpty ? .systemGray : .label
+            descriptionTextView.textColor = community.description.isEmpty ? .placeholderText : .label
             createButton.setTitle("Save Changes", for: .normal)
         }
     }
@@ -41,32 +41,6 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
     func setupUI() {
         nameTextField.delegate = self
         descriptionTextView.delegate = self
-        
-        nameTextField.backgroundColor = .white
-        nameTextField.textColor = .label
-        nameTextField.font = UIFont.systemFont(ofSize: 16)
-        nameTextField.layer.cornerRadius = 12
-        nameTextField.layer.borderWidth = 0
-        nameTextField.layer.masksToBounds = true
-        
-        descriptionTextView.backgroundColor = .white
-        descriptionTextView.textColor = .label
-        descriptionTextView.font = UIFont.systemFont(ofSize: 16)
-        descriptionTextView.layer.cornerRadius = 12
-        descriptionTextView.layer.borderWidth = 0
-        descriptionTextView.layer.masksToBounds = true
-        
-        if let placeholder = nameTextField.placeholder {
-            nameTextField.attributedPlaceholder = NSAttributedString(
-                string: placeholder,
-                attributes: [.foregroundColor: UIColor.systemGray]
-            )
-        }
-        
-        descriptionTextView.text = "Describe your community..."
-        descriptionTextView.textColor = .systemGray
-        descriptionTextView.isScrollEnabled = true
-      
     }
     
     
@@ -85,7 +59,7 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView === descriptionTextView && textView.textColor == .systemGray {
+        if textView === descriptionTextView && textView.textColor == .placeholderText {
             textView.text = ""
             textView.textColor = .label
         }
@@ -95,7 +69,7 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
         if textView === descriptionTextView &&
             textView.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             textView.text = "Describe your community..."
-            textView.textColor = .systemGray
+            textView.textColor = .placeholderText
         }
     }
     
@@ -115,7 +89,7 @@ class CreateCommunityViewController: UIViewController, UITextFieldDelegate, UITe
         }
         
         var description = descriptionTextView.text ?? ""
-        if descriptionTextView.textColor == .systemGray {
+        if descriptionTextView.textColor == .placeholderText {
             description = ""
         }
        

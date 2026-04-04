@@ -24,6 +24,7 @@ class CommunityInfoCell: UICollectionViewCell {
         titleButton.titleLabel?.lineBreakMode = .byTruncatingTail
         titleButton.titleLabel?.adjustsFontSizeToFitWidth = true
         titleButton.titleLabel?.minimumScaleFactor = 0.7
+        titleButton.isUserInteractionEnabled = false
         
         titleButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         titleButton.setContentHuggingPriority(.defaultLow, for: .horizontal)

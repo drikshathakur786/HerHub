@@ -48,11 +48,31 @@ class TrackerViewController: UIViewController {
     @IBOutlet var dateLabels: [UILabel]!
     @IBOutlet var moodLabels: [UILabel]!
     @IBOutlet var fertilityBoxes: [UILabel]!
+    private var isLoadingData = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupNavigationTitle()
         loadData() // Fetch data
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // Reload data every time the screen appears (e.g. returning from forecast details)
+        // Small delay to avoid racing with onSave callback
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+            self?.loadData()
+        }
+    }
+    
+    // MARK: - Guest Guard for Storyboard Segues (e.g. "View Details")
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if AuthManager.shared.currentUser?.isGuest == true || AuthManager.shared.currentUser == nil {
+            showGuestLoginPrompt()
+            return false
+        }
+        return true
     }
     
     // MARK: - UI Setup
@@ -83,10 +103,23 @@ class TrackerViewController: UIViewController {
             container.layer.shadowRadius = 8
         }
         
+        // IMPORTANT: Hide check-in grid IMMEDIATELY to prevent overlap with capacity ring
+        // The grid shows storyboard placeholder "Label" text and overlaps the Bio-Capacity UI
+        checkInGridStackView?.isHidden = true
+        
+        // Set meaningful defaults for storyboard labels (replace "Label" placeholders)
+        moodValueLabel?.text = "--"
+        cycleDayValueLabel?.text = "--"
+        nextPeriodValueLabel?.text = "--"
+        energyValueLabel?.text = "--"
+        phaseSubtitleLabel?.text = "Follicular Phase"
+        insightTitleLabel?.text = "Welcome to HerHub"
+        insightDescriptionLabel?.text = "Log your first check-in to see personalised cycle insights and predictions."
+        
         // Add manual Check-in Button (+)
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "plus.circle.fill"),
-            style: .done,
+            style: .plain,
             target: self,
             action: #selector(presentDailyCheckIn)
         )
@@ -476,6 +509,12 @@ class TrackerViewController: UIViewController {
     // MARK: - Check-In Logic
     
     @objc func presentDailyCheckIn() {
+        // Guest guard — show "Create Account" popup
+        if AuthManager.shared.currentUser?.isGuest == true || AuthManager.shared.currentUser == nil {
+            showGuestLoginPrompt()
+            return
+        }
+        
         let storyboard = UIStoryboard(name: "tracker", bundle: nil)
         guard let vc = storyboard.instantiateViewController(withIdentifier: "DailyCheckInViewController") as? DailyCheckInViewController else {
             print("Could not instantiate DailyCheckInViewController from storyboard")
@@ -486,10 +525,12 @@ class TrackerViewController: UIViewController {
             sheet.prefersGrabberVisible = true
         }
         
-        // Refresh data after saving
+        // Refresh data after saving — delay slightly to ensure DB write is flushed
         vc.onSave = { [weak self] in
             print(" [Tracker] Check-in saved, reloading data...")
-            self?.loadData()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self?.loadData()
+            }
         }
         
         present(vc, animated: true)
@@ -571,10 +612,25 @@ class TrackerViewController: UIViewController {
     extension TrackerViewController {
         
         func loadData() {
+            // Prevent concurrent loads from racing each other
+            guard !isLoadingData else {
+                print(" [Tracker] loadData skipped — already loading")
+                return
+            }
+            isLoadingData = true
+            
             Task {
+                defer { Task { @MainActor in self.isLoadingData = false } }
                 do {
                     guard let currentUser = AuthManager.shared.currentUser else {
-                        print(" [Tracker] No user logged in")
+                        print(" [Tracker] No user logged in — showing demo data")
+                        await MainActor.run { self.populateGuestDummyData() }
+                        return
+                    }
+                    
+                    // Guest user — show demo data
+                    if currentUser.isGuest {
+                        await MainActor.run { self.populateGuestDummyData() }
                         return
                     }
                     
@@ -582,11 +638,18 @@ class TrackerViewController: UIViewController {
                     
                     // 1. Fetch data
                     let checkIns = try await CycleDataController.shared.getCheckIns(forUser: userID)
-                    let baseline = try await CycleDataController.shared.getBaselineProfile(forUser: userID)
+                    let fetchedBaseline = try await CycleDataController.shared.getBaselineProfile(forUser: userID)
                     
-                    guard let baseline = baseline else {
-                        print(" [Tracker] No baseline found")
-                        return
+                    // If no baseline exists for this logged-in user, create a default one
+                    // so their check-in data still flows through the real tracker UI
+                    var baseline: CycleBaselineProfile
+                    if let existingBaseline = fetchedBaseline {
+                        baseline = existingBaseline
+                    } else {
+                        print(" [Tracker] No baseline found — creating default for logged-in user")
+                        baseline = CycleBaselineProfile.sample(userID: userID)
+                        // Save it so it persists
+                        try await CycleDataController.shared.saveBaselineProfile(baseline, forUser: userID)
                     }
                     
                     // Check if baseline profile is incomplete (user skipped questions)
@@ -609,8 +672,8 @@ class TrackerViewController: UIViewController {
                     
                     // 2. Get Predicted Data
                     let prediction = PeriodPredictionService.shared.predict(baseline: baseline)
-                    let cycleLength = prediction?.cycleLength ?? baseline.baseCycleLength
-                    let periodLength = prediction?.periodLength ?? baseline.basePeriodLength
+                    _ = prediction?.cycleLength ?? baseline.baseCycleLength
+                    _ = prediction?.periodLength ?? baseline.basePeriodLength
                     let confidence = PeriodPredictionService.shared.calculateConfidence(baseline: baseline)
                     
                     // 3. Current Day & Phase (NO MODULO - Let reality drive the cycle)
@@ -620,6 +683,11 @@ class TrackerViewController: UIViewController {
                     // 4. Find check-in for TODAY
                     let today = Date()
                     let todayCheckIn = checkIns.first(where: { Calendar.current.isDate($0.date, inSameDayAs: today) })
+                    
+                    print(" [Tracker] Total check-ins: \(checkIns.count), Today's check-in found: \(todayCheckIn != nil)")
+                    if let ci = todayCheckIn {
+                        print(" [Tracker] Today's check-in → Sleep: \(ci.sleepHours)h, Stress: \(ci.currentStress)/10, Period: \(ci.periodStartedToday ?? false)")
+                    }
                     
                     // 5. Update UI components
                     await MainActor.run {
@@ -910,6 +978,106 @@ class TrackerViewController: UIViewController {
                 case .high:
                     box.backgroundColor = UIColor(red: 0.25, green: 0.51, blue: 1, alpha: 1) // 3F82FF
                 }
+            }
+        }
+        
+        // MARK: - Guest / Demo Data
+        @MainActor
+        private func populateGuestDummyData() {
+            // -- Top Card: Today's Check-in --
+            phaseSubtitleLabel?.text = "Follicular Phase"
+            phaseSubtitleLabel?.textColor = .systemGray
+            cycleDayValueLabel?.text = "Day 8: Follicular"
+            
+            // -- Bio-Capacity Ring (85% for follicular) --
+            showCapacityDashboard(true)
+            capacityRingView?.updateCapacity(85, animated: true)
+            
+            // -- Theory / Reality sections --
+            theoryLabel?.text = "Baseline"
+            theoryValueLabel?.text = "85%"
+            
+            realityStackView?.arrangedSubviews.forEach { $0.removeFromSuperview() }
+            realityLabel?.text = "ESTIMATED"
+            realityLabel?.textColor = .systemGray
+            createRealityRow(title: "Sleep", value: "Optimal", color: .systemGray)
+            createRealityRow(title: "Stress", value: "Optimal", color: .systemGray)
+            
+            // -- Mid Cards: Cycle Day & Next Period --
+            cycleDayCardLabel?.text = "Day 8"
+            cycleDaySubtitleLabel?.text = "6 days to peak"
+            cycleDaySubtitleLabel?.textColor = .rosePink
+            
+            let nextPeriodDate = Calendar.current.date(byAdding: .day, value: 20, to: Date()) ?? Date()
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MMM d"
+            confidenceCardLabel?.text = dateFormatter.string(from: nextPeriodDate)
+            confidenceSubtitleLabel?.text = "in 20 days"
+            confidenceSubtitleLabel?.textColor = .slateGray
+            
+            // -- Bottom storyboard labels --
+            moodValueLabel?.text = "Good"
+            energyValueLabel?.text = "High"
+            nextPeriodValueLabel?.text = dateFormatter.string(from: nextPeriodDate)
+            
+            // -- Insight Card --
+            insightTitleLabel?.text = "Prediction Confidence"
+            insightDescriptionLabel?.text = "Your cycle is following a 78% regularity pattern. Log daily check-ins to improve accuracy."
+            
+            // -- 7-Day Forecast (populate with sample data) --
+            populateGuestForecast()
+        }
+        
+        @MainActor
+        private func populateGuestForecast() {
+            guard let dayLabels = dayLabels, dayLabels.count == 7,
+                  let dateLabels = dateLabels, dateLabels.count == 7,
+                  let moodLabels = moodLabels, moodLabels.count == 7,
+                  let fertilityBoxes = fertilityBoxes, fertilityBoxes.count == 7 else {
+                return
+            }
+            
+            let dayFormatter = DateFormatter()
+            dayFormatter.dateFormat = "EEE"
+            let dateFmt = DateFormatter()
+            dateFmt.dateFormat = "d"
+            
+            // Sample fertility pattern for follicular phase
+            let sampleFertility: [String] = ["Low", "Low", "Med", "Med", "High", "High", "Med"]
+            let sampleColors: [UIColor] = [
+                UIColor(red: 1, green: 0.35, blue: 0.47, alpha: 1),  // Low
+                UIColor(red: 1, green: 0.35, blue: 0.47, alpha: 1),  // Low
+                UIColor(red: 1, green: 0.80, blue: 0.25, alpha: 1),  // Med
+                UIColor(red: 1, green: 0.80, blue: 0.25, alpha: 1),  // Med
+                UIColor(red: 0.25, green: 0.51, blue: 1, alpha: 1),  // High
+                UIColor(red: 0.25, green: 0.51, blue: 1, alpha: 1),  // High
+                UIColor(red: 1, green: 0.80, blue: 0.25, alpha: 1),  // Med
+            ]
+            let sampleMoods = ["Good", "Great", "Okay", "Happy", "Happy", "Calm", "Tired"]
+            
+            for i in 0..<7 {
+                let date = Calendar.current.date(byAdding: .day, value: i, to: Date()) ?? Date()
+                
+                dayLabels[i].text = dayFormatter.string(from: date)
+                dayLabels[i].textColor = .systemGray
+                dayLabels[i].font = UIFont.systemFont(ofSize: 12, weight: .medium)
+                
+                dateLabels[i].text = dateFmt.string(from: date)
+                dateLabels[i].font = UIFont.boldSystemFont(ofSize: 14)
+                dateLabels[i].textColor = .black
+                
+                moodLabels[i].text = sampleMoods[i]
+                moodLabels[i].font = UIFont.systemFont(ofSize: 12)
+                moodLabels[i].textColor = .systemGray2
+                
+                let box = fertilityBoxes[i]
+                box.text = sampleFertility[i]
+                box.textAlignment = .center
+                box.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+                box.textColor = .white
+                box.layer.cornerRadius = 6
+                box.layer.masksToBounds = true
+                box.backgroundColor = sampleColors[i]
             }
         }
     }
