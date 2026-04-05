@@ -20,14 +20,12 @@ class SignInViewController: UIViewController {
         super.viewDidLoad()
         print("sign in screen loaded") // debug
         setupUI() // setup UI elements
-        emailTextField.text = "user1@gmail.com"
-        passwordTextField.text = "user1"
     }
     
     // setup UI elements
     private func setupUI() {
-        errorLabel?.isHidden = true // hide error initially
-        passwordTextField?.isSecureTextEntry = true // hide password text
+        errorLabel?.isHidden = true
+        passwordTextField?.isSecureTextEntry = true
         
         emailTextField?.delegate = self
         passwordTextField?.delegate = self
@@ -37,7 +35,17 @@ class SignInViewController: UIViewController {
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         
-        signInButton?.layer.cornerRadius = 10 // rounded button
+        // Sign In button — native filled style
+        signInButton?.layer.cornerRadius = 12
+        signInButton?.clipsToBounds = true
+        signInButton?.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+        signInButton?.backgroundColor = UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 1.0)
+        
+        // "Don't have an account? Sign Up" — attributed with bold pink "Sign Up"
+        styleCreateAccountButton()
+        
+        // "Continue as Guest" — subtle secondary style
+        styleGuestButton()
         
         // add logo above title
         addLogo()
@@ -45,6 +53,39 @@ class SignInViewController: UIViewController {
         // round text field corners
         styleTextField(emailTextField)
         styleTextField(passwordTextField)
+    }
+    
+    private func styleCreateAccountButton() {
+        guard let btn = createAccountButton else { return }
+        
+        let regularText = "Don't have an account? "
+        let boldText = "Sign Up"
+        
+        let regularAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 15, weight: .regular),
+            .foregroundColor: UIColor.secondaryLabel
+        ]
+        let boldAttrs: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 15, weight: .semibold),
+            .foregroundColor: UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 1.0)
+        ]
+        
+        let attributed = NSMutableAttributedString(string: regularText, attributes: regularAttrs)
+        attributed.append(NSAttributedString(string: boldText, attributes: boldAttrs))
+        btn.setAttributedTitle(attributed, for: .normal)
+    }
+    
+    private func styleGuestButton() {
+        guard let btn = view.viewWithTag(0) as? UIButton ?? findGuestButton() else { return }
+        btn.setTitleColor(.secondaryLabel, for: .normal)
+        btn.titleLabel?.font = UIFont.systemFont(ofSize: 15, weight: .regular)
+    }
+    
+    private func findGuestButton() -> UIButton? {
+        // Find the guest button by its action
+        return view.subviews.compactMap { $0 as? UIButton }.first {
+            $0.title(for: .normal) == "Continue as Guest"
+        }
     }
     
     // add the HerHub logo

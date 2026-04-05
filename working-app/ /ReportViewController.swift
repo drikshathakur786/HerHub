@@ -53,7 +53,7 @@ class ReportViewController: UIViewController {
         let reason = selectedReason ?? "Inappropriate Content"
         
         if let pID = postID, let cID = communityID, let currentUser = AuthManager.shared.currentUser {
-            // Safety: prevent reporting your own post even if UI allows opening report sheet.
+            
             if let community = CommunityManager.shared.getCommunity(by: cID),
                let post = community.posts.first(where: { $0.id == pID }),
                post.authorID == currentUser.id {

@@ -268,8 +268,18 @@ class CommunityManager {
         if let memberIndex = communities[index].members.firstIndex(of: userID) {
             communities[index].members.remove(at: memberIndex)
             
-            if useSupabase {
-    
+            if communities[index].members.isEmpty {
+                let emptyCommunity = communities.remove(at: index)
+                if useSupabase {
+                    Task {
+                        _ = try? await supabaseService.deleteCommunity(emptyCommunity)
+                        print("[CommunityManager] Auto-deleted ghost community: \(emptyCommunity.id)")
+                    }
+                }
+            } else {
+                if useSupabase {
+                    // Sync updated member list to Supabase here if needed
+                }
             }
             
             saveCommunities()

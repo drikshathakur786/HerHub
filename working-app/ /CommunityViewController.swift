@@ -30,6 +30,7 @@ class CommunityViewController: UIViewController{
         
         communitiesCollectionView.delegate = self
         communitiesCollectionView.dataSource = self
+        communitiesCollectionView.delaysContentTouches = false
         communitiesCollectionView.register(
             FeaturedPostCollectionCell.self,
             forCellWithReuseIdentifier: "FeaturedPostCollectionCell"

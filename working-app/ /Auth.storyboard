@@ -62,14 +62,24 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CreateAccountBtn">
-                                <rect key="frame" x="76.666666666666686" y="577.66666666666663" width="240" height="30"/>
-                                <state key="normal" title="Don't have an account? Create one"/>
+                                <rect key="frame" x="32" y="577.66666666666663" width="329" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="CreateAcctHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <state key="normal" title="Don't have an account? Sign Up">
+                                    <color key="titleColor" red="0.92" green="0.38" blue="0.68" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                </state>
                                 <connections>
-                                    <segue destination="SignUpVC" kind="push" id="tX9-am-14W"/>
+                                    <segue destination="SignUpVC" kind="show" id="tX9-am-14W"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GuestBtn">
-                                <rect key="frame" x="127" y="623.66666666666663" width="139" height="30"/>
+                                <rect key="frame" x="32" y="633.66666666666663" width="329" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="GuestBtnHeight"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal" title="Continue as Guest">
                                     <color key="titleColor" systemColor="secondaryLabelColor"/>
                                 </state>
@@ -91,16 +101,18 @@
                             <constraint firstItem="SignInButton" firstAttribute="top" secondItem="ErrorLabel" secondAttribute="bottom" constant="20" id="c16"/>
                             <constraint firstItem="SignInButton" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="c17"/>
                             <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="SignInButton" secondAttribute="trailing" constant="32" id="c18"/>
-                            <constraint firstItem="CreateAccountBtn" firstAttribute="top" secondItem="SignInButton" secondAttribute="bottom" constant="16" id="c19"/>
+                            <constraint firstItem="CreateAccountBtn" firstAttribute="top" secondItem="SignInButton" secondAttribute="bottom" constant="20" id="c19"/>
                             <constraint firstItem="TitleLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="16" id="c2"/>
                             <constraint firstItem="CreateAccountBtn" firstAttribute="centerX" secondItem="SignIn-SafeArea" secondAttribute="centerX" id="c20"/>
-                            <constraint firstItem="GuestBtn" firstAttribute="top" secondItem="CreateAccountBtn" secondAttribute="bottom" constant="16" id="g-c1"/>
+                            <constraint firstItem="GuestBtn" firstAttribute="top" secondItem="CreateAccountBtn" secondAttribute="bottom" constant="4" id="g-c1"/>
                             <constraint firstItem="GuestBtn" firstAttribute="centerX" secondItem="SignIn-SafeArea" secondAttribute="centerX" id="g-c2"/>
+                            <constraint firstItem="GuestBtn" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="g-c3"/>
+                            <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="GuestBtn" secondAttribute="trailing" constant="32" id="g-c4"/>
                             <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="TitleLabel" secondAttribute="trailing" constant="16" id="c3"/>
                             <constraint firstItem="SubtitleLabel" firstAttribute="top" secondItem="TitleLabel" secondAttribute="bottom" constant="16" id="c4"/>
                             <constraint firstItem="SubtitleLabel" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="16" id="c5"/>
                             <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="SubtitleLabel" secondAttribute="trailing" constant="16" id="c6"/>
-                            <constraint firstItem="EmailField" firstAttribute="top" secondItem="SubtitleLabel" secondAttribute="bottom" constant="48" id="c7"/>
+                            <constraint firstItem="EmailField" firstAttribute="top" secondItem="SubtitleLabel" secondAttribute="bottom" constant="40" id="c7"/>
                             <constraint firstItem="EmailField" firstAttribute="leading" secondItem="SignIn-SafeArea" secondAttribute="leading" constant="32" id="c8"/>
                             <constraint firstItem="SignIn-SafeArea" firstAttribute="trailing" secondItem="EmailField" secondAttribute="trailing" constant="32" id="c9"/>
                         </constraints>
@@ -192,7 +204,7 @@
                         <viewLayoutGuide key="safeArea" id="SignUp-SafeArea"/>
                         <color key="backgroundColor" name="Bg_Color"/>
                         <constraints>
-                            <constraint firstItem="SignUpTitle" firstAttribute="top" secondItem="SignUp-SafeArea" secondAttribute="top" constant="80" id="su-c1"/>
+                            <constraint firstItem="SignUpTitle" firstAttribute="top" secondItem="SignUp-SafeArea" secondAttribute="top" constant="160" id="su-c1"/>
                             <constraint firstItem="SignUpPasswordField" firstAttribute="top" secondItem="SignUpEmailField" secondAttribute="bottom" constant="16" id="su-c10"/>
                             <constraint firstItem="SignUpPasswordField" firstAttribute="leading" secondItem="SignUp-SafeArea" secondAttribute="leading" constant="32" id="su-c11"/>
                             <constraint firstItem="SignUp-SafeArea" firstAttribute="trailing" secondItem="SignUpPasswordField" secondAttribute="trailing" constant="32" id="su-c12"/>

@@ -19,7 +19,11 @@ class LikedResourcesTableViewController: UITableViewController {
         super.viewDidLoad()
 
         title = "Liked Articles"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
+        
+        // Match the app's pink background
+        tableView.backgroundColor = UIColor(named: "Bg_Color")
+        view.backgroundColor = UIColor(named: "Bg_Color")
 
        
         loadLikedResources()

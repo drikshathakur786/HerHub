@@ -160,6 +160,19 @@ class BaselineOnboardingViewController: UIViewController {
             if let c3 = Int(cycle3TextField?.text ?? "") { cycleHistory.append(c3) }
             if cycleHistory.isEmpty { cycleHistory = [baseCycleLength] }
             
+            // Track whether user actually filled in the fields or left them empty
+            let heightFilled = !(heightTextField?.text ?? "").isEmpty
+            let weightFilled = !(weightTextField?.text ?? "").isEmpty
+            let historyFilled = !(cycle1TextField?.text ?? "").isEmpty
+            let allFilled = heightFilled && weightFilled && historyFilled
+            
+            if let userID = AuthManager.shared.currentUser?.id {
+                let key = "baselineFullyCompleted_\(userID.uuidString)"
+                UserDefaults.standard.set(allFilled, forKey: key)
+                // Reset the dismissed flag so popup can show again after re-onboarding
+                UserDefaults.standard.set(false, forKey: "baselineIncompleteAlertDismissed_\(userID.uuidString)")
+            }
+            
         default:
             break
         }

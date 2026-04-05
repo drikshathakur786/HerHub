@@ -146,8 +146,10 @@ extension ForecastViewController {
         Task {
             do {
                 // Get the logged-in user from AuthManager
-                guard let currentUser = AuthManager.shared.currentUser else {
-                    print(" [Forecast] No user logged in")
+                guard let currentUser = AuthManager.shared.currentUser,
+                      !currentUser.isGuest else {
+                    // Guest or no user — show demo forecasts
+                    await MainActor.run { self.loadDemoForecasts() }
                     return
                 }
                 
@@ -157,7 +159,8 @@ extension ForecastViewController {
                 let daily = try await CycleDataController.shared.getUpcomingForecasts(forUser: userID)
                 
                 guard daily.count >= 7 else {
-                    print("Not enough forecasts")
+                    print("Not enough forecasts — showing demo data")
+                    await MainActor.run { self.loadDemoForecasts() }
                     return
                 }
                 
@@ -169,8 +172,59 @@ extension ForecastViewController {
                 }
             } catch {
                 print("Error loading forecast data: \(error)")
+                await MainActor.run { self.loadDemoForecasts() }
             }
         }
+    }
+    
+    @MainActor
+    private func loadDemoForecasts() {
+        let phases: [CyclePhase] = [.follicular, .follicular, .follicular, .ovulation, .ovulation, .luteal, .luteal]
+        let fertilities: [FertilityLevel] = [.low, .low, .med, .high, .high, .med, .low]
+        let energies: [EnergyLevel] = [.medium, .high, .high, .high, .medium, .medium, .low]
+        let moods = ["Good", "Great", "Energetic", "Happy", "Calm", "Okay", "Tired"]
+        let sampleSymptoms: [[Symptom]] = [
+            [Symptom(name: "Mild cramps", intensity: 3)],
+            [Symptom(name: "Increased energy", intensity: 2)],
+            [Symptom(name: "Clear skin", intensity: 1)],
+            [Symptom(name: "Bloating", intensity: 4), Symptom(name: "Breast tenderness", intensity: 3)],
+            [Symptom(name: "Mood swings", intensity: 5)],
+            [Symptom(name: "Fatigue", intensity: 4), Symptom(name: "Cravings", intensity: 3)],
+            [Symptom(name: "Headache", intensity: 3)],
+        ]
+        let sampleRecs: [[String]] = [
+            ["Stay hydrated", "Light exercises recommended"],
+            ["Great day for cardio", "Include iron-rich foods"],
+            ["Yoga or stretching", "Stay hydrated"],
+            ["Rest when needed", "Eat balanced meals"],
+            ["Gentle walks", "Practice mindfulness"],
+            ["Prioritise sleep", "Reduce caffeine"],
+            ["Light stretching", "Warm compress for cramps"],
+        ]
+        
+        let demoUserID = UUID()
+        var demoForecasts: [DailyForecast] = []
+        for i in 0..<7 {
+            let date = Calendar.current.date(byAdding: .day, value: i, to: Date()) ?? Date()
+            let forecast = DailyForecast(
+                id: UUID(),
+                user_id: demoUserID,
+                date: date,
+                phase: phases[i],
+                fertility: fertilities[i],
+                energy: energies[i],
+                weatherDescription: "Sunny",
+                mood: moods[i],
+                symptoms: sampleSymptoms[i],
+                recommendations: sampleRecs[i],
+                confidence: 0.78
+            )
+            demoForecasts.append(forecast)
+        }
+        
+        self.forecasts = demoForecasts
+        self.updateDateStrip()
+        self.selectDate(at: 0)
     }
 }
 

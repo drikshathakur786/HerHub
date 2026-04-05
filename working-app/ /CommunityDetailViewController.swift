@@ -14,6 +14,7 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     @IBOutlet weak var postTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var photoButton: UIButton!
+    @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
         
         
     var community: Community?
@@ -63,6 +64,14 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
             name: NSNotification.Name("RefreshCommunityData"),
             object: nil
         )
+        
+        sendButton.isHidden = true
+        postTextField.addTarget(self, action: #selector(textDidChange), for: .editingChanged)
+    }
+    
+    @objc private func textDidChange() {
+        let text = postTextField.text ?? ""
+        sendButton.isHidden = text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,8 +96,6 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         refreshDisplayedPosts()
     }
 
-    // MARK: - Be respectful coachmark (bottom input)
-
     private var respectCoachmarkDismissedKey: String {
         let userPart = AuthManager.shared.currentUser?.id.uuidString ?? "anonymous"
         return "herhub_respectCoachmarkDismissed_\(userPart)"
@@ -103,12 +110,10 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         guard let coachmarkView = bottomInputView.viewWithTag(4003) else { return }
         coachmarkView.isHidden = !visible
 
-        // Collapse/expand the coachmark's fixed-height constraint.
         if let heightConstraint = coachmarkView.constraints.first(where: { $0.firstAttribute == .height }) {
             heightConstraint.constant = visible ? 36 : 0
         }
 
-        // Collapse/expand the bottom input view height so the space is removed when coachmark is dismissed.
         if let inputHeightConstraint = bottomInputView.constraints.first(where: { $0.firstAttribute == .height }) {
             inputHeightConstraint.constant = visible ? 110 : 64
         }
@@ -119,7 +124,7 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
 
     private func configureRespectCoachmark() {
-        // Wire buttons from storyboard by tag.
+
         let dismissButton = bottomInputView.viewWithTag(4001) as? UIButton
         let infoButton = bottomInputView.viewWithTag(4004) as? UIButton
 
@@ -129,7 +134,6 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         dismissButton?.addTarget(self, action: #selector(didTapDismissRespectCoachmark), for: .touchUpInside)
         infoButton?.addTarget(self, action: #selector(didTapRespectInfo), for: .touchUpInside)
 
-        // One-time: hide if already dismissed.
         setRespectCoachmarkVisible(!isRespectCoachmarkDismissed)
     }
 
@@ -139,7 +143,6 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
 
     @objc private func didTapRespectInfo() {
-        // Allow re-show any time via the info button.
         setRespectCoachmarkVisible(true)
     }
 
@@ -221,13 +224,13 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
                     NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
                     self.navigationController?.popViewController(animated: true)
                 }))
+            } else {
+                alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
+                    CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
+                    NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
+                    self.navigationController?.popViewController(animated: true)
+                }))
             }
-            
-            alert.addAction(UIAlertAction(title: "Leave Community", style: .destructive, handler: { _ in
-                CommunityManager.shared.leaveCommunity(communityID: currentCommunity.id, userID: currentUser.id)
-                NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
-                self.navigationController?.popViewController(animated: true)
-            }))
             
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
             
@@ -276,18 +279,23 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
     }
         
     @objc func keyboardWillShow(notification: NSNotification) {
-
-        guard postTextField.isFirstResponder else { return }
-        if let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if self.view.frame.origin.y == 0 {
-                self.view.frame.origin.y -= keyboardFrame.height
-            }
+        guard let keyboardFrame = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else { return }
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        let safeAreaBottom = view.safeAreaInsets.bottom
+        bottomConstraint.constant = keyboardFrame.height - safeAreaBottom
+        
+        UIView.animate(withDuration: duration) {
+            self.view.layoutIfNeeded()
         }
     }
 
     @objc func keyboardWillHide(notification: NSNotification) {
-        if self.view.frame.origin.y != 0 {
-            self.view.frame.origin.y = 0
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double ?? 0.3
+        
+        bottomConstraint.constant = 0
+        UIView.animate(withDuration: duration) {
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -563,6 +571,7 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             }
                 
             postTextField.text = ""
+            sendButton.isHidden = true
             selectedImage = nil
             photoButton?.setImage(UIImage(systemName: "photo"), for: .normal)
             photoButton?.tintColor = .systemBlue
