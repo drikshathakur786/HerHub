@@ -6,8 +6,8 @@ class EditProfileViewController: UIViewController {
     // UI outlets from storyboard
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var phoneNumberTextField: UITextField!
-    @IBOutlet weak var dateOfBirthPicker: UIDatePicker!
+    @IBOutlet weak var phoneNumberTextField: UITextField!  // kept for storyboard connection
+    @IBOutlet weak var dateOfBirthPicker: UIDatePicker!    // kept for storyboard connection
     @IBOutlet weak var cycleLengthTextField: UITextField!
     @IBOutlet weak var periodLengthTextField: UITextField!
     @IBOutlet weak var saveButton: UIButton!
@@ -15,7 +15,10 @@ class EditProfileViewController: UIViewController {
     
     // user data variables
     var currentUser: User?
-    var userEmail: String? // TODO: maybe remove this later if not needed
+    
+    // Avatar options
+    private let avatarNames = ["avatar_flower", "avatar_star", "avatar_glasses", "avatar_heart", "avatar_moon"]
+    private var selectedAvatarName: String?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,21 +40,31 @@ class EditProfileViewController: UIViewController {
         // make profile image round
         profileImageView.layer.cornerRadius = profileImageView.frame.height / 2
         profileImageView.clipsToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
+        
+        // Make profile image tappable for avatar selection
+        profileImageView.isUserInteractionEnabled = true
+        let imageTap = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+        profileImageView.addGestureRecognizer(imageTap)
+        
+        // Also make the "Change Photo" label tappable (it's a sibling in the storyboard)
+        if let changePhotoLabel = profileImageView.superview?.subviews.compactMap({ $0 as? UILabel }).first(where: { $0.text == "Change Photo" }) {
+            changePhotoLabel.text = "Choose Avatar"
+            changePhotoLabel.isUserInteractionEnabled = true
+            let labelTap = UITapGestureRecognizer(target: self, action: #selector(profileImageTapped))
+            changePhotoLabel.addGestureRecognizer(labelTap)
+        }
         
         // round button corners
         saveButton.layer.cornerRadius = 8
        
         nameTextField.delegate = self
-        phoneNumberTextField.delegate = self
         cycleLengthTextField.delegate = self
         periodLengthTextField.delegate = self
         
-        dateOfBirthPicker.datePickerMode = .date
-        dateOfBirthPicker.maximumDate = Date() // cant be born in future
-        // set minimum date to 100 years ago
-        if let minDate = Calendar.current.date(byAdding: .year, value: -100, to: Date()) {
-            dateOfBirthPicker.minimumDate = minDate
-        }
+        // Hide phone number and date of birth sections
+        phoneNumberTextField?.superview?.isHidden = true
+        dateOfBirthPicker?.superview?.isHidden = true
         
         // tap anywhere to dismiss keyboard
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -61,7 +74,9 @@ class EditProfileViewController: UIViewController {
         // add done button to number keyboards
         addDoneButtonToKeyboard(for: cycleLengthTextField)
         addDoneButtonToKeyboard(for: periodLengthTextField)
-        addDoneButtonToKeyboard(for: phoneNumberTextField)
+        
+        // Load previously selected avatar
+        loadSavedAvatar()
     }
     
     private func addDoneButtonToKeyboard(for textField: UITextField) {
@@ -125,10 +140,13 @@ class EditProfileViewController: UIViewController {
         print(" populateFields - baseline exists: \(user.baselineProfile != nil)")
     
         nameTextField.text = user.userName
-        phoneNumberTextField.text = user.phoneNumber
-   
-        if let dob = user.dateOfBirth {
-            dateOfBirthPicker.date = dob
+        
+        // Load saved avatar
+        if let avatarName = user.userPicture, !avatarName.isEmpty {
+            selectedAvatarName = avatarName
+            profileImageView.image = UIImage(named: avatarName)
+        } else {
+            loadSavedAvatar()
         }
         
         if let baseline = user.baselineProfile {
@@ -137,6 +155,138 @@ class EditProfileViewController: UIViewController {
         }
         
         print(" Loaded user data for editing")
+    }
+    
+    // MARK: - Avatar Selection
+    
+    private func loadSavedAvatar() {
+        if let savedAvatar = UserDefaults.standard.string(forKey: "selectedAvatar") {
+            selectedAvatarName = savedAvatar
+            profileImageView.image = UIImage(named: savedAvatar)
+        }
+    }
+    
+    @objc private func profileImageTapped() {
+        showAvatarPicker()
+    }
+    
+    private func showAvatarPicker() {
+        let pickerVC = UIViewController()
+        pickerVC.modalPresentationStyle = .pageSheet
+        
+        if let sheet = pickerVC.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 24
+        }
+        
+        let containerView = UIView()
+        containerView.backgroundColor = .systemBackground
+        pickerVC.view = containerView
+        
+        // Title label
+        let titleLabel = UILabel()
+        titleLabel.text = "Choose Your Avatar"
+        titleLabel.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        titleLabel.textAlignment = .center
+        titleLabel.textColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 1.0)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(titleLabel)
+        
+        // Subtitle
+        let subtitleLabel = UILabel()
+        subtitleLabel.text = "Tap an avatar to select it"
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        subtitleLabel.textAlignment = .center
+        subtitleLabel.textColor = .secondaryLabel
+        subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(subtitleLabel)
+        
+        // Avatar stack
+        let avatarStack = UIStackView()
+        avatarStack.axis = .horizontal
+        avatarStack.distribution = .equalSpacing
+        avatarStack.alignment = .center
+        avatarStack.spacing = 12
+        avatarStack.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(avatarStack)
+        
+        let avatarSize: CGFloat = 60
+        
+        for (index, name) in avatarNames.enumerated() {
+            let avatarButton = UIButton(type: .custom)
+            avatarButton.tag = index
+            avatarButton.layer.cornerRadius = avatarSize / 2
+            avatarButton.clipsToBounds = true
+            avatarButton.translatesAutoresizingMaskIntoConstraints = false
+            avatarButton.contentMode = .scaleAspectFill
+            avatarButton.imageView?.contentMode = .scaleAspectFill
+            
+            if let img = UIImage(named: name) {
+                avatarButton.setImage(img, for: .normal)
+            }
+            
+            // Highlight if this is the currently selected avatar
+            if name == selectedAvatarName {
+                avatarButton.layer.borderWidth = 3
+                avatarButton.layer.borderColor = UIColor(red: 0.92, green: 0.38, blue: 0.68, alpha: 1.0).cgColor
+                avatarButton.transform = CGAffineTransform(scaleX: 1.1, y: 1.1)
+            } else {
+                avatarButton.layer.borderWidth = 2
+                avatarButton.layer.borderColor = UIColor.systemGray4.cgColor
+            }
+            
+            // Shadow
+            avatarButton.layer.shadowColor = UIColor.black.cgColor
+            avatarButton.layer.shadowOpacity = 0.1
+            avatarButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+            avatarButton.layer.shadowRadius = 4
+            avatarButton.layer.masksToBounds = false
+            
+            NSLayoutConstraint.activate([
+                avatarButton.widthAnchor.constraint(equalToConstant: avatarSize),
+                avatarButton.heightAnchor.constraint(equalToConstant: avatarSize)
+            ])
+            
+            avatarButton.addTarget(self, action: #selector(avatarSelected(_:)), for: .touchUpInside)
+            avatarStack.addArrangedSubview(avatarButton)
+        }
+        
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor, constant: 24),
+            titleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            
+            subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            subtitleLabel.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            
+            avatarStack.topAnchor.constraint(equalTo: subtitleLabel.bottomAnchor, constant: 30),
+            avatarStack.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+            avatarStack.leadingAnchor.constraint(greaterThanOrEqualTo: containerView.leadingAnchor, constant: 20),
+            avatarStack.trailingAnchor.constraint(lessThanOrEqualTo: containerView.trailingAnchor, constant: -20)
+        ])
+        
+        present(pickerVC, animated: true)
+    }
+    
+    @objc private func avatarSelected(_ sender: UIButton) {
+        let index = sender.tag
+        guard index < avatarNames.count else { return }
+        
+        let name = avatarNames[index]
+        selectedAvatarName = name
+        
+        // Update profile image with animation
+        UIView.transition(with: profileImageView, duration: 0.3, options: .transitionCrossDissolve) {
+            self.profileImageView.image = UIImage(named: name)
+        }
+        
+        // Save to UserDefaults immediately
+        UserDefaults.standard.set(name, forKey: "selectedAvatar")
+        
+        // Dismiss the picker
+        dismiss(animated: true)
+        
+        print("Selected avatar: \(name)")
     }
 
     // when user taps save button
@@ -178,28 +328,28 @@ class EditProfileViewController: UIViewController {
         print(" baselineProfile exists: \(user.baselineProfile != nil)")
         
         // validate name field
-        guard let name = nameTextField.text, !name.isEmpty else {
+        guard let name = nameTextField.text, !name.trimmingCharacters(in: .whitespaces).isEmpty else {
             showAlert(title: "Error", message: "Name cannot be empty")
             return
         }
         
         if let cycleLengthText = cycleLengthTextField.text, !cycleLengthText.isEmpty {
-            guard let cycleLength = Int(cycleLengthText), cycleLength > 0, cycleLength <= 100 else {
-                showAlert(title: "Error", message: "Cycle length must be a positive number between 1 and 100")
+            guard let cycleLength = Int(cycleLengthText), cycleLength >= 21, cycleLength <= 45 else {
+                showAlert(title: "Error", message: "Cycle length must be between 21 and 45 days")
                 return
             }
         }
         
         if let periodLengthText = periodLengthTextField.text, !periodLengthText.isEmpty {
-            guard let periodLength = Int(periodLengthText), periodLength > 0, periodLength <= 30 else {
-                showAlert(title: "Error", message: "Period length must be a positive number between 1 and 30")
+            guard let periodLength = Int(periodLengthText), periodLength >= 2, periodLength <= 10 else {
+                showAlert(title: "Error", message: "Period length must be between 2 and 10 days")
                 return
             }
         }
         
+        // Update user name and avatar
         user.userName = name
-        user.phoneNumber = phoneNumberTextField.text?.isEmpty == false ? phoneNumberTextField.text : nil
-        user.dateOfBirth = dateOfBirthPicker.date
+        user.userPicture = selectedAvatarName
         
         // create baseline profile if it doesnt exist
         if user.baselineProfile == nil {
@@ -236,18 +386,25 @@ class EditProfileViewController: UIViewController {
         saveButton.isEnabled = false
         saveButton.setTitle("Saving...", for: .normal)
         
+        // Keep a clean copy for Supabase (without nested objects that aren't DB columns)
+        var userForDB = user
+        userForDB.baselineProfile = nil
+        userForDB.recentCheckIns = nil
+        userForDB.latestPrediction = nil
+        
         Task {
             do {
-                // Save the user object
-                try await UserController.shared.updateUser(user)
+                // Save user object (only DB-compatible fields)
+                try await UserController.shared.updateUser(userForDB)
+                print(" User profile saved to DB")
                 
-                // Also save the baseline profile separately (it's stored in a different file)
+                // Save the baseline profile separately (it's stored in a different table)
                 if let baseline = user.baselineProfile {
                     try await CycleDataController.shared.saveBaselineProfile(baseline, forUser: user.id)
                     print(" Baseline profile saved separately")
                 }
                 
-                // Update AuthManager's current user using the proper method
+                // Update AuthManager's current user with the full object (including baseline)
                 AuthManager.shared.updateCurrentUser(user)
                 
                 await MainActor.run {
@@ -295,3 +452,4 @@ extension EditProfileViewController: UITextFieldDelegate {
         return true
     }
 }
+
