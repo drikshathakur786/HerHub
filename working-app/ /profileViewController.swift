@@ -243,6 +243,7 @@ extension profileViewController {
         // make profile image circular with border
         profileImage.layer.cornerRadius = profileImage.frame.height / 2
         profileImage.clipsToBounds = true
+        profileImage.contentMode = .scaleAspectFill
         profileImage.backgroundColor = UIColor.white.withAlphaComponent(0.3)
         profileImage.layer.borderWidth = 3
         profileImage.layer.borderColor = UIColor.white.cgColor
@@ -288,15 +289,8 @@ extension profileViewController {
         settingsStackContainer.layer.shadowColor = UIColor.clear.cgColor
         settingsStackContainer.layer.shadowOpacity = 0
 
-        // Notification row - standalone card
-        notificationRow.layer.cornerRadius = 20
-        notificationRow.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]  // All corners
-        notificationRow.backgroundColor = .white
-        notificationRow.layer.shadowColor = UIColor(red: 0.73, green: 0.33, blue: 0.83, alpha: 0.25).cgColor
-        notificationRow.layer.shadowOpacity = 0.12
-        notificationRow.layer.shadowOffset = CGSize(width: 0, height: 4)
-        notificationRow.layer.shadowRadius = 10
-        notificationRow.layer.masksToBounds = false
+        // Notification row - hidden (not functional)
+        notificationRow.isHidden = true
 
         // Edit Profile row - standalone card  
         EditProfile.layer.cornerRadius = 20
@@ -403,6 +397,17 @@ extension profileViewController {
         
         // set name label
         nameLabel.text = user.userName ?? user.email ?? user.phoneNumber ?? "User"
+        
+        // Load avatar image
+        if let avatarName = user.userPicture, !avatarName.isEmpty,
+           let avatarImage = UIImage(named: avatarName) {
+            profileImage.image = avatarImage
+            profileImage.contentMode = .scaleAspectFill
+        } else if let savedAvatar = UserDefaults.standard.string(forKey: "selectedAvatar"),
+                  let avatarImage = UIImage(named: savedAvatar) {
+            profileImage.image = avatarImage
+            profileImage.contentMode = .scaleAspectFill
+        }
         
         // display cycle length with 'days' text
         if let cycleLength = baseline?.baseCycleLength {

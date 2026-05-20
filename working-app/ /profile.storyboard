@@ -141,10 +141,10 @@
                                                     <constraint firstAttribute="height" constant="140" id="stack-height-constraint"/>
                                                 </constraints>
                                             </stackView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nKo-Yx-636">
-                                                <rect key="frame" x="39.999999999999993" y="346.66666666666663" width="76.333333333333314" height="23"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Settings" hidden="YES" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nKo-Yx-636">
+                                                <rect key="frame" x="39.999999999999993" y="346.66666666666663" width="76.333333333333314" height="0.0"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="23" id="2Ek-yW-xn1"/>
+                                                    <constraint firstAttribute="height" constant="0" id="2Ek-yW-xn1"/>
                                                 </constraints>
                                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="19"/>
                                                 <nil key="textColor"/>

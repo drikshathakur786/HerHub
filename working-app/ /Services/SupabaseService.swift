@@ -113,9 +113,39 @@ final class SupabaseService {
     
     // MARK: - Community Operations
     
-    /// Fetch all communities
+    /// Fetch all communities with their posts and comments reassembled
     func fetchAllCommunities() async throws -> [Community] {
-        return try await fetchAll(from: SupabaseManager.Tables.communities)
+        // 1. Fetch flat community records
+        let dbCommunities: [CommunityForDB] = try await fetchAll(from: SupabaseManager.Tables.communities)
+        
+        // 2. Fetch all posts
+        let dbPosts: [PostForDB] = try await fetchAll(from: SupabaseManager.Tables.posts)
+        
+        // 3. Fetch all comments
+        let dbComments: [CommentForDB] = try await fetchAll(from: SupabaseManager.Tables.comments)
+        
+        // 4. Reassemble: comments -> posts -> communities
+        var assembledCommunities: [Community] = []
+        
+        for dbCom in dbCommunities {
+            var community = Community(name: dbCom.name, description: dbCom.description, themeColor: dbCom.themeColor, isFeatured: dbCom.isFeatured, createdBy: dbCom.createdBy)
+            // Overwrite generated id/createdAt with DB values
+            community = Community(id: dbCom.id, name: dbCom.name, description: dbCom.description, themeColor: dbCom.themeColor, isFeatured: dbCom.isFeatured, createdBy: dbCom.createdBy, posts: [], members: dbCom.members, createdAt: dbCom.createdAt)
+            
+            // Find posts belonging to this community
+            let communityPosts = dbPosts.filter { $0.communityID == dbCom.id }
+            for dbPost in communityPosts {
+                let postComments = dbComments.filter { $0.postID == dbPost.id }.map { dbComment in
+                    Comment(id: dbComment.id, postID: dbComment.postID, parentCommentID: dbComment.parentCommentID, authorID: dbComment.authorID, authorName: dbComment.authorName, text: dbComment.text, createdAt: dbComment.createdAt, likedBy: dbComment.likedBy)
+                }
+                let post = Post(id: dbPost.id, communityID: dbPost.communityID, authorID: dbPost.authorID, authorName: dbPost.authorName, title: dbPost.title, text: dbPost.text, imageURL: dbPost.imageURL, likedBy: dbPost.likedBy, comments: postComments, createdAt: dbPost.createdAt)
+                community.posts.append(post)
+            }
+            
+            assembledCommunities.append(community)
+        }
+        
+        return assembledCommunities
     }
     
     /// Fetch community by ID
@@ -123,14 +153,16 @@ final class SupabaseService {
         return try await fetchByID(id: id, from: SupabaseManager.Tables.communities)
     }
     
-    /// Create a new community
+    /// Create a new community (DB-safe, no nested posts)
     func createCommunity(_ community: Community) async throws {
-        try await insert(community, into: SupabaseManager.Tables.communities)
+        let dbRecord = CommunityForDB(from: community)
+        try await insert(dbRecord, into: SupabaseManager.Tables.communities)
     }
     
-    /// Update a community
+    /// Update a community (DB-safe, no nested posts)
     func updateCommunity(_ community: Community) async throws {
-        try await update(id: community.id, record: community, in: SupabaseManager.Tables.communities)
+        let dbRecord = CommunityForDB(from: community)
+        try await update(id: community.id, record: dbRecord, in: SupabaseManager.Tables.communities)
     }
     
     /// Delete a community
@@ -163,9 +195,10 @@ final class SupabaseService {
         return response
     }
     
-    /// Create a new post
+    /// Create a new post (DB-safe, no nested comments)
     func createPost(_ post: Post) async throws {
-        try await insert(post, into: SupabaseManager.Tables.posts)
+        let dbRecord = PostForDB(from: post)
+        try await insert(dbRecord, into: SupabaseManager.Tables.posts)
     }
     
     /// Delete a post
@@ -183,9 +216,10 @@ final class SupabaseService {
         return response["liked"] ?? false
     }
     
-    /// Create a report for a post
+    /// Create a report for a post (DB-safe)
     func createReport(_ report: Report) async throws {
-        try await insert(report, into: SupabaseManager.Tables.reports)
+        let dbRecord = ReportForDB(from: report)
+        try await insert(dbRecord, into: SupabaseManager.Tables.reports)
     }
     
     // MARK: - Comment Operations
@@ -202,9 +236,10 @@ final class SupabaseService {
         return response
     }
     
-    /// Create a comment
+    /// Create a comment (DB-safe)
     func createComment(_ comment: Comment) async throws {
-        try await insert(comment, into: SupabaseManager.Tables.comments)
+        let dbRecord = CommentForDB(from: comment)
+        try await insert(dbRecord, into: SupabaseManager.Tables.comments)
     }
     
     /// Delete a comment
