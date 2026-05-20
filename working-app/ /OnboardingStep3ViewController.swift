@@ -46,10 +46,10 @@ class OnboardingStep3ViewController: OnboardingBaseViewController {
             $0?.layer.cornerRadius = 8
         }
         
-        sleepTextField?.text = "7"
-        stressTextField?.text = "5"
-        dietTextField?.text = "5"
-        cycleLengthTextField?.text = "28"
+        sleepTextField?.placeholder = "e.g. 7 (4-14 hrs)"
+        stressTextField?.placeholder = "e.g. 5 (1-10)"
+        dietTextField?.placeholder = "e.g. 5 (1-10)"
+        cycleLengthTextField?.placeholder = "e.g. 28 (21-45 days)"
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
@@ -82,38 +82,100 @@ class OnboardingStep3ViewController: OnboardingBaseViewController {
     
     @IBAction func nextButtonTapped(_ sender: Any) {
         
+        var invalidFields: [UITextField] = []
+        var errorMessages: [String] = []
+        
+        // Reset all field borders first
+        [sleepTextField, stressTextField, dietTextField, cycleLengthTextField].forEach {
+            clearErrorBorder($0)
+        }
+        
+        // Validate sleep
+        let sleepText = sleepTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if sleepText.isEmpty {
+            invalidFields.append(sleepTextField!)
+            errorMessages.append("Sleep hours")
+        } else if let val = Double(sleepText), val < 4.0 || val > 14.0 {
+            invalidFields.append(sleepTextField!)
+            errorMessages.append("Sleep hours (4-14)")
+        } else if Double(sleepText) == nil {
+            invalidFields.append(sleepTextField!)
+            errorMessages.append("Sleep hours (enter a number)")
+        }
+        
+        // Validate stress
+        let stressText = stressTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if stressText.isEmpty {
+            invalidFields.append(stressTextField!)
+            errorMessages.append("Stress level")
+        } else if let val = Int(stressText), val < 1 || val > 10 {
+            invalidFields.append(stressTextField!)
+            errorMessages.append("Stress level (1-10)")
+        } else if Int(stressText) == nil {
+            invalidFields.append(stressTextField!)
+            errorMessages.append("Stress level (enter a number)")
+        }
+        
+        // Validate diet
+        let dietText = dietTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if dietText.isEmpty {
+            invalidFields.append(dietTextField!)
+            errorMessages.append("Diet quality")
+        } else if let val = Int(dietText), val < 1 || val > 10 {
+            invalidFields.append(dietTextField!)
+            errorMessages.append("Diet quality (1-10)")
+        } else if Int(dietText) == nil {
+            invalidFields.append(dietTextField!)
+            errorMessages.append("Diet quality (enter a number)")
+        }
+        
+        // Validate cycle length
+        let cycleText = cycleLengthTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if cycleText.isEmpty {
+            invalidFields.append(cycleLengthTextField!)
+            errorMessages.append("Cycle length")
+        } else if let val = Int(cycleText), val < 21 || val > 45 {
+            invalidFields.append(cycleLengthTextField!)
+            errorMessages.append("Cycle length (21-45 days)")
+        } else if Int(cycleText) == nil {
+            invalidFields.append(cycleLengthTextField!)
+            errorMessages.append("Cycle length (enter a number)")
+        }
+        
+        // If there are invalid fields, highlight them red and show alert
+        if !invalidFields.isEmpty {
+            for field in invalidFields {
+                setErrorBorder(field)
+            }
+            let message = "Please fill in: " + errorMessages.joined(separator: ", ")
+            showAlert(message: message)
+            return
+        }
+        
+        // All valid — parse values
+        let sleepHours = Double(sleepText)!
+        let stressLevel = Int(stressText)!
+        let dietQuality = Int(dietText)!
+        let cycleLength = Int(cycleText)!
+        
         let exerciseMap = [0, 2, 4, 7]
         let exercisePerWeek = exerciseMap[exerciseSegment?.selectedSegmentIndex ?? 2]
         
-     
         let caffeineMap = [0, 1, 3]
         let caffeineIntake = caffeineMap[caffeineSegment?.selectedSegmentIndex ?? 1]
         
-       
-        let sleepHours = Double(sleepTextField?.text ?? "7") ?? 7.0
-        let stressLevel = Int(stressTextField?.text ?? "5") ?? 5
-        let dietQuality = Int(dietTextField?.text ?? "5") ?? 5
-        let cycleLength = Int(cycleLengthTextField?.text ?? "28") ?? 28
-        
-        
-        let clampedSleep = max(4.0, min(10.0, sleepHours))
-        let clampedStress = max(1, min(10, stressLevel))
-        let clampedDiet = max(1, min(10, dietQuality))
-        let clampedCycle = max(21, min(45, cycleLength))
-        
-       
-        onBoardingViewController.onboardingData["baseCycleLength"] = clampedCycle
+        onBoardingViewController.onboardingData["baseCycleLength"] = cycleLength
         onBoardingViewController.onboardingData["exercisePerWeek"] = exercisePerWeek
-        onBoardingViewController.onboardingData["avgSleepHours"] = clampedSleep
-        onBoardingViewController.onboardingData["baselineStress"] = clampedStress
-        onBoardingViewController.onboardingData["dietQuality"] = clampedDiet
+        onBoardingViewController.onboardingData["avgSleepHours"] = sleepHours
+        onBoardingViewController.onboardingData["baselineStress"] = stressLevel
+        onBoardingViewController.onboardingData["dietQuality"] = dietQuality
         onBoardingViewController.onboardingData["caffeineIntake"] = caffeineIntake
         onBoardingViewController.onboardingData["workSchedule"] = workSegment?.selectedSegmentIndex ?? 0
         
         print("[Onboarding Step 2] Lifestyle data saved:")
-        print("  - Cycle: \(clampedCycle), Exercise: \(exercisePerWeek)/week")
-        print("  - Sleep: \(clampedSleep)h, Stress: \(clampedStress)/10")
-        print("  - Diet: \(clampedDiet)/10, Caffeine: \(caffeineIntake) cups")
+        print("  - Cycle: \(cycleLength), Exercise: \(exercisePerWeek)/week")
+        print("  - Sleep: \(sleepHours)h, Stress: \(stressLevel)/10")
+        print("  - Diet: \(dietQuality)/10, Caffeine: \(caffeineIntake) cups")
         print("  - Work: \(workSegment?.selectedSegmentIndex == 0 ? "Day" : "Night")")
         
         performSegue(withIdentifier: "toStep4", sender: self)
@@ -122,11 +184,43 @@ class OnboardingStep3ViewController: OnboardingBaseViewController {
     @IBAction func backButtonTapped(_ sender: Any) {
         navigationController?.popViewController(animated: true)
     }
+    
+    // MARK: - Field Error Highlighting
+    
+    private func setErrorBorder(_ textField: UITextField?) {
+        guard let field = textField else { return }
+        field.layer.borderWidth = 1.5
+        field.layer.borderColor = UIColor.systemRed.cgColor
+        
+        // Shake animation for extra visual feedback
+        let shake = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        shake.timingFunction = CAMediaTimingFunction(name: .linear)
+        shake.duration = 0.4
+        shake.values = [-6, 6, -4, 4, -2, 2, 0]
+        field.layer.add(shake, forKey: "shake")
+    }
+    
+    private func clearErrorBorder(_ textField: UITextField?) {
+        guard let field = textField else { return }
+        field.layer.borderWidth = 0
+        field.layer.borderColor = UIColor.clear.cgColor
+    }
+    
+    private func showAlert(message: String) {
+        let alert = UIAlertController(title: "Required Fields", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
 
 extension OnboardingStep3ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // Clear red border when user starts typing in the field
+        clearErrorBorder(textField)
     }
 }

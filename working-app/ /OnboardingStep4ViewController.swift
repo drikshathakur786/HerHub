@@ -48,6 +48,11 @@ class OnboardingStep4ViewController: OnboardingBaseViewController {
         weightTextField?.keyboardType = .decimalPad
         periodLengthTextField?.keyboardType = .numberPad
         
+        // Placeholder hints instead of default values
+        heightTextField?.placeholder = "e.g. 165 (100-220 cm)"
+        weightTextField?.placeholder = "e.g. 60 (30-200 kg)"
+        periodLengthTextField?.placeholder = "e.g. 5 (2-10 days)"
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
@@ -78,10 +83,68 @@ class OnboardingStep4ViewController: OnboardingBaseViewController {
     }
     
     @IBAction func completeButtonTapped(_ sender: Any) {
-        // Collect final data
-        let heightCm = Double(heightTextField?.text ?? "") ?? 165.0
-        let weightKg = Double(weightTextField?.text ?? "") ?? 60.0
-        let periodLength = Int(periodLengthTextField?.text ?? "") ?? 5
+        
+        var invalidFields: [UITextField] = []
+        var errorMessages: [String] = []
+        
+        // Reset all field borders first
+        [heightTextField, weightTextField, periodLengthTextField].forEach {
+            clearErrorBorder($0)
+        }
+        
+        // Validate height
+        let heightText = heightTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if heightText.isEmpty {
+            invalidFields.append(heightTextField!)
+            errorMessages.append("Height")
+        } else if let val = Double(heightText), val < 100.0 || val > 220.0 {
+            invalidFields.append(heightTextField!)
+            errorMessages.append("Height (100-220 cm)")
+        } else if Double(heightText) == nil {
+            invalidFields.append(heightTextField!)
+            errorMessages.append("Height (enter a number)")
+        }
+        
+        // Validate weight
+        let weightText = weightTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if weightText.isEmpty {
+            invalidFields.append(weightTextField!)
+            errorMessages.append("Weight")
+        } else if let val = Double(weightText), val < 30.0 || val > 200.0 {
+            invalidFields.append(weightTextField!)
+            errorMessages.append("Weight (30-200 kg)")
+        } else if Double(weightText) == nil {
+            invalidFields.append(weightTextField!)
+            errorMessages.append("Weight (enter a number)")
+        }
+        
+        // Validate period length
+        let periodText = periodLengthTextField?.text?.trimmingCharacters(in: .whitespaces) ?? ""
+        if periodText.isEmpty {
+            invalidFields.append(periodLengthTextField!)
+            errorMessages.append("Period length")
+        } else if let val = Int(periodText), val < 2 || val > 10 {
+            invalidFields.append(periodLengthTextField!)
+            errorMessages.append("Period length (2-10 days)")
+        } else if Int(periodText) == nil {
+            invalidFields.append(periodLengthTextField!)
+            errorMessages.append("Period length (enter a number)")
+        }
+        
+        // If there are invalid fields, highlight them red and show alert
+        if !invalidFields.isEmpty {
+            for field in invalidFields {
+                setErrorBorder(field)
+            }
+            let message = "Please fill in: " + errorMessages.joined(separator: ", ")
+            showValidationAlert(message: message)
+            return
+        }
+        
+        // All valid — parse values
+        let heightCm = Double(heightText)!
+        let weightKg = Double(weightText)!
+        let periodLength = Int(periodText)!
         let lastPeriodStart = lastPeriodDatePicker?.date ?? Date()
         
         let baseCycleLength = onBoardingViewController.onboardingData["baseCycleLength"] as? Int ?? 28
@@ -150,6 +213,27 @@ class OnboardingStep4ViewController: OnboardingBaseViewController {
         navigationController?.popViewController(animated: true)
     }
     
+    // MARK: - Field Error Highlighting
+    
+    private func setErrorBorder(_ textField: UITextField?) {
+        guard let field = textField else { return }
+        field.layer.borderWidth = 1.5
+        field.layer.borderColor = UIColor.systemRed.cgColor
+        
+        // Shake animation for extra visual feedback
+        let shake = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        shake.timingFunction = CAMediaTimingFunction(name: .linear)
+        shake.duration = 0.4
+        shake.values = [-6, 6, -4, 4, -2, 2, 0]
+        field.layer.add(shake, forKey: "shake")
+    }
+    
+    private func clearErrorBorder(_ textField: UITextField?) {
+        guard let field = textField else { return }
+        field.layer.borderWidth = 0
+        field.layer.borderColor = UIColor.clear.cgColor
+    }
+    
     private func showCompletionAlert() {
         onBoardingViewController.onboardingData = [:]
         
@@ -175,6 +259,12 @@ class OnboardingStep4ViewController: OnboardingBaseViewController {
         }
     }
     
+    private func showValidationAlert(message: String) {
+        let alert = UIAlertController(title: "Required Fields", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
     private func showErrorAlert(message: String) {
         let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
@@ -186,5 +276,10 @@ extension OnboardingStep4ViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // Clear red border when user starts typing in the field
+        clearErrorBorder(textField)
     }
 }
