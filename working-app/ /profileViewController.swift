@@ -30,6 +30,10 @@ class profileViewController: UIViewController {
     private let profileGradient = CAGradientLayer()
     private let backgroundGradient = CAGradientLayer()
     
+    // track previous bounds to avoid redundant layout work
+    private var lastViewBounds: CGRect = .zero
+    private var lastProfileCardBounds: CGRect = .zero
+    
     // store the current logged in user
     private var currentUser: User?
 
@@ -51,8 +55,49 @@ class profileViewController: UIViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        profileGradient.frame = profileCard.bounds
-        backgroundGradient.frame = view.bounds
+        
+        // Only update when bounds actually change to avoid
+        // redundant work during scroll-triggered layout passes
+        let viewBoundsChanged = view.bounds != lastViewBounds
+        let cardBoundsChanged = profileCard.bounds != lastProfileCardBounds
+        
+        if viewBoundsChanged {
+            lastViewBounds = view.bounds
+            backgroundGradient.frame = view.bounds
+        }
+        
+        if cardBoundsChanged {
+            lastProfileCardBounds = profileCard.bounds
+            profileGradient.frame = profileCard.bounds
+        }
+        
+        // Update shadow paths only when bounds change
+        if viewBoundsChanged || cardBoundsChanged {
+            updateShadowPaths()
+        }
+    }
+    
+    /// Set explicit shadowPath on all shadow-bearing views so Core Animation
+    /// doesn't have to render each view offscreen to compute the shadow shape
+    /// on every frame during scrolling.
+    private func updateShadowPaths() {
+        // Cycle & Period cards
+        if let card = cycleCard {
+            card.layer.shadowPath = UIBezierPath(roundedRect: card.bounds, cornerRadius: card.layer.cornerRadius).cgPath
+        }
+        if let card = periodCard {
+            card.layer.shadowPath = UIBezierPath(roundedRect: card.bounds, cornerRadius: card.layer.cornerRadius).cgPath
+        }
+        // Settings rows
+        if let v = EditProfile {
+            v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds, cornerRadius: v.layer.cornerRadius).cgPath
+        }
+        if let v = About {
+            v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds, cornerRadius: v.layer.cornerRadius).cgPath
+        }
+        if let v = LogOut {
+            v.layer.shadowPath = UIBezierPath(roundedRect: v.bounds, cornerRadius: v.layer.cornerRadius).cgPath
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -234,11 +279,8 @@ extension profileViewController {
         profileGradient.endPoint = CGPoint(x: 1, y: 1)
         profileCard.layer.insertSublayer(profileGradient, at: 0)
         
-        // Add subtle shadow to profile card
-        profileCard.layer.shadowColor = UIColor.black.cgColor
-        profileCard.layer.shadowOpacity = 0.15
-        profileCard.layer.shadowOffset = CGSize(width: 0, height: 8)
-        profileCard.layer.shadowRadius = 16
+        // NOTE: shadow removed from profileCard because clipsToBounds = true
+        // clips the shadow entirely (wasted GPU work that caused scroll lag)
 
         // make profile image circular with border
         profileImage.layer.cornerRadius = profileImage.frame.height / 2
@@ -266,6 +308,10 @@ extension profileViewController {
             card.layer.shadowOffset = CGSize(width: 0, height: 6)
             card.layer.shadowRadius = 12
             card.layer.masksToBounds = false
+            
+            // Cache rendered layer as bitmap for smooth scrolling
+            card.layer.shouldRasterize = true
+            card.layer.rasterizationScale = UIScreen.main.scale
             
             // Add subtle border for definition
             card.layer.borderWidth = 0.5
@@ -301,6 +347,8 @@ extension profileViewController {
         EditProfile.layer.shadowOffset = CGSize(width: 0, height: 4)
         EditProfile.layer.shadowRadius = 10
         EditProfile.layer.masksToBounds = false
+        EditProfile.layer.shouldRasterize = true
+        EditProfile.layer.rasterizationScale = UIScreen.main.scale
 
         // About row - standalone card
         About.layer.cornerRadius = 20
@@ -311,6 +359,8 @@ extension profileViewController {
         About.layer.shadowOffset = CGSize(width: 0, height: 4)
         About.layer.shadowRadius = 10
         About.layer.masksToBounds = false
+        About.layer.shouldRasterize = true
+        About.layer.rasterizationScale = UIScreen.main.scale
 
         // Logout button - pink filled button style
         LogOut.layer.cornerRadius = 14
@@ -321,6 +371,8 @@ extension profileViewController {
         LogOut.layer.shadowOffset = CGSize(width: 0, height: 4)
         LogOut.layer.shadowRadius = 8
         LogOut.layer.masksToBounds = false
+        LogOut.layer.shouldRasterize = true
+        LogOut.layer.rasterizationScale = UIScreen.main.scale
         
         // Delete Account button - bordered red style
         if DeleteAccountView != nil {
