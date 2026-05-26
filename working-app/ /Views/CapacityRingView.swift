@@ -94,6 +94,13 @@ class CapacityRingView: UIView {
         progressLayer.lineWidth = ringWidth
         progressLayer.lineCap = .round
         progressLayer.strokeEnd = 0
+        
+        // Glow effect
+        progressLayer.shadowColor = UIColor.rosePink.cgColor
+        progressLayer.shadowOffset = CGSize(width: 0, height: 2)
+        progressLayer.shadowRadius = 8
+        progressLayer.shadowOpacity = 0.6
+        
         layer.addSublayer(progressLayer)
     }
     
@@ -135,6 +142,9 @@ class CapacityRingView: UIView {
             color = UIColor(red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0) // Gray
         }
         progressLayer.strokeColor = color.cgColor
+        
+        // Sync the glow color with the stroke color
+        progressLayer.shadowColor = color.cgColor
         
         setProgress(to: CGFloat(capacity) / 100.0, animated: animated)
     }

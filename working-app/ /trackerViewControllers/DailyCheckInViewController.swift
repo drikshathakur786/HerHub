@@ -21,6 +21,7 @@ class DailyCheckInViewController: UIViewController {
     
     // MARK: - Properties
     var onSave: (() -> Void)?
+    var hidePeriodSwitch: Bool = false
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -63,6 +64,19 @@ class DailyCheckInViewController: UIViewController {
             btn.layer.shadowOffset = CGSize(width: 0, height: 4)
             btn.layer.shadowRadius = 8
             btn.layer.shadowOpacity = 0.2
+        }
+        
+        // Hide period switch if period is already active
+        if hidePeriodSwitch {
+            periodSwitch?.isHidden = true
+            // Find the label next to it ("Period Started Today?") and hide it
+            if let container = periodSwitch?.superview {
+                for view in container.subviews {
+                    if let label = view as? UILabel, label.text == "Period Started Today?" {
+                        label.isHidden = true
+                    }
+                }
+            }
         }
     }
     

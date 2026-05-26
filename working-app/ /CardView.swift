@@ -60,10 +60,58 @@ class CardView: UIView {
     override class var layerClass: AnyClass {
         return CAGradientLayer.self
     }
+    
+    // MARK: - Interactive Animations
+    
+    private let feedbackGenerator = UIImpactFeedbackGenerator(style: .light)
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        feedbackGenerator.prepare()
+        
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
+            self.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        feedbackGenerator.impactOccurred()
+        
+        UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.8, options: [.allowUserInteraction]) {
+            self.transform = .identity
+        }
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        
+        UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.8, options: [.allowUserInteraction]) {
+            self.transform = .identity
+        }
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         updateGradient()
+        
+        // Enforce Apple Ecosystem premium aesthetics
+        layer.cornerCurve = .continuous
+        
+        // Convert old black shadows to soft tinted shadows automatically
+        if layer.shadowColor == UIColor.black.cgColor {
+            layer.shadowColor = UIColor(red: 0.4, green: 0.1, blue: 0.2, alpha: 1.0).cgColor
+            layer.shadowOpacity = 0.08
+            layer.shadowOffset = CGSize(width: 0, height: 8)
+            layer.shadowRadius = 15
+        }
+        
+        // Performance optimizations for 60fps scrolling
+        if layer.cornerRadius > 0 {
+            layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
+        }
+        layer.shouldRasterize = true
+        layer.rasterizationScale = UIScreen.main.scale
     }
 
     private func updateGradient() {

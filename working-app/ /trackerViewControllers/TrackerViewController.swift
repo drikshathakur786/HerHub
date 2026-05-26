@@ -42,6 +42,9 @@ class TrackerViewController: UIViewController {
     private var confidenceCardLabel: UILabel!
     private var confidenceSubtitleLabel: UILabel!
     
+    private var isPeriodCurrentlyActive: Bool = false
+    private var checkInBarItemRef: UIBarButtonItem?
+    
     
     
     @IBOutlet var dayLabels: [UILabel]!
@@ -77,30 +80,47 @@ class TrackerViewController: UIViewController {
     
     // MARK: - UI Setup
     private func setupUI() {
-        // Modern background gradient (matching Forecast screen)
+        // Modern background gradient (matching Profile screen exactly for cohesive "Wow UI")
         let bgGradientLayer = CAGradientLayer()
         bgGradientLayer.frame = view.bounds
         bgGradientLayer.colors = [
-            UIColor(red: 1.0, green: 0.941, blue: 0.961, alpha: 1.0).cgColor,
-            UIColor(red: 0.961, green: 0.827, blue: 0.922, alpha: 1.0).cgColor
+            UIColor(red: 1.0, green: 0.96, blue: 0.98, alpha: 1.0).cgColor,
+            UIColor(red: 0.98, green: 0.89, blue: 0.95, alpha: 1.0).cgColor,
+            UIColor(red: 0.95, green: 0.88, blue: 0.96, alpha: 1.0).cgColor
         ]
+        bgGradientLayer.locations = [0.0, 0.5, 1.0]
         bgGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         bgGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
         view.layer.insertSublayer(bgGradientLayer, at: 0)
         
-        // check-in container 
+        // Force storyboard backgrounds to clear so the gradient is visible
+        view.backgroundColor = .clear
+        
+        if let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+            scrollView.backgroundColor = .clear
+            if let contentView = scrollView.subviews.first {
+                contentView.backgroundColor = .clear
+            }
+        }
+        
+        // check-in container styling (Apple Ecosystem premium feel)
         if let container = checkInContainerView {
             container.backgroundColor = .white
             container.layer.cornerRadius = 20
+            container.layer.cornerCurve = .continuous
             
             // Remove any existing blur views if present
             container.subviews.filter { $0 is UIVisualEffectView }.forEach { $0.removeFromSuperview() }
             
-            // Shadow
-            container.layer.shadowColor = UIColor.black.cgColor
-            container.layer.shadowOpacity = 0.05
-            container.layer.shadowOffset = CGSize(width: 0, height: 4)
-            container.layer.shadowRadius = 8
+            // Soft tinted shadow
+            container.layer.shadowColor = UIColor(red: 0.4, green: 0.1, blue: 0.2, alpha: 1.0).cgColor
+            container.layer.shadowOpacity = 0.08
+            container.layer.shadowOffset = CGSize(width: 0, height: 8)
+            container.layer.shadowRadius = 15
+            
+            // Performance rasterization
+            container.layer.shouldRasterize = true
+            container.layer.rasterizationScale = UIScreen.main.scale
         }
         
         // IMPORTANT: Hide check-in grid IMMEDIATELY to prevent overlap with capacity ring
@@ -116,14 +136,22 @@ class TrackerViewController: UIViewController {
         insightTitleLabel?.text = "Welcome to HerHub"
         insightDescriptionLabel?.text = "Log your first check-in to see personalised cycle insights and predictions."
         
-        // Add manual Check-in Button (+)
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "plus.circle.fill"),
-            style: .plain,
-            target: self,
-            action: #selector(presentDailyCheckIn)
-        )
-        navigationItem.rightBarButtonItem?.tintColor = UIColor(red: 0.9, green: 0.4, blue: 0.5, alpha: 1)
+        // Info Button - Plain native iOS bar button
+        let infoIcon = UIImage(systemName: "info.circle")
+        let infoBarItem = UIBarButtonItem(image: infoIcon, style: .plain, target: self, action: #selector(presentCyclePhasesInfo))
+        infoBarItem.tintColor = UIColor(red: 0.6, green: 0.4, blue: 0.8, alpha: 1)
+        
+        // Check-in Button (+) - Plain native iOS bar button
+        let checkInIcon = UIImage(systemName: "plus.circle.fill")
+        let checkInBarItem = UIBarButtonItem(image: checkInIcon, style: .plain, target: self, action: #selector(presentDailyCheckIn))
+        checkInBarItem.tintColor = UIColor(red: 0.9, green: 0.4, blue: 0.5, alpha: 1)
+        
+        // Store a reference to update it later
+        self.checkInBarItemRef = checkInBarItem
+        
+        // Right bar: check-in first (rightmost), then info (left of it)
+        // Note: the array is ordered right-to-left visually
+        navigationItem.rightBarButtonItems = [checkInBarItem, infoBarItem]
         
         // Auto-Popup Check logic (Premium feature)
         checkCheckInStatus()
@@ -139,6 +167,9 @@ class TrackerViewController: UIViewController {
         
         setupBioCapacityComponents()
         setupMidSectionComponents()
+        
+        // Style the forecast card to look native iOS
+        styleForecastCard()
     }
     
     
@@ -392,10 +423,17 @@ class TrackerViewController: UIViewController {
             let card = UIView()
             card.backgroundColor = .white
             card.layer.cornerRadius = 20
-            card.layer.shadowColor = UIColor.black.cgColor
-            card.layer.shadowOpacity = 0.05
-            card.layer.shadowOffset = CGSize(width: 0, height: 4)
-            card.layer.shadowRadius = 8
+            card.layer.cornerCurve = .continuous
+            
+            // Soft tinted shadow (Apple ecosystem feel)
+            card.layer.shadowColor = UIColor(red: 0.4, green: 0.1, blue: 0.2, alpha: 1.0).cgColor
+            card.layer.shadowOpacity = 0.08
+            card.layer.shadowOffset = CGSize(width: 0, height: 8)
+            card.layer.shadowRadius = 15
+            
+            // Rasterization for 60fps scrolling
+            card.layer.shouldRasterize = true
+            card.layer.rasterizationScale = UIScreen.main.scale
             card.translatesAutoresizingMaskIntoConstraints = false
             
             let titleLabel = UILabel()
@@ -462,28 +500,111 @@ class TrackerViewController: UIViewController {
     
     
     private func setupNavigationTitle() {
+        navigationItem.largeTitleDisplayMode = .never
+        navigationController?.navigationBar.prefersLargeTitles = false
+        
+        // Fully transparent nav bar — removes the pink blob behind the title
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.isTranslucent = true
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        navigationController?.navigationBar.shadowImage = UIImage()
+        
+        // Title label
         let titleLabel = UILabel()
         titleLabel.text = "Tracker"
-        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .semibold)
-        titleLabel.textColor = UIColor(red: 0.82, green: 0.23, blue: 0.56, alpha: 1) // Figma pink
-        titleLabel.textAlignment = .left
+        titleLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        titleLabel.textColor = .black
         
+        // Date subtitle
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "EEEE, MMMM d, yyyy"
-        let currentDate = dateFormatter.string(from: Date())
-        
+        dateFormatter.dateFormat = "EEEE, MMMM d"
         let subtitleLabel = UILabel()
-        subtitleLabel.text = currentDate
-        subtitleLabel.font = UIFont.systemFont(ofSize: 13, weight: .regular)
-        subtitleLabel.textColor = .darkGray
-        subtitleLabel.textAlignment = .left
+        subtitleLabel.text = dateFormatter.string(from: Date())
+        subtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        subtitleLabel.textColor = .secondaryLabel
         
         let stack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         stack.axis = .vertical
         stack.alignment = .leading
-        stack.spacing = 0
+        stack.spacing = 2
+        stack.translatesAutoresizingMaskIntoConstraints = false
         
-        navigationItem.titleView = stack
+        self.view.addSubview(stack)
+        
+        if let scrollView = self.view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+            for constraint in self.view.constraints {
+                if (constraint.firstItem as? UIView == scrollView && constraint.firstAttribute == .top) ||
+                   (constraint.secondItem as? UIView == scrollView && constraint.secondAttribute == .top) {
+                    constraint.isActive = false
+                }
+            }
+            NSLayoutConstraint.activate([
+                stack.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20),
+                stack.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 8),
+                scrollView.topAnchor.constraint(equalTo: stack.bottomAnchor, constant: 4) // Reduced from 20 to 4
+            ])
+        }
+        
+        navigationItem.leftBarButtonItem = nil
+        navigationItem.titleView = nil
+    }
+    
+    private func styleForecastCard() {
+        guard let forecast = forecastContainerView else { return }
+        
+        // Clean white card with soft shadow
+        forecast.backgroundColor = .white
+        forecast.layer.cornerRadius = 20
+        forecast.layer.cornerCurve = .continuous
+        forecast.layer.shadowColor = UIColor(red: 0.4, green: 0.1, blue: 0.2, alpha: 1.0).cgColor
+        forecast.layer.shadowOpacity = 0.08
+        forecast.layer.shadowOffset = CGSize(width: 0, height: 8)
+        forecast.layer.shadowRadius = 15
+        forecast.layer.shouldRasterize = true
+        forecast.layer.rasterizationScale = UIScreen.main.scale
+        forecast.clipsToBounds = false
+        
+        // Clear backgrounds of ALL nested day-column wrapper views
+        // These have systemBackgroundColor set in the storyboard which blocks the white card
+        func clearNestedBackgrounds(_ view: UIView) {
+            for subview in view.subviews {
+                if !(subview is UILabel) && !(subview is UIButton) && !(subview is UIImageView) {
+                    subview.backgroundColor = .clear
+                }
+                clearNestedBackgrounds(subview)
+            }
+        }
+        clearNestedBackgrounds(forecast)
+        
+        // Style the day labels, date labels, and fertility boxes
+        if let dayLabels = dayLabels {
+            for label in dayLabels {
+                label.font = UIFont.systemFont(ofSize: 11, weight: .medium)
+                label.textColor = .tertiaryLabel
+            }
+        }
+        
+        if let dateLabels = dateLabels {
+            for label in dateLabels {
+                label.font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+                label.textColor = .label
+            }
+        }
+        
+        if let fertilityBoxes = fertilityBoxes {
+            for box in fertilityBoxes {
+                box.layer.cornerRadius = 10
+                box.layer.cornerCurve = .continuous
+                box.layer.masksToBounds = true
+                box.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+            }
+        }
     }
     
     
@@ -491,12 +612,27 @@ class TrackerViewController: UIViewController {
     
     
     // Update gradient on layout changes (important!)
+    // Update gradient and shadows on layout changes (important for performance!)
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
         // Update gradient frame if it exists
         if let gradientLayer = view.layer.sublayers?.first(where: { $0 is CAGradientLayer }) as? CAGradientLayer {
-            gradientLayer.frame = view.bounds
+            if gradientLayer.frame != view.bounds {
+                gradientLayer.frame = view.bounds
+            }
+        }
+        
+        // Update shadow paths for explicit containers
+        if let container = checkInContainerView {
+            container.layer.shadowPath = UIBezierPath(roundedRect: container.bounds, cornerRadius: container.layer.cornerRadius).cgPath
+        }
+        
+        // Dynamically update shadow paths for programmatic mid-stack cards
+        if let stack = midStackView {
+            for card in stack.arrangedSubviews {
+                card.layer.shadowPath = UIBezierPath(roundedRect: card.bounds, cornerRadius: card.layer.cornerRadius).cgPath
+            }
         }
     }
     
@@ -525,6 +661,9 @@ class TrackerViewController: UIViewController {
             sheet.prefersGrabberVisible = true
         }
         
+        // Pass logic to hide period switch if period is already active
+        vc.hidePeriodSwitch = self.isPeriodCurrentlyActive
+        
         // Refresh data after saving — delay slightly to ensure DB write is flushed
         vc.onSave = { [weak self] in
             print(" [Tracker] Check-in saved, reloading data...")
@@ -536,6 +675,17 @@ class TrackerViewController: UIViewController {
         present(vc, animated: true)
     }
     
+    @objc func presentCyclePhasesInfo() {
+        let vc = CyclePhasesInfoViewController()
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+        }
+        present(vc, animated: true)
+    }
+    
+
     func checkCheckInStatus() {
         Task {
             guard let currentUser = AuthManager.shared.currentUser else { return }
@@ -677,7 +827,9 @@ class TrackerViewController: UIViewController {
                     let confidence = PeriodPredictionService.shared.calculateConfidence(baseline: baseline)
                     
                     // 3. Current Day & Phase (NO MODULO - Let reality drive the cycle)
-                    let daysSinceLastPeriod = Calendar.current.dateComponents([.day], from: baseline.lastPeriodStart, to: Date()).day ?? 0
+                    let startOfLastPeriod = Calendar.current.startOfDay(for: baseline.lastPeriodStart)
+                    let startOfToday = Calendar.current.startOfDay(for: Date())
+                    let daysSinceLastPeriod = Calendar.current.dateComponents([.day], from: startOfLastPeriod, to: startOfToday).day ?? 0
                     let actualDay = daysSinceLastPeriod + 1
                     
                     // 4. Find check-in for TODAY
@@ -729,21 +881,27 @@ class TrackerViewController: UIViewController {
             let phase = determinePhaseHeuristic(dayInCycle: effectiveDay, cycleLength: cycleLength, periodLength: periodLength)
             
             // Populate New Mid-Section Cards (Unconditional)
-            cycleDayCardLabel.text = "Day \(effectiveDay)"
-            
             // Calculate days to ovulation (approximate)
             let predictedOvulation = (prediction?.cycleLength ?? 28) / 2
             let daysToPeak = predictedOvulation - effectiveDay
             
-            if daysToPeak > 0 {
-                cycleDaySubtitleLabel.text = "\(daysToPeak) days to peak"
-                cycleDaySubtitleLabel.textColor = .rosePink
-            } else if daysToPeak == 0 {
-                cycleDaySubtitleLabel.text = "Peak day"
-                cycleDaySubtitleLabel.textColor = .rosePink
+            if effectiveDay > cycleLength && !(todayCheckIn?.periodStartedToday == true) {
+                cycleDayCardLabel.text = "Late"
+                cycleDaySubtitleLabel.text = "Day \(effectiveDay) of cycle"
+                cycleDaySubtitleLabel.textColor = .systemRed
             } else {
-                cycleDaySubtitleLabel.text = "\(abs(daysToPeak)) days post"
-                cycleDaySubtitleLabel.textColor = .slateGray
+                cycleDayCardLabel.text = "Day \(effectiveDay)"
+                
+                if daysToPeak > 0 {
+                    cycleDaySubtitleLabel.text = "\(daysToPeak) days to peak"
+                    cycleDaySubtitleLabel.textColor = .rosePink
+                } else if daysToPeak == 0 {
+                    cycleDaySubtitleLabel.text = "Peak day"
+                    cycleDaySubtitleLabel.textColor = .rosePink
+                } else {
+                    cycleDaySubtitleLabel.text = "\(abs(daysToPeak)) days post peak"
+                    cycleDaySubtitleLabel.textColor = .slateGray
+                }
             }
             
             // NEXT PERIOD Logic (Replacing Confidence)
@@ -753,7 +911,9 @@ class TrackerViewController: UIViewController {
             
             confidenceCardLabel.text = dateFormatter.string(from: nextPeriodDate)
             
-            let daysUntil = Calendar.current.dateComponents([.day], from: Date(), to: nextPeriodDate).day ?? 0
+            let startOfNextPeriod = Calendar.current.startOfDay(for: nextPeriodDate)
+            let startOfToday = Calendar.current.startOfDay(for: Date())
+            let daysUntil = Calendar.current.dateComponents([.day], from: startOfToday, to: startOfNextPeriod).day ?? 0
             
             if daysUntil > 0 {
                 confidenceSubtitleLabel.text = "in \(daysUntil) days"
@@ -806,6 +966,16 @@ class TrackerViewController: UIViewController {
             
             // 3. BOTTOM: Bio-Capacity Dashboard (Always Visible)
             showCapacityDashboard(true)
+            
+            // 4. Update check-in button state
+            self.isPeriodCurrentlyActive = effectiveDay <= periodLength
+            if todayCheckIn != nil {
+                self.checkInBarItemRef?.image = UIImage(systemName: "checkmark.circle.fill")
+                self.checkInBarItemRef?.tintColor = .systemGreen
+            } else {
+                self.checkInBarItemRef?.image = UIImage(systemName: "plus.circle.fill")
+                self.checkInBarItemRef?.tintColor = UIColor(red: 0.9, green: 0.4, blue: 0.5, alpha: 1)
+            }
             
             // Calculate capacity (Check-in optional - handles nil gracefully)
             let capacity = PeriodPredictionService.shared.calculateBioCapacity(
@@ -967,16 +1137,22 @@ class TrackerViewController: UIViewController {
                 box.textAlignment = .center
                 box.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
                 box.textColor = .white
-                box.layer.cornerRadius = 6
+                
+                // Modern squircle pill
+                box.layer.cornerRadius = 10
+                box.layer.cornerCurve = .continuous
                 box.layer.masksToBounds = true
                 
                 switch forecast.fertility {
                 case .low:
-                    box.backgroundColor = UIColor(red: 1, green: 0.35, blue: 0.47, alpha: 1) // FF5A78
+                    box.backgroundColor = UIColor.systemRed.withAlphaComponent(0.12)
+                    box.textColor = .systemRed
                 case .med:
-                    box.backgroundColor = UIColor(red: 1, green: 0.80, blue: 0.25, alpha: 1) // FFCC3F
+                    box.backgroundColor = UIColor.systemOrange.withAlphaComponent(0.15)
+                    box.textColor = .systemOrange
                 case .high:
-                    box.backgroundColor = UIColor(red: 0.25, green: 0.51, blue: 1, alpha: 1) // 3F82FF
+                    box.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.12)
+                    box.textColor = .systemBlue
                 }
             }
         }

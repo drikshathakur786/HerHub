@@ -14,6 +14,7 @@ class FeaturedPostCollectionCell: UICollectionViewCell {
     private let communityLabel = UILabel()
     private let titleLabel = UILabel()
     private let snippetLabel = UILabel()
+    private let postImageView = UIImageView()
     private let timeLabel = UILabel()
     
     override init(frame: CGRect) {
@@ -63,7 +64,13 @@ class FeaturedPostCollectionCell: UICollectionViewCell {
         timeLabel.font = UIFont.systemFont(ofSize: 12)
         timeLabel.textColor = .secondaryLabel
         
-        let textStack = UIStackView(arrangedSubviews: [communityLabel, titleLabel, snippetLabel, timeLabel])
+        postImageView.translatesAutoresizingMaskIntoConstraints = false
+        postImageView.contentMode = .scaleAspectFill
+        postImageView.clipsToBounds = true
+        postImageView.layer.cornerRadius = 8
+        postImageView.isHidden = true
+        
+        let textStack = UIStackView(arrangedSubviews: [communityLabel, titleLabel, snippetLabel, postImageView, timeLabel])
         textStack.axis = .vertical
         textStack.spacing = 4
         textStack.translatesAutoresizingMaskIntoConstraints = false
@@ -88,7 +95,9 @@ class FeaturedPostCollectionCell: UICollectionViewCell {
             headerStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -16),
             
             avatarImageView.widthAnchor.constraint(equalToConstant: 40),
-            avatarImageView.heightAnchor.constraint(equalToConstant: 40)
+            avatarImageView.heightAnchor.constraint(equalToConstant: 40),
+            
+            postImageView.heightAnchor.constraint(equalToConstant: 160)
         ])
     }
     
@@ -114,6 +123,28 @@ class FeaturedPostCollectionCell: UICollectionViewCell {
         } else {
             communityLabel.textColor = .systemBlue
         }
+        
+        if let imageURL = post.imageURL, !imageURL.isEmpty {
+            postImageView.isHidden = false
+            if let image = loadImageFromDocuments(filename: imageURL) {
+                postImageView.image = image
+            } else {
+                postImageView.image = UIImage(named: imageURL)
+            }
+        } else {
+            postImageView.isHidden = true
+            postImageView.image = nil
+        }
+    }
+    
+    private func loadImageFromDocuments(filename: String) -> UIImage? {
+        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsDirectory.appendingPathComponent(filename)
+        
+        if let imageData = try? Data(contentsOf: fileURL) {
+            return UIImage(data: imageData)
+        }
+        return nil
     }
 }
 

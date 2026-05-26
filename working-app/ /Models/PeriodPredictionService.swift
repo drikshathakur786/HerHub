@@ -167,10 +167,12 @@ class PeriodPredictionService {
     func getLateDays(baseline: CycleBaselineProfile, cycleLength: Int) -> Int {
         let lastPeriod = baseline.lastPeriodStart
         let expectedNext = Calendar.current.date(byAdding: .day, value: cycleLength, to: lastPeriod)!
+        
+        let startOfExpected = Calendar.current.startOfDay(for: expectedNext)
         let today = Calendar.current.startOfDay(for: Date())
         
-        if today > expectedNext {
-            return Calendar.current.dateComponents([.day], from: expectedNext, to: today).day ?? 0
+        if today > startOfExpected {
+            return Calendar.current.dateComponents([.day], from: startOfExpected, to: today).day ?? 0
         }
         return 0
     }

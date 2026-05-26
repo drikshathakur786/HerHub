@@ -45,24 +45,34 @@ class ForecastViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        loadForecastData()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        loadForecastData()
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Prevents the black box jump glitch when hiding the tab bar on push
+        self.hidesBottomBarWhenPushed = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // Show Nav Bar, Hide Tab Bar
+        // Show Nav Bar
         navigationController?.setNavigationBarHidden(false, animated: animated)
-        tabBarController?.tabBar.isHidden = true
+        
+        // Make Nav Bar completely transparent so the gradient flows behind the title seamlessly
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = .clear
+        appearance.shadowColor = .clear
+        
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+        navigationController?.navigationBar.isTranslucent = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // Restore Tab Bar for other screens
-        tabBarController?.tabBar.isHidden = false
     }
 }
 
@@ -70,13 +80,15 @@ class ForecastViewController: UIViewController {
 extension ForecastViewController {
     
     func setupUI() {
-        // Modern background gradient (Standardized)
+        // Modern background gradient (matching Tracker screen exactly)
         let bgGradientLayer = CAGradientLayer()
         bgGradientLayer.frame = view.bounds
         bgGradientLayer.colors = [
-            UIColor(red: 1.0, green: 0.941, blue: 0.961, alpha: 1.0).cgColor,
-            UIColor(red: 0.961, green: 0.827, blue: 0.922, alpha: 1.0).cgColor
+            UIColor(red: 1.0, green: 0.96, blue: 0.98, alpha: 1.0).cgColor,
+            UIColor(red: 0.98, green: 0.89, blue: 0.95, alpha: 1.0).cgColor,
+            UIColor(red: 0.95, green: 0.88, blue: 0.96, alpha: 1.0).cgColor
         ]
+        bgGradientLayer.locations = [0.0, 0.5, 1.0]
         bgGradientLayer.startPoint = CGPoint(x: 0.5, y: 0)
         bgGradientLayer.endPoint = CGPoint(x: 0.5, y: 1)
         
@@ -85,6 +97,17 @@ extension ForecastViewController {
             oldLayer.removeFromSuperlayer()
         }
         view.layer.insertSublayer(bgGradientLayer, at: 0)
+        
+        // Ensure the root view has clear background so gradient shows
+        view.backgroundColor = .clear
+        
+        // Clear scrollView and its content view so the gradient shines through
+        if let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+            scrollView.backgroundColor = .clear
+            if let contentView = scrollView.subviews.first {
+                contentView.backgroundColor = .clear
+            }
+        }
         
         setupDateStrip()
         setupCards()
