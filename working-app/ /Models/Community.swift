@@ -15,6 +15,7 @@ struct CommunityForDB: Codable {
     var name: String
     var description: String
     var themeColor: String
+    var iconName: String
     var isFeatured: Bool
     var createdBy: UUID
     var members: [UUID]
@@ -23,6 +24,7 @@ struct CommunityForDB: Codable {
     enum CodingKeys: String, CodingKey {
         case id, name, description
         case themeColor = "theme_color"
+        case iconName = "icon_name"
         case isFeatured = "is_featured"
         case createdBy = "created_by"
         case members
@@ -34,6 +36,7 @@ struct CommunityForDB: Codable {
         self.name = community.name
         self.description = community.description
         self.themeColor = community.themeColor
+        self.iconName = community.iconName
         self.isFeatured = community.isFeatured
         self.createdBy = community.createdBy
         self.members = community.members
@@ -148,17 +151,19 @@ struct Community: Codable, Identifiable, Equatable {
     var name: String
     var description: String
     var themeColor: String
+    var iconName: String
     var isFeatured: Bool
     var createdBy: UUID
     var posts: [Post]
     var members: [UUID]
     var createdAt: Date
 
-    init(name: String, description: String, themeColor: String, isFeatured: Bool = false, createdBy: UUID) {
+    init(name: String, description: String, themeColor: String, iconName: String = "heart.fill", isFeatured: Bool = false, createdBy: UUID) {
         self.id = UUID()
         self.name = name
         self.description = description
         self.themeColor = themeColor
+        self.iconName = iconName
         self.isFeatured = isFeatured
         self.createdBy = createdBy
         self.posts = []
@@ -167,11 +172,12 @@ struct Community: Codable, Identifiable, Equatable {
     }
     
     /// Full memberwise init for reassembling from DB
-    init(id: UUID, name: String, description: String, themeColor: String, isFeatured: Bool, createdBy: UUID, posts: [Post], members: [UUID], createdAt: Date) {
+    init(id: UUID, name: String, description: String, themeColor: String, iconName: String = "heart.fill", isFeatured: Bool, createdBy: UUID, posts: [Post], members: [UUID], createdAt: Date) {
         self.id = id
         self.name = name
         self.description = description
         self.themeColor = themeColor
+        self.iconName = iconName
         self.isFeatured = isFeatured
         self.createdBy = createdBy
         self.posts = posts

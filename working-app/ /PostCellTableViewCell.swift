@@ -35,7 +35,10 @@ class PostCellTableViewCell: UITableViewCell {
         self.selectionStyle = .none
     }
 
+    private var currentPostID: UUID?
+
     func configure(post: Post, currentUserID: UUID? = nil) {
+        currentPostID = post.id
         
         nameLabel.text = post.authorName
         postBodyLabel.text = post.text
@@ -55,6 +58,20 @@ class PostCellTableViewCell: UITableViewCell {
 
         avatarImageView.image = UIImage(systemName: "person.circle.fill")
         avatarImageView.tintColor = .systemGray4
+        
+        Task {
+            if let user = try? await UserController.shared.fetchUser(byID: post.authorID) {
+                if let avatarName = user.userPicture, !avatarName.isEmpty {
+                    await MainActor.run {
+                        // Prevent cell reuse mismatch
+                        if self.currentPostID == post.id {
+                            self.avatarImageView.image = UIImage(named: avatarName)
+                            self.avatarImageView.tintColor = nil
+                        }
+                    }
+                }
+            }
+        }
             
         if let imageURL = post.imageURL, !imageURL.isEmpty {
             postImageView.isHidden = false

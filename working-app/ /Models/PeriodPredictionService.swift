@@ -101,7 +101,7 @@ class PeriodPredictionService {
     
     private func fallbackPredict(baseline: CycleBaselineProfile) -> (cycleLength: Int, periodLength: Int) {
         var cycleLength = baseline.baseCycleLength
-        var periodLength = baseline.basePeriodLength
+        let periodLength = baseline.basePeriodLength
         
         if baseline.hasPCOS { cycleLength += 5 }
         if baseline.onBirthControl { cycleLength = 28 }

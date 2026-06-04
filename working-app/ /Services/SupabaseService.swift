@@ -78,7 +78,7 @@ final class SupabaseService {
         let response: [User] = try await client
             .from(SupabaseManager.Tables.users)
             .select()
-            .ilike("email", value: email)
+            .ilike("email", pattern: email)
             .limit(1)
             .execute()
             .value
@@ -128,9 +128,9 @@ final class SupabaseService {
         var assembledCommunities: [Community] = []
         
         for dbCom in dbCommunities {
-            var community = Community(name: dbCom.name, description: dbCom.description, themeColor: dbCom.themeColor, isFeatured: dbCom.isFeatured, createdBy: dbCom.createdBy)
+            var community = Community(name: dbCom.name, description: dbCom.description, themeColor: dbCom.themeColor, iconName: dbCom.iconName, isFeatured: dbCom.isFeatured, createdBy: dbCom.createdBy)
             // Overwrite generated id/createdAt with DB values
-            community = Community(id: dbCom.id, name: dbCom.name, description: dbCom.description, themeColor: dbCom.themeColor, isFeatured: dbCom.isFeatured, createdBy: dbCom.createdBy, posts: [], members: dbCom.members, createdAt: dbCom.createdAt)
+            community = Community(id: dbCom.id, name: dbCom.name, description: dbCom.description, themeColor: dbCom.themeColor, iconName: dbCom.iconName, isFeatured: dbCom.isFeatured, createdBy: dbCom.createdBy, posts: [], members: dbCom.members, createdAt: dbCom.createdAt)
             
             // Find posts belonging to this community
             let communityPosts = dbPosts.filter { $0.communityID == dbCom.id }
@@ -292,7 +292,7 @@ final class SupabaseService {
         let filePath = "\(fileName)"
         _ = try await client.storage
             .from(bucket)
-            .upload(path: filePath, file: data)
+            .upload(filePath, data: data)
         
         // Return the public URL
         let publicURL = try client.storage

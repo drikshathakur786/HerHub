@@ -66,7 +66,7 @@ final class UserController {
     
     // MARK: - Fetch User by Email
     
-    func fetchUserByEmail(_ email: String) async throws -> User? {
+    func fetchUserByEmail( email: String) async throws -> User? {
         if useSupabase {
             let user = try await supabaseService.fetchUserByEmail(email)
             print("[UserController] Fetched user by email from Supabase: \(email)")

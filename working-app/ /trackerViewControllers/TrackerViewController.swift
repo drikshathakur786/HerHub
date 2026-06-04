@@ -120,7 +120,7 @@ class TrackerViewController: UIViewController {
             
             // Performance rasterization
             container.layer.shouldRasterize = true
-            container.layer.rasterizationScale = UIScreen.main.scale
+            container.layer.rasterizationScale = traitCollection.displayScale
         }
         
         // IMPORTANT: Hide check-in grid IMMEDIATELY to prevent overlap with capacity ring
@@ -433,7 +433,7 @@ class TrackerViewController: UIViewController {
             
             // Rasterization for 60fps scrolling
             card.layer.shouldRasterize = true
-            card.layer.rasterizationScale = UIScreen.main.scale
+            card.layer.rasterizationScale = traitCollection.displayScale
             card.translatesAutoresizingMaskIntoConstraints = false
             
             let titleLabel = UILabel()
@@ -567,7 +567,7 @@ class TrackerViewController: UIViewController {
         forecast.layer.shadowOffset = CGSize(width: 0, height: 8)
         forecast.layer.shadowRadius = 15
         forecast.layer.shouldRasterize = true
-        forecast.layer.rasterizationScale = UIScreen.main.scale
+        forecast.layer.rasterizationScale = traitCollection.displayScale
         forecast.clipsToBounds = false
         
         // Clear backgrounds of ALL nested day-column wrapper views

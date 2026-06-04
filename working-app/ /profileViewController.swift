@@ -244,6 +244,16 @@ extension profileViewController {
         backgroundGradient.startPoint = CGPoint(x: 0.5, y: 0)
         backgroundGradient.endPoint = CGPoint(x: 0.5, y: 1)
         view.layer.insertSublayer(backgroundGradient, at: 0)
+        
+        // Force storyboard backgrounds to clear so the gradient is visible
+        view.backgroundColor = .clear
+        
+        if let scrollView = view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+            scrollView.backgroundColor = .clear
+            if let contentView = scrollView.subviews.first {
+                contentView.backgroundColor = .clear
+            }
+        }
     }
 
     private func setupNavigationBar() {
@@ -311,7 +321,7 @@ extension profileViewController {
             
             // Cache rendered layer as bitmap for smooth scrolling
             card.layer.shouldRasterize = true
-            card.layer.rasterizationScale = UIScreen.main.scale
+            card.layer.rasterizationScale = traitCollection.displayScale
             
             // Add subtle border for definition
             card.layer.borderWidth = 0.5
@@ -348,7 +358,7 @@ extension profileViewController {
         EditProfile.layer.shadowRadius = 10
         EditProfile.layer.masksToBounds = false
         EditProfile.layer.shouldRasterize = true
-        EditProfile.layer.rasterizationScale = UIScreen.main.scale
+        EditProfile.layer.rasterizationScale = traitCollection.displayScale
 
         // About row - standalone card
         About.layer.cornerRadius = 20
@@ -360,7 +370,7 @@ extension profileViewController {
         About.layer.shadowRadius = 10
         About.layer.masksToBounds = false
         About.layer.shouldRasterize = true
-        About.layer.rasterizationScale = UIScreen.main.scale
+        About.layer.rasterizationScale = traitCollection.displayScale
 
         // Logout button - pink filled button style
         LogOut.layer.cornerRadius = 14
@@ -372,7 +382,7 @@ extension profileViewController {
         LogOut.layer.shadowRadius = 8
         LogOut.layer.masksToBounds = false
         LogOut.layer.shouldRasterize = true
-        LogOut.layer.rasterizationScale = UIScreen.main.scale
+        LogOut.layer.rasterizationScale = traitCollection.displayScale
         
         // Delete Account button - bordered red style
         if DeleteAccountView != nil {

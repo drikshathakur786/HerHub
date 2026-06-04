@@ -26,23 +26,35 @@ class FeaturedPostCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
+    private var currentPostID: UUID?
+
     func configure(post: Post, community: Community?) {
+        currentPostID = post.id
         
         titleLabel.text = post.title
         snippetLabel.text = post.text
 
         avatarImageView.image = UIImage(systemName: "person.circle.fill")
         avatarImageView.tintColor = .systemGray4
+        
+        Task {
+            if let user = try? await UserController.shared.fetchUser(byID: post.authorID) {
+                if let avatarName = user.userPicture, !avatarName.isEmpty {
+                    await MainActor.run {
+                        if self.currentPostID == post.id {
+                            self.avatarImageView.image = UIImage(named: avatarName)
+                            self.avatarImageView.tintColor = nil
+                        }
+                    }
+                }
+            }
+        }
         timeLabel.text = post.createdAt.timeAgoDisplay()
 
         categoryLabel.text = community?.name ?? "General"
 
-        if community?.themeColor == "pink" {
-            categoryLabel.textColor = .systemPink
-        } else if community?.themeColor == "purple" {
-            categoryLabel.textColor = .systemPurple
-        } else if community?.themeColor == "yellow" {
-            categoryLabel.textColor = .systemYellow
+        if let theme = community?.themeColor {
+            categoryLabel.textColor = UIColor.themeColor(from: theme)
         } else {
             categoryLabel.textColor = .systemBlue
         }

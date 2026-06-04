@@ -21,7 +21,12 @@ class AllCommunitiesViewController: UIViewController {
         
         super.viewDidLoad()
         
-        title = "All Communities"
+        let titleLabel = UILabel()
+        titleLabel.text = "All Communities"
+        titleLabel.font = UIFont.systemFont(ofSize: 26, weight: .heavy)
+        titleLabel.textColor = UIColor(red: 0.3, green: 0.1, blue: 0.2, alpha: 1.0)
+        titleLabel.sizeToFit()
+        navigationItem.titleView = titleLabel
         navigationItem.largeTitleDisplayMode = .never
         
         loadData()
