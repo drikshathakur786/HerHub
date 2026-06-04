@@ -190,8 +190,8 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDat
         cell.configure(
             title: community.name,
             members: "\(community.members.count)",
-            iconName: "heart.fill",
-            color: UIColor(named: community.themeColor) ?? .systemPink
+            iconName: community.iconName,
+            color: UIColor.themeColor(from: community.themeColor)
         )
 
         return cell
@@ -268,4 +268,79 @@ extension CommunityViewController: UICollectionViewDelegate, UICollectionViewDat
     }
 }
 
+extension UIColor {
+    static func themeColor(from name: String) -> UIColor {
+        switch name.lowercased() {
+        case "pink", "red": return UIColor(red: 1.000, green: 0.533, blue: 0.969, alpha: 1.0) // #FF88F7
+        case "purple": return UIColor(red: 0.769, green: 0.400, blue: 1.000, alpha: 1.0) // #C466FF
+        case "cyan": return UIColor(red: 0.537, green: 0.812, blue: 0.941, alpha: 1.0) // #89CFF0
+        case "yellow": return UIColor(red: 0.937, green: 0.867, blue: 0.063, alpha: 1.0) // #EFDD10
+        case "green": return UIColor(red: 0.482, green: 0.831, blue: 0.169, alpha: 1.0) // #7BD42B
+        case "blue": return UIColor(red: 0.537, green: 0.812, blue: 0.941, alpha: 1.0) // #89CFF0
+        default: return UIColor(red: 1.000, green: 0.533, blue: 0.969, alpha: 1.0) // #FF88F7
+        }
+    }
+}
 
+extension UIView {
+    func applyPremiumGradient(theme: String) {
+        removePremiumGradient()
+        
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.name = "PremiumThemeGradient"
+        gradientLayer.frame = self.bounds
+        
+        let colors: [CGColor]
+        switch theme.lowercased() {
+        case "pink":
+            colors = [
+                UIColor(red: 1.0, green: 0.65, blue: 0.75, alpha: 1.0).cgColor,
+                UIColor(red: 0.95, green: 0.45, blue: 0.6, alpha: 1.0).cgColor
+            ]
+        case "purple":
+            colors = [
+                UIColor(red: 0.75, green: 0.6, blue: 0.95, alpha: 1.0).cgColor,
+                UIColor(red: 0.55, green: 0.35, blue: 0.85, alpha: 1.0).cgColor
+            ]
+        case "green":
+            colors = [
+                UIColor(red: 0.5, green: 0.95, blue: 0.8, alpha: 1.0).cgColor,
+                UIColor(red: 0.25, green: 0.75, blue: 0.55, alpha: 1.0).cgColor
+            ]
+        case "cyan":
+            colors = [
+                UIColor(red: 0.45, green: 0.85, blue: 1.0, alpha: 1.0).cgColor,
+                UIColor(red: 0.25, green: 0.65, blue: 0.95, alpha: 1.0).cgColor
+            ]
+        case "yellow":
+            colors = [
+                UIColor(red: 1.0, green: 0.9, blue: 0.5, alpha: 1.0).cgColor,
+                UIColor(red: 0.98, green: 0.7, blue: 0.2, alpha: 1.0).cgColor
+            ]
+        case "blue":
+            colors = [
+                UIColor(red: 0.4, green: 0.75, blue: 1.0, alpha: 1.0).cgColor,
+                UIColor(red: 0.15, green: 0.45, blue: 0.9, alpha: 1.0).cgColor
+            ]
+        default:
+            colors = [
+                UIColor(red: 1.0, green: 0.65, blue: 0.75, alpha: 1.0).cgColor,
+                UIColor(red: 0.95, green: 0.45, blue: 0.6, alpha: 1.0).cgColor
+            ]
+        }
+        
+        gradientLayer.colors = colors
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        gradientLayer.cornerRadius = self.layer.cornerRadius
+        if #available(iOS 13.0, *) {
+            gradientLayer.cornerCurve = self.layer.cornerCurve
+        }
+        
+        self.layer.insertSublayer(gradientLayer, at: 0)
+    }
+    
+    func removePremiumGradient() {
+        self.layer.sublayers?.removeAll(where: { $0.name == "PremiumThemeGradient" })
+    }
+}

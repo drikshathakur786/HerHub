@@ -101,7 +101,26 @@ class FeaturedPostCollectionCell: UICollectionViewCell {
         ])
     }
     
+    private var currentPostID: UUID?
+
     func configure(post: Post, community: Community?) {
+        currentPostID = post.id
+        
+        avatarImageView.image = UIImage(systemName: "person.circle.fill")
+        avatarImageView.tintColor = .systemGray4
+        
+        Task {
+            if let user = try? await UserController.shared.fetchUser(byID: post.authorID) {
+                if let avatarName = user.userPicture, !avatarName.isEmpty {
+                    await MainActor.run {
+                        if self.currentPostID == post.id {
+                            self.avatarImageView.image = UIImage(named: avatarName)
+                            self.avatarImageView.tintColor = nil
+                        }
+                    }
+                }
+            }
+        }
         communityLabel.text = community?.name ?? "General"
         titleLabel.text = post.title
         snippetLabel.text = post.text
@@ -110,16 +129,7 @@ class FeaturedPostCollectionCell: UICollectionViewCell {
         timeLabel.text = timeText
         
         if let theme = community?.themeColor {
-            switch theme {
-            case "pink":
-                communityLabel.textColor = .systemPink
-            case "purple":
-                communityLabel.textColor = .systemPurple
-            case "yellow":
-                communityLabel.textColor = .systemYellow
-            default:
-                communityLabel.textColor = .systemBlue
-            }
+            communityLabel.textColor = UIColor.themeColor(from: theme)
         } else {
             communityLabel.textColor = .systemBlue
         }

@@ -47,11 +47,12 @@ class CommunityManager {
     }
     
     
-    func addCommunity(name: String, description: String, themeColor: String, isFeatured: Bool, createdBy: UUID) {
+    func addCommunity(name: String, description: String, themeColor: String, iconName: String, isFeatured: Bool, createdBy: UUID) {
         var newCommunity = Community(
             name: name,
             description: description,
             themeColor: themeColor,
+            iconName: iconName,
             isFeatured: isFeatured,
             createdBy: createdBy
         )
@@ -60,8 +61,12 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                _ = try? await supabaseService.createCommunity(newCommunity)
-                print("[CommunityManager] Created community in Supabase: \(newCommunity.id)")
+                do {
+                    try await supabaseService.createCommunity(newCommunity)
+                    print("[CommunityManager] Created community in Supabase: \(newCommunity.id)")
+                } catch {
+                    print("[CommunityManager] ❌ ERROR creating community in Supabase: \(error)")
+                }
             }
         }
         saveCommunities()
@@ -75,7 +80,7 @@ class CommunityManager {
                 
         let allCommunities = getAllCommunities()
         let relevantCommunities = allCommunities.filter { community in
-            return community.isFeatured == true && community.members.contains(userID)
+            return community.members.contains(userID)
         }
                 
         let allPosts = relevantCommunities.flatMap { $0.posts }
@@ -100,8 +105,12 @@ class CommunityManager {
             
             if useSupabase {
                 Task {
-                    _ = try? await supabaseService.updateCommunity(updated)
-                    print("[CommunityManager] Updated community in Supabase: \(updated.id)")
+                    do {
+                        try await supabaseService.updateCommunity(updated)
+                        print("[CommunityManager] Updated community in Supabase: \(updated.id)")
+                    } catch {
+                        print("[CommunityManager] ❌ ERROR updating community in Supabase: \(error)")
+                    }
                 }
             }
             
@@ -124,8 +133,12 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                _ = try? await supabaseService.createPost(post)
-                print("[CommunityManager] Created post in Supabase: \(post.id)")
+                do {
+                    try await supabaseService.createPost(post)
+                    print("[CommunityManager] Created post in Supabase: \(post.id)")
+                } catch {
+                    print("[CommunityManager] ❌ ERROR creating post in Supabase: \(error)")
+                }
             }
         }
         
@@ -140,8 +153,12 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                _ = try? await supabaseService.deletePost(postID: postID)
-                print("[CommunityManager] Deleted post in Supabase: \(postID)")
+                do {
+                    try await supabaseService.deletePost(postID: postID)
+                    print("[CommunityManager] Deleted post in Supabase: \(postID)")
+                } catch {
+                    print("[CommunityManager] ❌ ERROR deleting post in Supabase: \(error)")
+                }
             }
         }
         
@@ -195,8 +212,12 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                _ = try? await supabaseService.createComment(comment)
-                print("[CommunityManager] Created comment in Supabase: \(comment.id)")
+                do {
+                    try await supabaseService.createComment(comment)
+                    print("[CommunityManager] Created comment in Supabase: \(comment.id)")
+                } catch {
+                    print("[CommunityManager] ❌ ERROR creating comment in Supabase: \(error)")
+                }
             }
         }
         
@@ -219,8 +240,12 @@ class CommunityManager {
         
         if useSupabase {
             Task {
-                _ = try? await supabaseService.createComment(reply)
-                print("[CommunityManager] Created reply comment in Supabase: \(reply.id)")
+                do {
+                    try await supabaseService.createComment(reply)
+                    print("[CommunityManager] Created reply comment in Supabase: \(reply.id)")
+                } catch {
+                    print("[CommunityManager] ❌ ERROR creating reply in Supabase: \(error)")
+                }
             }
         }
         
@@ -291,10 +316,21 @@ class CommunityManager {
         
         let community = communities.remove(at: index)
         
+        // Track deleted IDs persistently so they never resurrect (even if Supabase deletion fails)
+        var deletedIDs = UserDefaults.standard.stringArray(forKey: "deletedCommunityIDs") ?? []
+        if !deletedIDs.contains(communityID.uuidString) {
+            deletedIDs.append(communityID.uuidString)
+            UserDefaults.standard.setValue(deletedIDs, forKey: "deletedCommunityIDs")
+        }
+        
         if useSupabase {
             Task {
-                _ = try? await supabaseService.deleteCommunity(community)
-                print("[CommunityManager] Deleted community in Supabase: \(community.id)")
+                do {
+                    try await supabaseService.deleteCommunity(community)
+                    print("[CommunityManager] Successfully deleted community in Supabase: \(community.id)")
+                } catch {
+                    print("[CommunityManager] FAILED to delete community in Supabase: \(error)")
+                }
             }
         }
         
@@ -416,8 +452,19 @@ class CommunityManager {
                             NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
                         }
                     } else {
-                        self.communities = fetched
-                        print("[CommunityManager] Loaded \(fetched.count) communities from Supabase")
+                        // Ensure deleted communities stay dead
+                        let deletedIDs = UserDefaults.standard.stringArray(forKey: "deletedCommunityIDs") ?? []
+                        var finalCommunities = fetched.filter { !deletedIDs.contains($0.id.uuidString) }
+                        
+                        // Merge sample communities so they are always visible!
+                        let sampleComms = self.loadSampleCommunities().filter { !deletedIDs.contains($0.id.uuidString) }
+                        for sample in sampleComms {
+                            if !finalCommunities.contains(where: { $0.id == sample.id }) {
+                                finalCommunities.append(sample)
+                            }
+                        }
+                        self.communities = finalCommunities
+                        print("[CommunityManager] Loaded \(fetched.count) communities from Supabase and merged sample communities.")
                         await MainActor.run {
                             self.saveCommunities()
                             NotificationCenter.default.post(name: NSNotification.Name("RefreshCommunityData"), object: nil)
@@ -443,11 +490,14 @@ class CommunityManager {
         if let data = try? Data(contentsOf: fileURL) {
             let decoder = JSONDecoder()
             if let decoded = try? decoder.decode([Community].self, from: data) {
-                if decoded.isEmpty {
-                    communities = loadSampleCommunities()
+                let deletedIDs = UserDefaults.standard.stringArray(forKey: "deletedCommunityIDs") ?? []
+                let validCommunities = decoded.filter { !deletedIDs.contains($0.id.uuidString) }
+                
+                if validCommunities.isEmpty {
+                    communities = loadSampleCommunities().filter { !deletedIDs.contains($0.id.uuidString) }
                     saveCommunities()
                 } else {
-                    communities = decoded
+                    communities = validCommunities
                 }
                 return
             }

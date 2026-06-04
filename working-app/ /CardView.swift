@@ -111,7 +111,7 @@ class CardView: UIView {
             layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: layer.cornerRadius).cgPath
         }
         layer.shouldRasterize = true
-        layer.rasterizationScale = UIScreen.main.scale
+        layer.rasterizationScale = traitCollection.displayScale
     }
 
     private func updateGradient() {

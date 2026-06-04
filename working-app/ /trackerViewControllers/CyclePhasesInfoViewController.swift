@@ -190,7 +190,7 @@ class CyclePhasesInfoViewController: UIViewController {
         card.layer.shadowOffset = CGSize(width: 0, height: 6)
         card.layer.shadowRadius = 14
         card.layer.shouldRasterize = true
-        card.layer.rasterizationScale = UIScreen.main.scale
+        card.layer.rasterizationScale = traitCollection.displayScale
         
         card.translatesAutoresizingMaskIntoConstraints = false
         

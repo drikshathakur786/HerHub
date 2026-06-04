@@ -53,24 +53,13 @@ class AllCommunityCell: UITableViewCell {
         memberLabel.text = "\(community.members.count) members"
        
         let config = UIImage.SymbolConfiguration(weight: .bold)
-        iconImageView.image = UIImage(systemName: "heart.fill", withConfiguration: config)
+        iconImageView.image = UIImage(systemName: community.iconName, withConfiguration: config) ?? UIImage(systemName: "heart.fill", withConfiguration: config)
         iconImageView.tintColor = .white
         iconImageView.contentMode = .scaleAspectFit
 
-        switch community.themeColor {
-        case "pink":
-            iconBackgroundView.backgroundColor = .systemPink
-        case "purple":
-            iconBackgroundView.backgroundColor = .systemPurple
-        case "green":
-            iconBackgroundView.backgroundColor = .systemGreen
-        case "yellow":
-            iconBackgroundView.backgroundColor = .systemYellow
-        case "cyan", "teal":
-            iconBackgroundView.backgroundColor = .systemCyan
-        default:
-            iconBackgroundView.backgroundColor = .systemPink
-        }
+        // Remove any old gradients if a cell is reused
+        iconBackgroundView.layer.sublayers?.removeAll(where: { $0.name == "PremiumThemeGradient" })
+        iconBackgroundView.backgroundColor = UIColor.themeColor(from: community.themeColor)
        
         if isJoined {
             joinButton.setTitle("Joined", for: .normal)

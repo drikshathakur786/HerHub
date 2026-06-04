@@ -106,45 +106,42 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
         set { UserDefaults.standard.set(newValue, forKey: respectCoachmarkDismissedKey) }
     }
 
-    private func setRespectCoachmarkVisible(_ visible: Bool) {
-        guard let coachmarkView = bottomInputView.viewWithTag(4003) else { return }
-        coachmarkView.isHidden = !visible
-
-        if let heightConstraint = coachmarkView.constraints.first(where: { $0.firstAttribute == .height }) {
-            heightConstraint.constant = visible ? 36 : 0
-        }
-
-        if let inputHeightConstraint = bottomInputView.constraints.first(where: { $0.firstAttribute == .height }) {
-            inputHeightConstraint.constant = visible ? 110 : 64
-        }
-
-        UIView.animate(withDuration: 0.25) {
-            self.bottomInputView.layoutIfNeeded()
-        }
-    }
-
     private func configureRespectCoachmark() {
-
+        // Completely remove the non-native bottom coachmark and 'i' button
         let dismissButton = bottomInputView.viewWithTag(4001) as? UIButton
         let infoButton = bottomInputView.viewWithTag(4004) as? UIButton
-
-        dismissButton?.removeTarget(nil, action: nil, for: .allEvents)
-        infoButton?.removeTarget(nil, action: nil, for: .allEvents)
-
-        dismissButton?.addTarget(self, action: #selector(didTapDismissRespectCoachmark), for: .touchUpInside)
-        infoButton?.addTarget(self, action: #selector(didTapRespectInfo), for: .touchUpInside)
-
-        setRespectCoachmarkVisible(!isRespectCoachmarkDismissed)
+        let coachmarkView = bottomInputView.viewWithTag(4003)
+        
+        dismissButton?.isHidden = true
+        infoButton?.isHidden = true
+        coachmarkView?.isHidden = true
+        
+        if let heightConstraint = coachmarkView?.constraints.first(where: { $0.firstAttribute == .height }) {
+            heightConstraint.constant = 0
+        }
+        
+        // Fix the excessive white space by shrinking the bottom input view height constraint
+        if let inputHeightConstraint = bottomInputView.constraints.first(where: { $0.firstAttribute == .height }) {
+            inputHeightConstraint.constant = 60 // Standard native input bar height
+        }
+        
+        // Native iMessage style text field
+        postTextField.borderStyle = .none
+        postTextField.backgroundColor = .secondarySystemBackground
+        postTextField.layer.cornerRadius = 18
+        postTextField.layer.cornerCurve = .continuous
+        postTextField.layer.masksToBounds = true
+        postTextField.placeholder = "Message"
+        
+        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 16, height: 36))
+        postTextField.leftView = paddingView
+        postTextField.leftViewMode = .always
+        
+        bottomInputView.backgroundColor = .systemBackground
     }
 
-    @objc private func didTapDismissRespectCoachmark() {
-        isRespectCoachmarkDismissed = true
-        setRespectCoachmarkVisible(false)
-    }
-
-    @objc private func didTapRespectInfo() {
-        setRespectCoachmarkVisible(true)
-    }
+    @objc private func didTapDismissRespectCoachmark() {}
+    @objc private func didTapRespectInfo() {}
 
     private var noticeCollapsedDefaultsKey: String {
         let communityPart = community?.id.uuidString ?? "unknown_community"
@@ -350,64 +347,36 @@ class CommunityDetailViewController: UIViewController, UIImagePickerControllerDe
 extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSource {
         
         func numberOfSections(in tableView: UITableView) -> Int {
-            return 2
+            return 1
         }
         
         func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            if section == 0 {
-                return 1
+            if isFiltering {
+                return filteredPostIndices.isEmpty ? 1 : filteredPostIndices.count
             } else {
-                if isFiltering {
-                    return filteredPostIndices.isEmpty ? 1 : filteredPostIndices.count
-                } else {
-                    return displayedPosts.isEmpty ? 1 : displayedPosts.count
-                }
+                return displayedPosts.isEmpty ? 1 : displayedPosts.count
             }
         }
         
 
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-                    
-                if indexPath.section == 0 {
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "NoticeCell", for: indexPath)
-                    let expandedView = cell.contentView.viewWithTag(3003)
-                    let closeButton = cell.contentView.viewWithTag(3001) as? UIButton
-                    let collapsedButton = cell.contentView.viewWithTag(3002) as? UIButton
-
-                    expandedView?.isHidden = isNoticeCollapsed
-                    closeButton?.isHidden = isNoticeCollapsed
-                    collapsedButton?.isHidden = !isNoticeCollapsed
-
-                    // Ensure buttons are tappable and not obscured by other subviews.
-                    closeButton?.isUserInteractionEnabled = true
-                    collapsedButton?.isUserInteractionEnabled = true
-                    if let closeButton {
-                        closeButton.superview?.bringSubviewToFront(closeButton)
-                    }
-
-                    closeButton?.removeTarget(nil, action: nil, for: .allEvents)
-                    collapsedButton?.removeTarget(nil, action: nil, for: .allEvents)
-                    closeButton?.addTarget(self, action: #selector(collapseNoticeTapped), for: .touchUpInside)
-                    collapsedButton?.addTarget(self, action: #selector(expandNoticeTapped), for: .touchUpInside)
-                    return cell
+            let isEmpty: Bool
+            if isFiltering {
+                isEmpty = filteredPostIndices.isEmpty
+            } else {
+                isEmpty = displayedPosts.isEmpty
+            }
+            if isEmpty {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyPostsCell", for: indexPath)
+                let label = cell.contentView.viewWithTag(1001) as? UILabel
+                if isFiltering {
+                    label?.text = "No matching posts"
                 } else {
-                    let isEmpty: Bool
-                    if isFiltering {
-                        isEmpty = filteredPostIndices.isEmpty
-                    } else {
-                        isEmpty = displayedPosts.isEmpty
-                    }
-                    if isEmpty {
-                        let cell = tableView.dequeueReusableCell(withIdentifier: "EmptyPostsCell", for: indexPath)
-                        let label = cell.contentView.viewWithTag(1001) as? UILabel
-                        if isFiltering {
-                            label?.text = "No matching posts"
-                        } else {
-                            label?.text = "No posts yet\nBe the first to post"
-                        }
-                        return cell
-                    }
+                    label?.text = "No posts yet\nBe the first to post"
+                }
+                return cell
+            }
                     let cell = tableView.dequeueReusableCell(withIdentifier: "PostCell", for: indexPath) as! PostCellTableViewCell
                     
                     let postIndex: Int
@@ -439,12 +408,10 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                     cell.commentButton.addTarget(self, action: #selector(handleComment(_:)), for: .touchUpInside)
                     
                     return cell
-                }
         }
         
         func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
          
-            guard indexPath.section == 1 else { return nil }
             if displayedPosts.isEmpty || (isFiltering && filteredPostIndices.isEmpty) { return nil }
             guard let currentUserID = AuthManager.shared.currentUser?.id else { return nil }
             
@@ -530,9 +497,9 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             }
 
             guard let text = postTextField.text, !text.isEmpty,
-                  let communityID = self.community?.id else { return }
+                  self.community?.id != nil else { return }
             
-            guard let currentUser = AuthManager.shared.currentUser else {
+            guard AuthManager.shared.currentUser != nil else {
                 print("Error: Could not get current user to create post")
                 return
             }
@@ -548,13 +515,29 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                 return
             }
                 
+            let firstPostKey = "herhub_has_seen_support_notice"
+            if !UserDefaults.standard.bool(forKey: firstPostKey) {
+                let alert = UIAlertController(title: "Support Community Notice", message: "This is a peer support community. For medical concerns, always consult your doctor. Please be respectful and kind to all members.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "I Understand", style: .default, handler: { [weak self] _ in
+                    UserDefaults.standard.set(true, forKey: firstPostKey)
+                    self?.executePostSubmission()
+                }))
+                present(alert, animated: true)
+            } else {
+                executePostSubmission()
+            }
+        }
+        
+        private func executePostSubmission() {
+            guard let text = postTextField.text, !text.isEmpty,
+                  let communityID = self.community?.id,
+                  let currentUser = AuthManager.shared.currentUser else { return }
+                  
             let authorName = currentUser.userName ?? "Anonymous"
-                
             var imageFilename: String? = nil
             if let image = selectedImage {
                 imageFilename = saveImageLocally(image)
             }
-                
               
             CommunityManager.shared.addPost(
                 to: communityID,
@@ -565,11 +548,6 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
                 imageURL: imageFilename
             )
                 
-            print("Post created by: \(currentUser.email ?? "unknown")")
-            if imageFilename != nil {
-                print("Post includes photo: \(imageFilename!)")
-            }
-                
             postTextField.text = ""
             sendButton.isHidden = true
             selectedImage = nil
@@ -578,13 +556,12 @@ extension CommunityDetailViewController: UITableViewDelegate, UITableViewDataSou
             postTextField.resignFirstResponder()
             
             if let updatedCommunity = CommunityManager.shared.getCommunity(by: communityID) {
-                
                 self.community = updatedCommunity
                 self.refreshDisplayedPosts()
                 
                 let lastRow = displayedPosts.count - 1
                 if lastRow >= 0 {
-                    let indexPath = IndexPath(row: lastRow, section: 1)
+                    let indexPath = IndexPath(row: lastRow, section: 0)
                     tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
                 }
             }

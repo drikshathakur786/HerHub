@@ -59,17 +59,58 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             // Show loading screen temporarily
             let loadingVC = UIViewController()
-            loadingVC.view.backgroundColor = .white
-            let loadingLabel = UILabel()
-            loadingLabel.text = "Loading..."
-            loadingLabel.textColor = .systemPink
-            loadingLabel.font = .systemFont(ofSize: 18, weight: .medium)
-            loadingLabel.translatesAutoresizingMaskIntoConstraints = false
-            loadingVC.view.addSubview(loadingLabel)
+            loadingVC.view.backgroundColor = .systemBackground // Use white to seamlessly blend the image's background
+            
+            let imageView = UIImageView()
+            imageView.image = UIImage(named: "safe_space_girls")
+            imageView.contentMode = .scaleAspectFit
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            
+            loadingVC.view.addSubview(imageView)
+            
+            let titleLabel = UILabel()
+            titleLabel.text = "HerHub"
+            titleLabel.textColor = UIColor(red: 0.6, green: 0.4, blue: 0.8, alpha: 1.0) // Deep pastel purple
+            titleLabel.font = .systemFont(ofSize: 36, weight: .heavy)
+            titleLabel.textAlignment = .center
+            titleLabel.translatesAutoresizingMaskIntoConstraints = false
+            loadingVC.view.addSubview(titleLabel)
+            
+            let subtitleLabel = UILabel()
+            subtitleLabel.text = "Your safe space."
+            subtitleLabel.textColor = .secondaryLabel
+            subtitleLabel.font = .systemFont(ofSize: 18, weight: .medium)
+            subtitleLabel.textAlignment = .center
+            subtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+            loadingVC.view.addSubview(subtitleLabel)
+            
             NSLayoutConstraint.activate([
-                loadingLabel.centerXAnchor.constraint(equalTo: loadingVC.view.centerXAnchor),
-                loadingLabel.centerYAnchor.constraint(equalTo: loadingVC.view.centerYAnchor)
+                imageView.centerXAnchor.constraint(equalTo: loadingVC.view.centerXAnchor),
+                imageView.centerYAnchor.constraint(equalTo: loadingVC.view.centerYAnchor, constant: -60),
+                imageView.widthAnchor.constraint(equalToConstant: 250),
+                imageView.heightAnchor.constraint(equalToConstant: 250),
+                
+                titleLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 24),
+                titleLabel.centerXAnchor.constraint(equalTo: loadingVC.view.centerXAnchor),
+                
+                subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+                subtitleLabel.centerXAnchor.constraint(equalTo: loadingVC.view.centerXAnchor)
             ])
+            
+            // Modern iOS "Breathing" Animation
+            imageView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            titleLabel.alpha = 0
+            subtitleLabel.alpha = 0
+            
+            UIView.animate(withDuration: 1.2, delay: 0, options: [.curveEaseInOut, .repeat, .autoreverse], animations: {
+                imageView.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+            }, completion: nil)
+            
+            UIView.animate(withDuration: 0.8, delay: 0.3, options: .curveEaseOut, animations: {
+                titleLabel.alpha = 1
+                subtitleLabel.alpha = 1
+            }, completion: nil)
+            
             window.rootViewController = loadingVC
         } else {
             // User not logged in - show sign in

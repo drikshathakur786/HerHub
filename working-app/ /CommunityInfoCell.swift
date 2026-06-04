@@ -60,6 +60,11 @@ class CommunityInfoCell: UICollectionViewCell {
         memberLabel.minimumScaleFactor = 0.7
     
         iconImageView.image = UIImage(systemName: iconName)
+        
+        // Remove any old gradient layers if a cell is reused
+        contentView.layer.sublayers?.removeAll(where: { $0.name == "PremiumThemeGradient" })
+        
+        // Apply solid pastel color
         contentView.backgroundColor = color
     }
 

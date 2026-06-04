@@ -24,7 +24,10 @@ class CommentCell: UITableViewCell {
         self.selectionStyle = .none
     }
 
+    private var currentCommentID: UUID?
+
     func configure(comment: Comment) {
+        currentCommentID = comment.id
         avatarImageView.isHidden = false
         nameLabel.isHidden = false
         timeLabel.isHidden = false
@@ -40,6 +43,19 @@ class CommentCell: UITableViewCell {
          
         avatarImageView.image = UIImage(systemName: "person.circle.fill")
         avatarImageView.tintColor = .systemGray4
+        
+        Task {
+            if let user = try? await UserController.shared.fetchUser(byID: comment.authorID) {
+                if let avatarName = user.userPicture, !avatarName.isEmpty {
+                    await MainActor.run {
+                        if self.currentCommentID == comment.id {
+                            self.avatarImageView.image = UIImage(named: avatarName)
+                            self.avatarImageView.tintColor = nil
+                        }
+                    }
+                }
+            }
+        }
         likeButton.setImage(UIImage(systemName: "heart"), for: .normal)
         likeButton.tintColor = .systemGray
     }
