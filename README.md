@@ -3,7 +3,8 @@
 [![Download on the App Store](https://tools.applemediaservices.com/api/badges/download-on-the-app-store/black/en-us?size=250x83)](https://apps.apple.com/in/app/herhub/id6760648593)
 
 <div align="center">
-  <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&w=800&q=80" alt="Women Community" width="600" />
+ <img width="1024" height="1024" alt="herhub_community_banner_1781075124473" src="https://github.com/user-attachments/assets/87b56223-8978-4cd9-b59b-1953023f5248" />
+
   <br>
   <i>Empowering women through data-driven health insights and community support.</i>
 </div>
