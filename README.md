@@ -1,4 +1,4 @@
-# 🌸 HerHub: The Intelligent Women's Health Companion
+# 🌸 HerHub
 
 <div align="center">
   <a href="https://apps.apple.com/in/app/herhub/id6760648593">
